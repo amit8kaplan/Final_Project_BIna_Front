@@ -26,20 +26,21 @@ function App() {
     setDisplayAlert(false)
   }
   return (
-    <>
+    <div className="p-2">
       {displayAleret && <Alert onDismiss={onDismiss}>This is an Alert!!!</Alert>}
       <h1>Cities!!</h1>
       <ListGroup items={cities} onDeleteItem={onDeleteCity} />
 
       <h1>Cars!!</h1>
       <ListGroup items={cars} onDeleteItem={onDeleteCar} />
-      <button type="button"
-        className="btn btn-primary"
-        onClick={openAlert}>
-        Open alert
-      </button>
-
-    </>
+      <div className="mx-auto pt-2 d-flex" style={{ width: "300px" }}>
+        <button type="button"
+          className="btn btn-primary flex-fill"
+          onClick={openAlert}>
+          Open alert
+        </button>
+      </div>
+    </div>
   )
 }
 

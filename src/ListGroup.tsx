@@ -36,11 +36,14 @@ function ListGroup({ items, onDeleteItem }: ListGroupProps) {
                 onClick={addElement}>
                 Add Element
             </button> */}
-            <button type="button"
-                className="btn btn-primary"
-                onClick={removeElement}>
-                Remove Element
-            </button>
+            <div className="pt-2">
+                <button type="button"
+                    className="btn btn-primary"
+                    onClick={removeElement}>
+                    Remove Element
+                </button>
+            </div>
+
         </div>
     )
 }
