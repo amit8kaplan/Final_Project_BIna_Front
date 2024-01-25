@@ -44,13 +44,12 @@
 //   )
 // }
 
-import PostsList from "./PostsList"
+import Registration from "./components/Registration"
 
 function App() {
-
   return (
     <div className="p-2">
-      <PostsList />
+      <Registration />
     </div>
   )
 }
