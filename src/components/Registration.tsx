@@ -3,7 +3,8 @@ import avatar from '../assets/avatar.jpeg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 import { uploadPhoto } from '../services/file-service'
-import { registrUser, IUser } from '../services/user-service'
+import { registrUser, googleSignin, IUser } from '../services/user-service'
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 
 function Registration() {
     const [imgSrc, setImgSrc] = useState<File>()
@@ -36,6 +37,19 @@ function Registration() {
         }
     }
 
+    const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
+        console.log(credentialResponse)
+        try {
+            const res = await googleSignin(credentialResponse)
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const onGoogleLoginFailure = () => {
+        console.log("Google login failed")
+    }
     return (
         <div className="vstack gap-3 col-md-7 mx-auto">
             <h1>Register</h1>
@@ -57,6 +71,8 @@ function Registration() {
                 <label htmlFor="floatingPassword">Password</label>
             </div>
             <button type="button" className="btn btn-primary" onClick={register}>Register</button>
+
+            <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
         </div>)
 }
 
