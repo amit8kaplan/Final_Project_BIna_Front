@@ -2,7 +2,7 @@ import axios, { CanceledError } from "axios";
 
 export { CanceledError }
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: 'https://10.10.248.100',
 });
 
 export default apiClient;
