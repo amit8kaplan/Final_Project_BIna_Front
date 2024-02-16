@@ -44,15 +44,34 @@
 //   )
 // }
 
-import PostList from "./components/PostsList"
-import Registration from "./components/Registration"
+import { Routes, Route } from "react-router-dom"
+import { Container } from "react-bootstrap"
+import { Home } from "./pages/Home"
+import { About } from "./pages/About"
+import { Register } from "./pages/Register";
+import { Login } from "./pages/Login"
+import { Store } from "./pages/Store"
+import { Course_reviews } from "./pages/Coursr_reviews"
+import { Nav_componnets } from "./components/Navbar"
+import avatar from "./assets/avatar.png"
+
 
 function App() {
+  
   return (
-    <div className="p-2">
-      <Registration />
-      <PostList />
-    </div>
+    <div>
+    <Nav_componnets />
+   <Container className="mb-4">
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/store" element={<Store />} />
+      <Route path="/course_review" element={<Course_reviews />} />
+    </Routes>
+  </Container>
+  </div>
   )
 }
 
