@@ -8,9 +8,8 @@ export function Nav_componnets() {
 
 
     return (
-       <Navbar  sticky="top" className ="bg-while shadow-sm mb-3">
+       <Navbar  sticky="top" className ="bg-while shadow-sm mb-3 mt-0">
         <Container>
-        <a class="navbar-brand" href="#page-top"><img src="assets/img/navbar-logo.svg" alt="..." /></a>
             <Nav className="me-auto">
                 <Nav.Link to={"/"} as={NavLink}>
                     Home

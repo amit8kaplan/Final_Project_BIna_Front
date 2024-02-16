@@ -27,7 +27,7 @@ export function Home() {
     <div className="container-fluid p-0 position-relative vh-100">
       {randomPhoto && (
         <div className="position-absolute top-0 start-0 h-100 w-100">
-          <img src={randomPhoto} alt="Random" className="img-fluid position-absolute top-0 start-0 h-100 w-100 blur" />
+          <img src={randomPhoto} alt="Random" className="img-fluid position-absolute top-0 start-0 h-100 w-100 blur" style={{ objectFit: 'cover' }} />
           <div className="position-absolute top-50 start-50 translate-middle text-center text-white">
             <div className="bg-transparent text-body" style={{ backdropFilter: 'blur(60px)' }}>
               <h1>Welcome to our course platform!</h1>

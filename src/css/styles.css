@@ -487,6 +487,10 @@ progress {
   display: none !important;
 }
 
+.navbar {
+  background-color: #ffffff; /* Set background color of navbar */
+}
+
 .lead {
   font-size: 1.25rem;
   font-weight: 300;
