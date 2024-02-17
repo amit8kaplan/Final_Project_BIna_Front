@@ -48,7 +48,8 @@ import { Routes, Route } from "react-router-dom"
 import { Container } from "react-bootstrap"
 import { Home } from "./pages/Home"
 import { About } from "./pages/About"
-import { Register } from "./pages/Register";
+import { Registerfunc } from "./pages/Register";
+// import Registration from "./components/Registration"
 import { Login } from "./pages/Login"
 import { Store } from "./pages/Store"
 import { Course_reviews } from "./pages/Coursr_reviews"
@@ -65,7 +66,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/register" element={<Registerfunc/>} />
       <Route path="/login" element={<Login />} />
       <Route path="/store" element={<Store />} />
       <Route path="/course_review" element={<Course_reviews />} />

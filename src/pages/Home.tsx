@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getRandomPhoto } from '../util/rest_api_photos';
+import { getRandomPhoto, homepagephoto } from '../services/rest_api_photos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function Home() {
@@ -16,7 +16,7 @@ export function Home() {
   const getPhoto = async () => {
     console.log('Getting photo');
     try {
-      const photo = await getRandomPhoto();
+      const photo = await homepagephoto("book,library,study,education,learning");
       setRandomPhoto(photo);
     } catch (error) {
       console.error('Error fetching random photo:', error);
