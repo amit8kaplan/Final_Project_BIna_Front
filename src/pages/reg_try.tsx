@@ -18,6 +18,7 @@ export function YourComponent() {
   const [userName, setUserName] = useState('');
   const [imgSrc, setImgSrc] = useState<File>()
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
+  const [imgError, setImgError] = useState<string>('');
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -68,13 +69,20 @@ export function YourComponent() {
 const onGoogleLoginFailure = () => {
     console.log("Google login failed")
 }
-const imgSelected = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
+
+const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImgSrc((e.target.files[0]))
-      setBooleanRandom(false)
+      const file = e.target.files[0];
+      const allowedTypes = ['image/jpeg', 'image/png']; // Add more image types if needed
+      if (allowedTypes.includes(file.type)) {
+        setImgSrc(file);
+        setBooleanRandom(false);
+        setImgError(''); // Clear any previous error message
+      } else {
+        setImgError('Please select a valid image file (JPEG, PNG).');
+      }
     }
-}
+  };
 const selectImg = () => {
   console.log("Selecting image...")
   if (fileInputRef.current) {
@@ -105,6 +113,7 @@ const randomImg =async () => {
                 <FontAwesomeIcon icon={faRandom} className="fa-xl" />
             </button>
       </div>
+      {imgError && <p className="text-danger">{imgError}</p>}
       <input style={{ display: "none" }} ref={fileInputRef} type="file" onChange={imgSelected}></input>
       <div className="form-floating m-3">
         <input type="text" id="email" {...register('email')} value={email} onChange={handleEmailChange} className='form-control' />
