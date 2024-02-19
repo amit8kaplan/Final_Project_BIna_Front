@@ -43,39 +43,54 @@
 //     </div>
 //   )
 // }
-
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import { Container } from "react-bootstrap"
 import { Home } from "./pages/Home"
 import { About } from "./pages/About"
-import { Registerfunc } from "./pages/Register";
-import {YourComponent} from "./pages/reg_try"
-// import Registration from "./components/Registration"
+import { YourComponent } from "./pages/reg_try"
 import { Login } from "./pages/Login"
 import { Store } from "./pages/Store"
 import { Course_reviews } from "./pages/Coursr_reviews"
 import { Nav_componnets } from "./components/Navbar"
-import avatar from "./assets/avatar.png"
+import { useEffect, useState } from "react";
 
-
-function App() {
-  
-  return (
-    <div>
-    <Nav_componnets />
-   <Container className="mb-4">
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/register" element={<YourComponent/>} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/store" element={<Store />} />
-      <Route path="/course_review" element={<Course_reviews />} />
-    </Routes>
-  </Container>
-  </div>
-  )
+let accessToken: string | null = null
+const isAuth = () => {
+  return !!accessToken
 }
 
+const ProtectedRoute = ({ element, ...rest }: any) => {
+  if (isAuth()) {
+    return <Route {...rest} element={element} />
+  } else {
+    return <Navigate to="/login" />
+  }
+}
+
+function App() {
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    accessToken = localStorage.getItem("accessToken")
+    setLoading(false)
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <Nav_componnets />
+      <Container className="mb-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/register" element={<YourComponent/>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="/course_review" element={<Course_reviews />} />
+        </Routes>
+      </Container>
+    </div>
+  )
+}
 
 export default App

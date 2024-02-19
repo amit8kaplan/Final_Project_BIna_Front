@@ -61,6 +61,8 @@ export function YourComponent() {
             console.log(user)
             const res = await registrUser(user)
             console.log("the user resgister:" +JSON.stringify(res, null, 2))
+            localStorage.setItem('token', res.accessToken!);
+            console.log("the token:" +localStorage.getItem('token'));
             if (imgSrc) {
                 const url = await uploadPhoto(imgSrc!,res.accessToken! );
                 console.log("the url of the photo:" +url)
