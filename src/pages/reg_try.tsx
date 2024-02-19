@@ -6,10 +6,11 @@ import {  IUser, googleSignin, registrUser, } from '../services/user-service'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
-import { ChangeEvent, useRef, useState } from 'react';
+import {  MouseEventHandler, useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
 import { uploadPhoto } from '../services/file-service';
+import 'bootstrap';
 
 
 export function YourComponent() {
@@ -19,11 +20,20 @@ export function YourComponent() {
   const [imgSrc, setImgSrc] = useState<File>()
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
   const [imgError, setImgError] = useState<string>('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalButtonLabel, setModalButtonLabel] = useState('');
+  const [modalButtonAction, setModalButtonAction] = useState(() => {});
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
   const handleUserNameChange = (e) => setUserName(e.target.value);
-
+  const handleModalClose = () => {
+    setShowModal(false);
+    setModalMessage('');
+    setModalButtonLabel('');
+    window.location.href = '/store';
+  };
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   
   const schemaFormUser = z.object({
@@ -39,23 +49,29 @@ export function YourComponent() {
   })
   
   const onsubmit = async () => {
-    if (email!= '' && password != '' && userName != '') {
-        console.log("Registering user...")
-        const user: IUser = {
-            email: email,
-            password: password,
-            imgUrl: "",
-            user_name: userName
+    try{
+        if (email!= '' && password != '' && userName != '') {
+            console.log("Registering user...")
+            const user: IUser = {
+                email: email,
+                password: password,
+                imgUrl: "",
+                user_name: userName
+            }
+            console.log(user)
+            const res = await registrUser(user)
+            console.log("the user resgister:" +JSON.stringify(res, null, 2))
+            if (imgSrc) {
+                const url = await uploadPhoto(imgSrc!,res.accessToken! );
+                console.log("the url of the photo:" +url)
+            }
         }
-        console.log(user)
-        const res = await registrUser(user)
-        console.log("the user resgister:" +JSON.stringify(res, null, 2))
-        const url = await uploadPhoto(imgSrc!,res.accessToken! );
-        console.log("the url of the photo:" +url)
-        // const res2 = await updateUser ({...user, imgUrl: url})
-        }
-    }
 
+    } catch (e) {
+        console.log(e)
+    }
+   
+}
   const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     console.log(credentialResponse)
     try {
@@ -130,10 +146,52 @@ const randomImg =async () => {
         {errors.userName && <p className="text-danger">{errors.userName.message}</p>}
         <label htmlFor="userName">User Name</label>
       </div>
-      <button type="button" onClick={handleSubmit(onsubmit)} className="btn btn-primary">Register</button>
+      <button type="button" onClick={handleSubmit(onsubmit)} className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Modal">Register</button>
       <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
+        <div className="modal fade" id="Modal" tabIndex={-1} aria-labelledby="ModalLabel" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                <div className="modal-header">
+                    <h1 className="modal-title fs-5" id="ModalLabel">Registraion Success!</h1>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                    hello {userName}!<br/>
+                    You have been registered successfully! <br/>
+                    This is the place to investigate the world of knowledge!
+
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => handleModalClose()}>Let's GO!</button>
+                </div>
+                </div>
+            </div>
+        </div>
+      
     </div>
+
+    
   );
 }
 
 export default YourComponent;
+
+
+
+// {showModal && (
+//     <div className="modal fade show" id="Modal" tabIndex={-1} aria-labelledby="ModalLabel" aria-hidden="true" style={{ display: 'block' }}>
+//     <div className="modal-dialog">
+//         <div className="modal-content">
+//             <div className="modal-header">
+//                 <h1 className="modal-title fs-5" id="ModalLabel">{modalMessage}</h1>
+//                 <button type="button" className="btn-close" aria-label="Close" onClick={handleModalClose}></button>
+//             </div>
+//             <div className="modal-body">
+//                 {/* Your modal body content */}
+//             </div>
+//             <div className="modal-footer">
+//                 <button type="button" className="btn btn-secondary" onClick={modalButtonAction}>{modalButtonLabel}</button>
+//             </div>
+//         </div>
+//     </div>
+// )}
