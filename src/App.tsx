@@ -49,6 +49,7 @@ import { Container } from "react-bootstrap"
 import { Home } from "./pages/Home"
 import { About } from "./pages/About"
 import { Registerfunc } from "./pages/Register";
+import {YourComponent} from "./pages/reg_try"
 // import Registration from "./components/Registration"
 import { Login } from "./pages/Login"
 import { Store } from "./pages/Store"
@@ -66,7 +67,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
-      <Route path="/register" element={<Registerfunc/>} />
+      <Route path="/register" element={<YourComponent/>} />
       <Route path="/login" element={<Login />} />
       <Route path="/store" element={<Store />} />
       <Route path="/course_review" element={<Course_reviews />} />
