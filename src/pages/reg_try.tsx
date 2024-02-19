@@ -9,6 +9,7 @@ import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
 import { ChangeEvent, useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
+import { uploadPhoto } from '../services/file-service';
 
 
 export function YourComponent() {
@@ -47,11 +48,10 @@ export function YourComponent() {
         }
         console.log(user)
         const res = await registrUser(user)
-        console.log(res)
-            //         const url = await uploadPhoto(imgSrc!);
-            //         const res2 = await updateUser ({...user, imgUrl: url})
-            //     }
-            // }
+        console.log("the user resgister:" +JSON.stringify(res, null, 2))
+        const url = await uploadPhoto(imgSrc!,res.accessToken! );
+        console.log("the url of the photo:" +url)
+        // const res2 = await updateUser ({...user, imgUrl: url})
         }
     }
 
@@ -79,6 +79,7 @@ const selectImg = () => {
   console.log("Selecting image...")
   if (fileInputRef.current) {
     fileInputRef.current.click();
+    console.log("Selecting image..." + fileInputRef.current)
   }
 }
 const randomImg =async () => {
