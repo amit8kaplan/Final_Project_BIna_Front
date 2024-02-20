@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 
 // Dummy data for courses
@@ -8,6 +9,22 @@ const courses = [
 ];
 
 export const Store: React.FC = () => {
+
+  //State to routeprotected auth
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null)
+  useEffect(() => {
+    accessToken = localStorage.getItem("accessToken")
+    const res = await axios.get("http://localhost:3000/auth/isAuth")
+  
+    if (accessToken) {
+    setLoading(false)
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   // State for selected topic
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   // State for search query
