@@ -11,29 +11,17 @@ export interface IUser {
     refreshToken?: string
 }
 
-export const registrUser = (user: IUser) => {
-    return new Promise<IUser>((resolve, reject) => {
-        console.log("Registering user...")
-        console.log(user)
-        apiClient.post("/auth/register", user).then((response) => {
-            console.log(response)
-            resolve(response.data)
-        }).catch((error) => {
-            console.log(error)
-            reject(error)
-        })
-    })
+export const registrUser = async (user: IUser) => (await apiClient.post("/auth/register", user)).data
+
+export const googleSignin = async (credentialResponse: CredentialResponse) => {
+    const data = (await apiClient.post("/auth/google", credentialResponse)).data;
+    const { accessToken, refreshToken } = data;
+
+    sessionStorage.setItem("accessToken", accessToken)
+    sessionStorage.setItem("refreshToken", refreshToken)
+
+    window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken } }));
+    return data;
 }
 
-export const googleSignin = (credentialResponse: CredentialResponse) => {
-    return new Promise<IUser>((resolve, reject) => {
-        console.log("googleSignin ...")
-        apiClient.post("/auth/google", credentialResponse).then((response) => {
-            console.log(response)
-            resolve(response.data)
-        }).catch((error) => {
-            console.log(error)
-            reject(error)
-        })
-    })
-}
+

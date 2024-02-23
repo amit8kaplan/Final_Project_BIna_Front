@@ -18,10 +18,10 @@ export const uploadPhoto = async (photo: File, accessToken: string) => {
                     'Authorization': `JWT ${accessToken}`
                 }
             }).then(res => {
-                console.log("upliad res: " +JSON.stringify(res, null, 2));
+                console.log("upliad res: " + JSON.stringify(res, null, 2));
                 resolve(res.data.url);
             }).catch(err => {
-                console.log("upliad err: " +JSON.stringify(err, null, 2));
+                console.log("upliad err: " + JSON.stringify(err, null, 2));
                 reject(err);
             });
         }

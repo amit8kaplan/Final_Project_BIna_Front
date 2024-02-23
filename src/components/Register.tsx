@@ -1,10 +1,4 @@
-
-
-
-
-
-export  const selectImg = () => {
-    console.log("Selecting image...")
-    fileInputRef.current?.click()
-}
-
+export const selectImg = () => {
+  console.log("Selecting image...");
+  fileInputRef.current?.click();
+};

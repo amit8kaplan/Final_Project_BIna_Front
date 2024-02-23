@@ -1,34 +1,20 @@
-import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { fetchCourses } from "../services/course-service";
 
-// Dummy data for courses
-const courses = [
-  { id: 1, title: 'Course 1', description: 'Description for Course 1' },
-  { id: 2, title: 'Course 2', description: 'Description for Course 2' },
-  { id: 3, title: 'Course 3', description: 'Description for Course 3' },
-];
+
 
 export const Store: React.FC = () => {
+  const [courses, setCourses] = useState<any>([]);
 
-  //State to routeprotected auth
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null)
   useEffect(() => {
-    accessToken = localStorage.getItem("accessToken")
-    const res = await axios.get("http://localhost:3000/auth/isAuth")
-  
-    if (accessToken) {
-    setLoading(false)
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  // State for selected topic
+    const fetchCoursesFromServer = async () => {
+      setCourses(await fetchCourses())
+    }
+    fetchCoursesFromServer();
+  }, [])
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   // State for search query
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Function to handle topic selection
   const handleTopicSelect = (topic: string) => {
@@ -36,16 +22,24 @@ export const Store: React.FC = () => {
   };
 
   // Function to handle search input
-  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSearchQuery(event.target.value);
   };
 
   // Filter courses based on selected topic and search query
-  const filteredCourses = courses.filter(course => {
-    if (selectedTopic && course.title.toLowerCase().includes(selectedTopic.toLowerCase())) {
+  const filteredCourses = courses.filter((course: any) => {
+    if (
+      selectedTopic &&
+      course.name.toLowerCase().includes(selectedTopic.toLowerCase())
+    ) {
       return true;
     }
-    if (!selectedTopic && course.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (
+      !selectedTopic &&
+      course.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
       return true;
     }
     return false;
@@ -59,9 +53,24 @@ export const Store: React.FC = () => {
             <div className="card-body">
               <h5 className="card-title">Topics</h5>
               <div className="btn-group-vertical">
-                <button className="btn btn-outline-primary" onClick={() => handleTopicSelect('Topic 1')}>Topic 1</button>
-                <button className="btn btn-outline-primary" onClick={() => handleTopicSelect('Topic 2')}>Topic 2</button>
-                <button className="btn btn-outline-primary" onClick={() => handleTopicSelect('Topic 3')}>Topic 3</button>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => handleTopicSelect("Topic 1")}
+                >
+                  Topic 1
+                </button>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => handleTopicSelect("Topic 2")}
+                >
+                  Topic 2
+                </button>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => handleTopicSelect("Topic 3")}
+                >
+                  Topic 3
+                </button>
                 {/* Add more topics as needed */}
               </div>
             </div>
@@ -69,11 +78,17 @@ export const Store: React.FC = () => {
         </div>
 
         <div className="col-md-9">
-          <input type="text" className="form-control mb-4" placeholder="Search courses..." value={searchQuery} onChange={handleSearchInputChange} />
-          {filteredCourses.map(course => (
+          <input
+            type="text"
+            className="form-control mb-4"
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+          />
+          {filteredCourses.map((course: any) => (
             <div className="card mb-3" key={course.id}>
               <div className="card-body">
-                <h5 className="card-title">{course.title}</h5>
+                <h5 className="card-title">{course.name}</h5>
                 <p className="card-text">{course.description}</p>
                 <button className="btn btn-primary">Buy</button>
               </div>
@@ -84,4 +99,3 @@ export const Store: React.FC = () => {
     </div>
   );
 };
-

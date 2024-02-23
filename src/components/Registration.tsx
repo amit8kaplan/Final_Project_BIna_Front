@@ -10,7 +10,6 @@
 // // import { zodResolver } from '@hookform/resolvers/zod'
 // // function Registration() {
 
-
 // //     // refine(email => /^[^@]+@[^@]+\.[^@]+$/.test(email), {
 // //     //     message: "Email must match the pattern 'example@example.example'"
 // //     // }),
@@ -22,7 +21,7 @@
 // //     const { register, handleSubmit, formState: { errors } } = useForm<FormUser>({
 // //         resolver: zodResolver(schemaFormUser)
 // //     })
-    
+
 // //     const [imgSrc, setImgSrc] = useState<File>()
 
 // //     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -104,9 +103,6 @@
 
 // // export default Registration
 
-
-
-
 // // <div className="vstack gap-3 col-md-7 mx-auto">
 // // <div className="d-flex justify-content-center position-relative">
 // //    <img src={imgSrc ? URL.createObjectURL(imgSrc) : avatar} style={{ height: "230px", width: "230px" }} className="img-fluid" />
@@ -130,7 +126,6 @@
 // </form>
 // <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
 // </div> */}
-
 
 // //   // const schemaFormUser = z.object({
 // //   //   email: z.string().min(3).refine(email => /^[^@]+@[^@]+\.[^@]+$/.test(email), {
