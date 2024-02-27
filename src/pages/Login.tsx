@@ -2,57 +2,61 @@ import { useState } from 'react';
 import { GoogleLogin } from "@react-oauth/google";
 import { googleSignin } from "../services/user-service";
 import apiClient from '../services/api-client'; // Ensure this is correctly importing your axios instance
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Existing Google login success handler
-  const onGoogleLoginSuccess = async (credentialResponse) => {
-    console.log(credentialResponse);
-    setLoading(true);
+  const onGoogleLoginSuccess = async (credentialResponse: any) => {
     try {
       const res = await googleSignin(credentialResponse);
-      console.log(res);
-      // Redirect user or update UI accordingly
+      sessionStorage.setItem("accessToken", res.accessToken);
+      sessionStorage.setItem("refreshToken", res.refreshToken);
+      window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: res.accessToken } }));
+      
+      navigate('/store'); // Redirect to store page
     } catch (error) {
       console.error(error);
-      setLoginError('Google login failed. Please try again.');
+      // Handle error, potentially set an error state here
     }
-    setLoading(false);
   };
+  
 
   // Google login failure handler
   const onGoogleLoginFailure = () => {
     console.log("Google login failed");
-    setLoginError('Google login failed. Please try again.');
+    // Handle Google login failure
   };
 
   // Email and password login handler
-  const handleEmailPasswordLogin = async (e) => {
-    e.preventDefault(); // Prevent the form from causing a page reload
+  const handleEmailPasswordLogin = async (e: any) => {
+    e.preventDefault();
     if (!email || !password) {
       setLoginError('Email and password must not be empty.');
       return;
     }
-    setLoading(true);
     try {
+      setLoading(true);
       const { data } = await apiClient.post('/auth/login', { email, password });
-      console.log(data);
-      // Redirect user or update UI accordingly
-    } catch (error) {
+      sessionStorage.setItem("accessToken", data.accessToken);
+      sessionStorage.setItem("refreshToken", data.refreshToken);
+      window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: data.accessToken } }));
+      
+      navigate('/store'); // Redirect to store page
+    } catch (error: any) {
       console.error(error);
-      if (error.response && error.response.data && error.response.data.message) {
-        setLoginError(error.response.data.message);
-      } else {
-        setLoginError('Failed to log in. Please check your email and password.');
-      }
+      setLoginError(error.response?.data?.message || 'Failed to log in. Please check your email and password.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-
+  
+  
   return (
     <div className="login-container">
       <h1>Login</h1>
@@ -86,7 +90,6 @@ export function Login() {
           onError={onGoogleLoginFailure}
         />
       </div>
-      {loading && <div>Loading...</div>}
     </div>
   );  
 }
