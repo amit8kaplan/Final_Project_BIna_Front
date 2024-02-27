@@ -43,7 +43,12 @@ export function Nav_componnets(props: NavComponnetsProps) {
             style={{ width: "30px" }}
           />
         </Nav.Link>
-      </Container>
+        {/* { isLogin ?(
+        <Nav.Link to={"https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout"} as={NavLink}>
+          LogOutOfGoogle
+          </Nav.Link>
+        ): null} */}
+        </Container>
     </Navbar>
   );
 }
