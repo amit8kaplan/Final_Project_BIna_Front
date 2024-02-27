@@ -49,7 +49,7 @@ import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
-import { Store } from "./pages/Store";
+import { CourseList } from "./pages/Store copy";
 import { Course_reviews } from "./pages/Coursr_reviews";
 import { Nav_componnets } from "./components/Navbar";
 import { useEffect, useState } from "react";
@@ -90,7 +90,7 @@ function App() {
             path="/store"
             element={
               <ProtectedRoute>
-                <Store />
+                <CourseList />
               </ProtectedRoute>
             }
           />

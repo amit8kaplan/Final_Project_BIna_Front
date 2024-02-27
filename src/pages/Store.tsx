@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
+import {Card } from "react-bootstrap";
 import { fetchCourses } from "../services/course-service";
-
-
 
 export const Store: React.FC = () => {
   const [courses, setCourses] = useState<any>([]);
