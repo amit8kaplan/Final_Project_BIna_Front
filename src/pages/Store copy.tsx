@@ -8,9 +8,9 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import apiClient from '../services/api-client';
+import { string } from 'zod';
 
 interface Course {
-  _id: string;
   name: string;
   owner: string;
   owner_name: string;
@@ -27,7 +27,6 @@ export const CourseList: React.FC = () => {
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
   const [vidError, setvidError] = useState<string>('');
   const [newCourse, setNewCourse] = useState<Course>({
-    _id: '',
     name: '',
     owner: '',
     owner_name: '',
@@ -65,28 +64,62 @@ export const CourseList: React.FC = () => {
   
       // Upload video file first
       const formData = new FormData();
+      console.log("The type of the formdata" + typeof formData)
       formData.append('video', vidSrc);
-  
+      console.log("the token"+ localStorage.getItem('token'))
+
       const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      console.log("the token"+ localStorage.getItem('token'))
+      const reqBody ={
+        owner: '', // this is the user id
+        Count: 0,
+          owner_name: '',
+          name: newCourse.name,
+          description: newCourse.description,
+          videoUrl: videoUploadResponse.data.url
+        }
+        console.log("the request body is:" + JSON.stringify(reqBody))
+        console.log("the type of request body is:" + typeof reqBody)
+        console.log("the token"+ localStorage.getItem('token'))
       const videoUrl = videoUploadResponse.data.url;
       console.log("the video url is:" + videoUrl)
       // Create new course object with videoUrl
       const newCourseWithVideo = { ...newCourse, videoUrl };
       console.log("the new course with video is:" + JSON.stringify(newCourseWithVideo))
+      console.log("type of name" + typeof newCourseWithVideo.name)
       const headers = {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       }
       console.log("the headers are:" + JSON.stringify(headers))
       // Post the course with the videoUrl
-      await apiClient.post('/course', newCourseWithVideo, {
-        headers: headers,
+      await fetch('http://localhost:3000/course/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body:  JSON.stringify({
+          owner: '', // this is the user id
+          Count: 0,
+          owner_name: '',
+          name: newCourse.name,
+          description: newCourse.description,
+          videoUrl: videoUploadResponse.data.url
+          
+        })
+      }).then((response) => {
+        console.log("the response is:" + (response))
+        return response.json();
+      }).then((data) => {
+        console.log("the data is:" + JSON.stringify(data))
+      }
+      ).catch((error) => {
+        console.error('Error:', error);
       });
   
       setShowForm(false);
@@ -162,7 +195,7 @@ export const CourseList: React.FC = () => {
                 type="text"
                 placeholder="Enter course name"
                 value={newCourse.name}
-                onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
+                onChange={(e) => setNewCourse(prevState => ({ ...prevState, name: e.target.value }))}
               />
             </Form.Group>
             <Form.Group controlId="formDescription" className='p-2'>
@@ -172,7 +205,7 @@ export const CourseList: React.FC = () => {
                 rows={3}
                 placeholder="Enter course description"
                 value={newCourse.description}
-                onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
+                onChange={(e) => setNewCourse(prevState => ({ ...prevState, description: e.target.value }))}
               />
             </Form.Group>
             <Form.Group controlId="formVideoUrl" className='p-2'>
