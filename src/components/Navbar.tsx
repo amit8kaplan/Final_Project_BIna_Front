@@ -1,7 +1,6 @@
 import { Container, Navbar, Nav, Button } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import avatar from "../assets/avatar.jpeg";
-import { useEffect, useState } from "react";
 
 interface NavComponnetsProps {
   isLogin: boolean;
@@ -10,7 +9,11 @@ interface NavComponnetsProps {
 export function Nav_componnets(props: NavComponnetsProps) {
   const { isLogin } = props;
 
-  const [imgSrc, setImgSrc] = useState<File>();
+  const handleLogout = () => {
+    // Implement your logout logic here
+    sessionStorage.clear(); // Clear the session storage
+    window.dispatchEvent(new Event("sessionStorageChange")); // Trigger sessionStorageChange event
+  };
 
   return (
     <Navbar sticky="top" className="bg-while shadow-sm mb-3 mt-0">
@@ -22,33 +25,36 @@ export function Nav_componnets(props: NavComponnetsProps) {
           <Nav.Link to={"/about"} as={NavLink}>
             About
           </Nav.Link>
-          <Nav.Link to={"/register"} as={NavLink}>
-            Register
-          </Nav.Link>
-          {isLogin ? (
-            <Nav.Link to={"/store"} as={NavLink}>
-              Store
-            </Nav.Link>
-          ) : (
-            <Nav.Link to={"/login"} as={NavLink}>
-              Login
+          {!isLogin && (
+            <Nav.Link to={"/register"} as={NavLink}>
+              Register
             </Nav.Link>
           )}
-        </Nav>
-        <Nav.Link to={"/personal"} as={NavLink}>
-          <img
-            className="rounded-circle"
-            src={imgSrc ? URL.createObjectURL(imgSrc) : avatar}
-            alt="aa"
-            style={{ width: "30px" }}
-          />
-        </Nav.Link>
-        {/* { isLogin ?(
-        <Nav.Link to={"https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout"} as={NavLink}>
-          LogOutOfGoogle
+          <Nav.Link to={isLogin ? "/store" : "/login"} as={NavLink}>
+            {isLogin ? "Store" : "Login"}
           </Nav.Link>
-        ): null} */}
-        </Container>
+        </Nav>
+        <Nav className="me-2">
+          <Nav.Link to={"/personal"} as={NavLink}>
+            <img
+              className="rounded-circle"
+              src={avatar}
+              alt="Avatar"
+              style={{ width: "30px" }}
+            />
+          </Nav.Link>
+          {isLogin && (
+            <>
+              <Nav.Link disabled className="me-2"> {/* Empty Nav.Link for spacing */}
+                &nbsp;
+              </Nav.Link>
+              <Button variant="outline-primary" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          )}
+        </Nav>
+      </Container>
     </Navbar>
   );
 }
