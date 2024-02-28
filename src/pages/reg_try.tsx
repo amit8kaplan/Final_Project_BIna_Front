@@ -51,12 +51,13 @@ export function YourComponent() {
   })
   
   const onsubmit = async (data: any) => {
+    console.log(data)
     setShowModal(false); // Ensure the modal is not shown by default on each submit attempt
     try {
         const registrationResponse = await registrUser({
             email: data.email,
             password: data.password,
-            username: data.userName,
+            user_name: data.userName,
             imgUrl: '', // Include imgUrl if applicable
         });
 
