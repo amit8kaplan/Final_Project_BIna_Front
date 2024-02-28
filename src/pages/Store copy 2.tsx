@@ -25,6 +25,16 @@ interface Course {
   Count: number;
   videoUrl: string;
 }
+interface IcourseReview {
+  _id: string;
+  course_id: string;
+  course_name: string;
+  title: string;
+  message: string;
+  score: number;
+  owner_id: string;
+  owner_name: string;
+}
 
 export const CourseList: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
@@ -36,12 +46,25 @@ export const CourseList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
   const [reviews, setReviews] = useState<IcourseReview[]>([]);
-const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
+const [newReview, setNewReview] = useState<IcourseReview>({
+  _id: '',
+  course_id: '',
+  course_name: '',
+  title: '',
+  message: '',
+  score: null,
+  owner_id: '',
+  owner_name: '',
+});
+const handleOpenAddReviewModal = () => {
+  setShowAddReviewModal(true);
+};
 
-  // Function to handle selecting an option from the dropdown
-  const handleSelectOption = (option: string) => {
-    setSelectedOption(option);
-  };  
+// Function to handle selecting an option from the dropdown
+const handleSelectOption = (option: string) => {
+  setSelectedOption(option);
+};
   const [newCourse, setNewCourse] = useState<Course>({
     _id: '',
     name: '',
@@ -186,7 +209,24 @@ const fetchReviews = async (courseId: string, courseName: string) => {
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
-
+  const handleSubmitReview = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      // Implement logic for submitting review
+      console.log("Submitting review:", newReview);
+      // Close the "Add Review" modal after submission
+      setShowAddReviewModal(false);
+      // Clear the newReview state
+      setNewReview({
+        title: '',
+        message: '',
+        score: undefined,
+      });
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    }
+  };
+  
 
 
   return (
@@ -244,6 +284,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
                   {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
                  </Button>
                   )}
+                  <Button className='btn p-2' variant="info" onClick={handleOpenAddReviewModal}>Add Review</Button>
                   <Button className='btn p-2' variant="secondary" onClick={() => fetchReviews(course.owner,course.name)}>Reviews</Button>
                 </div>
 
@@ -252,6 +293,54 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           </Col>
         ))}
       </Row>
+      <Modal show={showAddReviewModal} onHide={() => setShowAddReviewModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Waiting for Your Insights!</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {/* Form for adding review */}
+    <Form onSubmit={handleSubmitReview}>
+      const newReview = {
+        title: '',
+        message: '',
+        score: 0
+      };
+
+      <Form.Group controlId="formReviewTitle" className="p-2">
+        <Form.Label>Title</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter review title"
+          value={newReview.title}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, title: e.target.value }))}
+        />
+      </Form.Group>
+      <Form.Group controlId="formReviewMessage" className="p-2">
+        <Form.Label>Message</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          placeholder="Enter review message"
+          value={newReview.message}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, message: e.target.value }))}
+        />
+      </Form.Group>
+      <Form.Group controlId="formReviewScore" className="p-2">
+        <Form.Label>Score</Form.Label>
+        <Form.Control
+          type="number"
+          placeholder="Enter review score"
+          value={newReview.score}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, score: parseInt(e.target.value) }))}
+        />
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit Review
+      </Button>
+    </Form>
+  </Modal.Body>
+</Modal>
+
       <Modal show={showForm} onHide={() => setShowForm(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add New Course</Modal.Title>
