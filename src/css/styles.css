@@ -11377,3 +11377,47 @@ section#contact form#contactForm :-ms-input-placeholder {
   margin-bottom: 10px; /* Reduced margin for closer fields */
   gap: 10px; /* This will add space between the label and the input */
 }
+
+
+.about-container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #34568B;
+}
+
+.about-section {
+  margin-bottom: 40px;
+}
+
+.section {
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.section-create {
+  background-color: #E1F5FE;
+  color: #007BFF;
+}
+
+.section-engage {
+  background-color: #FEF9E7;
+  color: #F9A825;
+}
+
+.section-register {
+  background-color: #E8F5E9;
+  color: #43A047;
+}
+
+.section h2 {
+  color: inherit;
+}
+
+.section p {
+  color: #5D5D5D;
+}

@@ -35,16 +35,16 @@ export function Nav_componnets(props: NavComponnetsProps) {
           </Nav.Link>
         </Nav>
         <Nav className="me-2">
-          <Nav.Link to={"/personal"} as={NavLink}>
-            <img
-              className="rounded-circle"
-              src={avatar}
-              alt="Avatar"
-              style={{ width: "30px" }}
-            />
-          </Nav.Link>
           {isLogin && (
             <>
+              <Nav.Link to={"/personal"} as={NavLink}>
+                <img
+                  className="rounded-circle"
+                  src={avatar}
+                  alt="Avatar"
+                  style={{ width: "30px" }}
+                />
+              </Nav.Link>
               <Nav.Link disabled className="me-2"> {/* Empty Nav.Link for spacing */}
                 &nbsp;
               </Nav.Link>
