@@ -56,7 +56,7 @@ export function YourComponent() {
                 email: email,
                 password: password,
                 imgUrl: "",
-                user_name: userName
+                username: userName
             }
             console.log(user)
             const res = await registrUser(user)

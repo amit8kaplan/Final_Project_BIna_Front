@@ -30,18 +30,43 @@ export function Registerfunc() {
 
   const onSubmit = async (data) => {
     try {
-      // Assuming your API endpoint for registration is '/auth/register'
-      const response = await axios.post('http://localhost:3000/auth/register', data);
-      // Store tokens in session storage
-      sessionStorage.setItem("accessToken", response.data.accessToken);
-      sessionStorage.setItem("refreshToken", response.data.refreshToken);
-      navigate('/store'); // Redirect to store page
-    } catch (error) {
-      console.error("Registration error:", error.response?.data?.message || "An error occurred");
-    }
-  };
+        // Directly destructuring the response to get `data`
+        const { data } = await axios.post('http://localhost:3000/auth/register', {
+            email: data.email,
+            password: data.password,
+            username: data.username, // Ensure this matches the backend expectation
+            imgUrl: data.imgUrl || '',
+        });
 
-  const onGoogleLoginSuccess = async (credentialResponse) => {
+        console.log("the user register:", data);
+
+        // Access tokens directly from `data`, similar to the login function
+        const { accessToken, refreshToken } = data.tokens; 
+
+        console.log("the accessToken:", accessToken); // Debugging line to check accessToken
+        console.log("the refreshToken:", refreshToken); // Debugging line to check refreshToken
+
+        if (accessToken && refreshToken) {
+            sessionStorage.setItem("accessToken", accessToken);
+            sessionStorage.setItem("refreshToken", refreshToken);
+            // Dispatch an event similar to login for consistent session handling
+            window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: accessToken } }));
+            navigate('/store'); // Redirect to the store page on success
+        } else {
+            // Handle missing tokens in response
+            throw new Error("Tokens are missing in the registration response.");
+        }
+    } catch (error) {
+        console.error("Registration error:", error);
+        alert(error.response?.data?.message || "Registration failed. Please try again.");
+    }
+};
+
+
+
+
+
+  const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     try {
       const response = await googleSignin(credentialResponse);
       navigate('/store'); // Redirect to store page
@@ -50,11 +75,11 @@ export function Registerfunc() {
     }
   };
 
-  const onGoogleLoginFailure = (error) => {
+  const onGoogleLoginFailure = (error: any) => {
     console.error("Google login failed:", error);
   };
 
-  const imgSelected = (e) => {
+  const imgSelected = (e: { target: { files: string | any[]; }; }) => {
     if (e.target.files && e.target.files.length > 0) {
       setImgSrc(e.target.files[0]);
       setBooleanRandom(false);

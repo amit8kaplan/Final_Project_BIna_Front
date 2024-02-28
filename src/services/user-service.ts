@@ -3,7 +3,7 @@ import apiClient from "./api-client"
 
 export interface IUser {
     email: string,
-    user_name: string,
+    username: string,
     password?: string,
     imgUrl?: string,
     _id?: string,
