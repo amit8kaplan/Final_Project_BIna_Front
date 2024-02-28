@@ -78,11 +78,14 @@ export function YourComponent() {
         
         }
 
+
         // If registration is successful, proceed to login the user
         const loginSuccess = await loginUserWithEmailPassword(data.email, data.password);
         if (loginSuccess) {
+          console.log("the login success: ", loginSuccess)
             setModalMessage("Registration Successful! You are now being redirected...");
             setShowModal(true); // Show success modal
+            console.log("the storage token is after loginsuccess and in reg_try:" + sessionStorage.getItem('accessToken'))
             setTimeout(() => navigate('/store'), 3000); // Redirect user to the store page after a short delay
         }
     } catch (error: any) {

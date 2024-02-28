@@ -58,6 +58,8 @@ export const CourseList: React.FC = () => {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("the local storage token is:" + sessionStorage.getItem('accessToken'))
+
     event.preventDefault();
     try {
       if (!vidSrc) {
@@ -71,7 +73,7 @@ export const CourseList: React.FC = () => {
       const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
         },
       });
 
@@ -85,7 +87,7 @@ export const CourseList: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           owner: '', // this is the user id

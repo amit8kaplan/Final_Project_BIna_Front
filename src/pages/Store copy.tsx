@@ -51,6 +51,8 @@ export const CourseList: React.FC = () => {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("the local storage token is:" + localStorage.getItem('token'))
+
     event.preventDefault();
     try {
       if (!vidSrc) {
@@ -67,7 +69,6 @@ export const CourseList: React.FC = () => {
       console.log("The type of the formdata" + typeof formData)
       formData.append('video', vidSrc);
       console.log("the token"+ localStorage.getItem('token'))
-
       const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

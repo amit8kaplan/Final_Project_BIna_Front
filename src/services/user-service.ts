@@ -32,6 +32,7 @@ export const loginUserWithEmailPassword = async (email: any, password: any) => {
       sessionStorage.setItem("accessToken", data.accessToken);
       sessionStorage.setItem("refreshToken", data.refreshToken);
       window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: data.accessToken } }));
+      console.log("the storage token is:" + sessionStorage.getItem('accessToken'))
       return true; // Login successful
     } catch (error) {
       console.error(error);
