@@ -11,6 +11,7 @@ import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
 import 'bootstrap';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/api-client';
 
 
 export function YourComponent() {
@@ -60,8 +61,22 @@ export function YourComponent() {
             user_name: data.userName,
             imgUrl: '', // Include imgUrl if applicable
         });
-
         console.log("the user register:", registrationResponse);
+        console.log("the imgSrc: ", imgSrc)
+        const formData = new FormData();
+           if (imgSrc!=null){
+            formData.append('image', imgSrc);
+            console.log("the formdata: ", formData)
+            console.log("the register response: ", registrationResponse.accessToken)
+            const upload_photo = await apiClient.post("/user", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${registrationResponse.accessToken}`,
+            },
+          });
+          console.log("the photo uploaded: ", upload_photo)
+        
+        }
 
         // If registration is successful, proceed to login the user
         const loginSuccess = await loginUserWithEmailPassword(data.email, data.password);

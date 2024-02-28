@@ -11,7 +11,7 @@ export interface IUser {
     refreshToken?: string
 }
 
-export const registrUser = async (user: IUser) => (await apiClient.post("/auth/register", user)).data
+export const registrUser = async (user: any) => (await apiClient.post("/auth/register", user)).data
 
 export const googleSignin = async (credentialResponse: CredentialResponse) => {
     const data = (await apiClient.post("/auth/google", credentialResponse)).data;
