@@ -11,6 +11,7 @@ import apiClient from '../services/api-client';
 import { string } from 'zod';
 import { BsChevronDown, BsChevronUp,  } from 'react-icons/bs';
 import { set } from 'react-hook-form';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 // Inside the CourseCard component:
 
@@ -32,6 +33,13 @@ export const CourseList: React.FC = () => {
   const [vidSrc, setvidSrc] = useState<File>();
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
   const [vidError, setvidError] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
+  
+  // Function to handle selecting an option from the dropdown
+  const handleSelectOption = (option: string) => {
+    setSelectedOption(option);
+  };  
   const [newCourse, setNewCourse] = useState<Course>({
     _id: '',
     name: '',
@@ -43,11 +51,32 @@ export const CourseList: React.FC = () => {
   });
   const [selectedVideoName, setSelectedVideoName] = useState<string>('');
   const [isButtonGreen, setIsButtonGreen] = useState<boolean>(false);
+// Function to handle changing search criteria
+
+const fetchCoursesBySearch = async () => {
+  try {
+    let queryString = `/?${selectedOption}=${searchQuery}`;
+    const response = await apiClient.get(`/course${queryString}`);
+    setCourses(response.data);
+  } catch (error) {
+    console.error('Error fetching courses by search:', error);
+  }
+};
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (searchQuery.trim() !== '') {
+      console.log("the search query is:" + searchQuery)
+      fetchCoursesBySearch();
+    } else {
+      // If search query is empty, fetch all courses
+      fetchData();
+    }
+  }, [searchQuery]);
 
+
+  const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
   const fetchData = async () => {
     try {
       const response = await apiClient.get('/course');
@@ -151,6 +180,26 @@ export const CourseList: React.FC = () => {
       <Row>
         <Col>
           <Button onClick={() => setShowForm(true)}>Add New Course</Button>
+          <Form.Control
+            type="text"
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={handleSearchQueryChange}
+            className="ml-2"
+          />
+        <Dropdown className="mr-2">
+  <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+    {selectedOption}
+  </Dropdown.Toggle>
+
+  <Dropdown.Menu>
+    <Dropdown.Item onClick={() => handleSelectOption('name')}>Name</Dropdown.Item>
+    <Dropdown.Item onClick={() => handleSelectOption('description')}>Description</Dropdown.Item>
+    <Dropdown.Item onClick={() => handleSelectOption('Count')}>Score</Dropdown.Item>
+    <Dropdown.Item onClick={() => handleSelectOption('owner')}>Owner</Dropdown.Item>
+    <Dropdown.Item onClick={() => handleSelectOption('_id')}>ID</Dropdown.Item>
+  </Dropdown.Menu>
+</Dropdown>
         </Col>
       </Row>
       <Row>
