@@ -67,7 +67,7 @@ const fetchCoursesBySearch = async () => {
 };
 const fetchReviews = async (courseId: string, courseName: string) => {
   try {
-    const response = await apiClient.get(`/courseReviews/${courseId}`);
+    const response = await apiClient.get(`/review/${courseId}`);
     setReviews(response.data);
     setSelectedCourseName(courseName); // Set the selected course name
     setShowReviewsModal(true);
@@ -244,7 +244,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
                   {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
                  </Button>
                   )}
-                  <Button className='btn p-2' variant="secondary" onClick={() => fetchReviews(course._id)}>Reviews</Button>
+                  <Button className='btn p-2' variant="secondary" onClick={() => fetchReviews(course.owner,course.name)}>Reviews</Button>
                 </div>
 
               </Card.Body>
@@ -296,7 +296,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           </Form>
         </Modal.Body>
       </Modal>
-      <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} courseName={courseName} >
+      <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} coursename={courseName} >
         <Modal.Header closeButton>
           <Modal.Title>Reviews for {courseName}</Modal.Title>
         </Modal.Header>
@@ -310,7 +310,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowReviewsModal(true)}>Close</Button>
+          <Button variant="secondary" onClick={() => setShowReviewsModal(false)}>Close</Button>
           <Button variant="primary">Add a Review</Button>
         </Modal.Footer>
       </Modal>
