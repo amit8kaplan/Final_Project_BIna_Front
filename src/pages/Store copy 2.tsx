@@ -35,7 +35,9 @@ export const CourseList: React.FC = () => {
   const [vidError, setvidError] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
-  
+  const [reviews, setReviews] = useState<IcourseReview[]>([]);
+const [showReviewsModal, setShowReviewsModal] = useState(false);
+
   // Function to handle selecting an option from the dropdown
   const handleSelectOption = (option: string) => {
     setSelectedOption(option);
@@ -51,6 +53,7 @@ export const CourseList: React.FC = () => {
   });
   const [selectedVideoName, setSelectedVideoName] = useState<string>('');
   const [isButtonGreen, setIsButtonGreen] = useState<boolean>(false);
+  const [courseName, setSelectedCourseName] = useState<string>('');
 // Function to handle changing search criteria
 
 const fetchCoursesBySearch = async () => {
@@ -62,6 +65,17 @@ const fetchCoursesBySearch = async () => {
     console.error('Error fetching courses by search:', error);
   }
 };
+const fetchReviews = async (courseId: string, courseName: string) => {
+  try {
+    const response = await apiClient.get(`/courseReviews/${courseId}`);
+    setReviews(response.data);
+    setSelectedCourseName(courseName); // Set the selected course name
+    setShowReviewsModal(true);
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+  }
+};
+
 
   useEffect(() => {
     if (searchQuery.trim() !== '') {
@@ -177,8 +191,8 @@ const fetchCoursesBySearch = async () => {
 
   return (
     <Container>
-      <Row>
-        <Col>
+      <Row  >
+        <Col className='p-2'>
           <Button onClick={() => setShowForm(true)}>Add New Course</Button>
           <Form.Control
             type="text"
@@ -187,55 +201,54 @@ const fetchCoursesBySearch = async () => {
             onChange={handleSearchQueryChange}
             className="ml-2"
           />
-        <Dropdown className="mr-2">
-  <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-    {selectedOption}
-  </Dropdown.Toggle>
+          <Dropdown className="mr-2">
+            <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+              {selectedOption}
+            </Dropdown.Toggle>
 
-  <Dropdown.Menu>
-    <Dropdown.Item onClick={() => handleSelectOption('name')}>Name</Dropdown.Item>
-    <Dropdown.Item onClick={() => handleSelectOption('description')}>Description</Dropdown.Item>
-    <Dropdown.Item onClick={() => handleSelectOption('Count')}>Popular buying</Dropdown.Item>
-    <Dropdown.Item onClick={() => handleSelectOption('owner')}>Owner</Dropdown.Item>
-    <Dropdown.Item onClick={() => handleSelectOption('_id')}>ID</Dropdown.Item>
-  </Dropdown.Menu>
-</Dropdown>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleSelectOption('name')}>Name</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSelectOption('description')}>Description</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSelectOption('Count')}>Popular buying</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSelectOption('owner')}>Owner</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleSelectOption('_id')}>ID</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Col>
       </Row>
-      <Row>
+      <Row className='pb-2'>
         {courses.map((course) => (
-          <Col className='mb-3' key={course._id} xs={12} sm={6} md={4} lg={3} >
-            <Card style={{ margin: '10px 0', height: '110%' }}>
-      <Card.Body style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <div>
-          <Card.Title>{course.name}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">{course.owner_name}</Card.Subtitle>
-          <Card.Text>
-            {showFullDescription ? course.description : course.description.slice(0, MAX_DESCRIPTION_LENGTH)}
-            {course.description.length > MAX_DESCRIPTION_LENGTH && !showFullDescription && (
-              <span>...</span>
-            )}
-          </Card.Text>
-         
-        </div>
-        <div style={{ position: 'relative', paddingTop: '56.25%' }}>
-          <video controls style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-            <source src={course.videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button className='btn p-2' variant="primary">Buy ({course.Count})</Button>
-          {course.description.length > MAX_DESCRIPTION_LENGTH && (
-         <Button  onClick={toggleDescription} variant="outline-primary" size="sm">
-         {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
-       </Button>
-        )}
-          <Button className='btn p-2' variant="secondary">Reviews</Button>
-        </div>
+          <Col className='p-3' key={course._id} xs={12} sm={6} md={4} lg={3} >
+            <Card className='p-2' style={{ margin: '10px 0', height: '110%' }}>
+              <Card.Body style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div >
+                  <Card.Title>{course.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">{course.owner_name}</Card.Subtitle>
+                  <Card.Text>
+                    {showFullDescription ? course.description : course.description.slice(0, MAX_DESCRIPTION_LENGTH)}
+                    {course.description.length > MAX_DESCRIPTION_LENGTH && !showFullDescription && (
+                      <span>...</span>
+                    )}
+                  </Card.Text >
+                 </div>
+                <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+                  <video controls style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                    <source src={course.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button className='btn p-2' variant="primary">Buy ({course.Count})</Button>
+                  {course.description.length > MAX_DESCRIPTION_LENGTH && (
+                  <Button  onClick={toggleDescription} variant="outline-primary" size="sm">
+                  {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
+                 </Button>
+                  )}
+                  <Button className='btn p-2' variant="secondary" onClick={() => fetchReviews(course._id)}>Reviews</Button>
+                </div>
 
-      </Card.Body>
-    </Card>
+              </Card.Body>
+            </Card>
           </Col>
         ))}
       </Row>
@@ -282,6 +295,24 @@ const fetchCoursesBySearch = async () => {
             </Button>
           </Form>
         </Modal.Body>
+      </Modal>
+      <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} courseName={courseName} >
+        <Modal.Header closeButton>
+          <Modal.Title>Reviews for {courseName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* Display reviews here */}
+          {reviews.map(review => (
+            <div key={review._id}>
+              <h5>{review.owner_name}</h5>
+              <p>{review.message}</p>
+            </div>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowReviewsModal(true)}>Close</Button>
+          <Button variant="primary">Add a Review</Button>
+        </Modal.Footer>
       </Modal>
     </Container>
   );
