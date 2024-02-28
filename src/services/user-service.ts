@@ -25,3 +25,18 @@ export const googleSignin = async (credentialResponse: CredentialResponse) => {
 }
 
 
+// This could be added to your user-service.js or kept within the same file
+export const loginUserWithEmailPassword = async (email: any, password: any) => {
+    try {
+      const { data } = await apiClient.post('/auth/login', { email, password });
+      sessionStorage.setItem("accessToken", data.accessToken);
+      sessionStorage.setItem("refreshToken", data.refreshToken);
+      window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: data.accessToken } }));
+      return true; // Login successful
+    } catch (error) {
+      console.error(error);
+      // You might want to handle errors differently here since this will now be used programmatically
+      return false; // Login failed
+    }
+  };
+  

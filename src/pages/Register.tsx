@@ -30,41 +30,29 @@ export function Registerfunc() {
 
   const onSubmit = async (data) => {
     try {
-        // Directly destructuring the response to get `data`
-        const { data } = await axios.post('http://localhost:3000/auth/register', {
+        const response = await axios.post('http://localhost:3000/auth/register', {
             email: data.email,
             password: data.password,
-            username: data.username, // Ensure this matches the backend expectation
+            username: data.username,
             imgUrl: data.imgUrl || '',
         });
-
-        console.log("the user register:", data);
-
-        // Access tokens directly from `data`, similar to the login function
-        const { accessToken, refreshToken } = data.tokens; 
-
-        console.log("the accessToken:", accessToken); // Debugging line to check accessToken
-        console.log("the refreshToken:", refreshToken); // Debugging line to check refreshToken
-
-        if (accessToken && refreshToken) {
+  
+        if (response.status === 201) {
+            // Handle successful registration
+            const { accessToken, refreshToken } = response.data.tokens;
             sessionStorage.setItem("accessToken", accessToken);
             sessionStorage.setItem("refreshToken", refreshToken);
-            // Dispatch an event similar to login for consistent session handling
-            window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken: accessToken } }));
-            navigate('/store'); // Redirect to the store page on success
+            navigate('/store'); // Redirect on successful registration
         } else {
-            // Handle missing tokens in response
-            throw new Error("Tokens are missing in the registration response.");
+            // Handle errors or unsuccessful registration
+            throw new Error(response.data.message || "Registration failed. Please try again.");
         }
     } catch (error) {
         console.error("Registration error:", error);
         alert(error.response?.data?.message || "Registration failed. Please try again.");
     }
-};
-
-
-
-
+  };
+  
 
   const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     try {
