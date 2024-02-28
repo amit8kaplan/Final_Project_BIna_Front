@@ -195,7 +195,7 @@ const fetchCoursesBySearch = async () => {
   <Dropdown.Menu>
     <Dropdown.Item onClick={() => handleSelectOption('name')}>Name</Dropdown.Item>
     <Dropdown.Item onClick={() => handleSelectOption('description')}>Description</Dropdown.Item>
-    <Dropdown.Item onClick={() => handleSelectOption('Count')}>Score</Dropdown.Item>
+    <Dropdown.Item onClick={() => handleSelectOption('Count')}>Popular buying</Dropdown.Item>
     <Dropdown.Item onClick={() => handleSelectOption('owner')}>Owner</Dropdown.Item>
     <Dropdown.Item onClick={() => handleSelectOption('_id')}>ID</Dropdown.Item>
   </Dropdown.Menu>
