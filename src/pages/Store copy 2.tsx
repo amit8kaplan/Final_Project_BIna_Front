@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,22 +8,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import apiClient from '../services/api-client';
 import { string } from 'zod';
-import { BsChevronDown, BsChevronUp,  } from 'react-icons/bs';
 import { set } from 'react-hook-form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import CourseCards from '../components/Courses_cards';
+import NewCourseForm from '../components/new_course_form';
 // Inside the CourseCard component:
 
-
-interface Course {
-  _id: string;
-  name: string;
-  owner: string;
-  owner_name: string;
-  description: string;
-  Count: number;
-  videoUrl: string;
-}
 interface IcourseReview {
   _id: string;
   course_id: string;
@@ -35,7 +24,25 @@ interface IcourseReview {
   owner_id: string;
   owner_name: string;
 }
-
+interface Course {
+  _id: string;
+  name: string;
+  owner: string;
+  owner_name: string;
+  description: string;
+  Count: number;
+  videoUrl: string;
+}
+interface Form {
+  courseName: string;
+  description: string;
+  vidSrc: File | null;
+  }
+  interface ChildProps {
+    sendDataToParent: (data: Form) => void;
+    showFormFromParent: boolean;
+  
+  }
 export const CourseList: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   const [showForm, setShowForm] = useState(false);
@@ -95,18 +102,16 @@ const fetchReviews = async (courseId: string, courseName: string) => {
     setSearchQuery(event.target.value);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (data: Form) => {
     console.log("the local storage token is:" + sessionStorage.getItem('accessToken'))
-
-    event.preventDefault();
     try {
-      if (!vidSrc) {
+      if (!data.vidSrc) {
         console.error('Please select a video file.');
         return;
       }
       // Upload video file first
       const formData = new FormData();
-      formData.append('video', vidSrc);
+      formData.append('video', data.vidSrc);
 
       const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
         headers: {
@@ -116,37 +121,46 @@ const fetchReviews = async (courseId: string, courseName: string) => {
       });
 
       const videoUrl = videoUploadResponse.data.url;
-
-      // Create new course object with videoUrl
-      const newCourseWithVideo = { ...newCourse, videoUrl };
-
-      // Post the course with the videoUrl
-      await fetch('http://localhost:3000/course/', {
-        method: 'POST',
+      await apiClient.post('/course/', {
+        owner: '', // this is the user id
+        Count: 0,
+        owner_name: '',
+        name: data.courseName,
+        description: data.description,
+        videoUrl: videoUrl,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
         },
-        body: JSON.stringify({
-          owner: '', // this is the user id
-          Count: 0,
-          owner_name: '',
-          name: newCourse.name,
-          description: newCourse.description,
-          videoUrl: videoUploadResponse.data.url,
-        }),
       });
+      // // Post the course with the videoUrl
+      // await fetch('http://localhost:3000/course/', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      //   },
+      //   body: JSON.stringify({
+      //     owner: '', // this is the user id
+      //     Count: 0,
+      //     owner_name: '',
+      //     name: newCourse.name,
+      //     description: newCourse.description,
+      //     videoUrl: videoUploadResponse.data.url,
+      //   }),
+      // });
 
-      setShowForm(false);
-      setNewCourse({
-        _id: '',
-        name: '',
-        owner: '',
-        owner_name: '',
-        description: '',
-        Count: 0,
-        videoUrl: '',
-      });
+      // setShowForm(false);
+      // setNewCourse({
+      //   _id: '',
+      //   name: '',
+      //   owner: '',
+      //   owner_name: '',
+      //   description: '',
+      //   Count: 0,
+      //   videoUrl: '',
+      // });
       setvidSrc(undefined);
       fetchData(); // Fetch updated course list after adding a new course
     } catch (error) {
@@ -192,6 +206,14 @@ const fetchReviews = async (courseId: string, courseName: string) => {
       console.error('Error submitting review:', error);
     }
   };
+    const [receivedData, setReceivedData] = useState<Form>(); // Update the type of receivedData
+  
+    // Define a callback function to receive data from the child
+    const receiveDataFromChild = useCallback((data: Form) => {
+      setReceivedData(data);
+      console.log ('the received data is:', data)
+      handleSubmit(data);
+    }, []);
   
 
 
@@ -223,8 +245,8 @@ const fetchReviews = async (courseId: string, courseName: string) => {
         </Col>
       </Row>
       <CourseCards searchQuery={searchQuery} selectedOption={selectedOption} fetchReviews={fetchReviews} />
-      
-      <Modal show={showForm} onHide={() => setShowForm(false)}>
+      <NewCourseForm sendDataToParent={receiveDataFromChild} showFormFromParent={showForm} />
+      {/* <Modal show={showForm} onHide={() => setShowForm(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add New Course</Modal.Title>
         </Modal.Header>
@@ -267,7 +289,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
             </Button>
           </Form>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
       <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} coursename={courseName} >
         <Modal.Header closeButton>
           <Modal.Title>Reviews for {courseName}</Modal.Title>
