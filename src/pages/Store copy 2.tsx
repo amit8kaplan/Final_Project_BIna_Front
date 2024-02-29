@@ -12,7 +12,7 @@ import { string } from 'zod';
 import { BsChevronDown, BsChevronUp,  } from 'react-icons/bs';
 import { set } from 'react-hook-form';
 import Dropdown from 'react-bootstrap/Dropdown';
-
+import CourseCards from '../components/Courses_cards';
 // Inside the CourseCard component:
 
 
@@ -38,7 +38,6 @@ interface IcourseReview {
 
 export const CourseList: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
-  const [courses, setCourses] = useState<Course[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [vidSrc, setvidSrc] = useState<File>();
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
@@ -77,17 +76,7 @@ const handleSelectOption = (option: string) => {
   const [selectedVideoName, setSelectedVideoName] = useState<string>('');
   const [isButtonGreen, setIsButtonGreen] = useState<boolean>(false);
   const [courseName, setSelectedCourseName] = useState<string>('');
-// Function to handle changing search criteria
 
-const fetchCoursesBySearch = async () => {
-  try {
-    let queryString = `/?${selectedOption}=${searchQuery}`;
-    const response = await apiClient.get(`/course${queryString}`);
-    setCourses(response.data);
-  } catch (error) {
-    console.error('Error fetching courses by search:', error);
-  }
-};
 const fetchReviews = async (courseId: string, courseName: string) => {
   try {
     const response = await apiClient.get(`/review/${courseId}`);
@@ -100,27 +89,10 @@ const fetchReviews = async (courseId: string, courseName: string) => {
 };
 
 
-  useEffect(() => {
-    if (searchQuery.trim() !== '') {
-      console.log("the search query is:" + searchQuery)
-      fetchCoursesBySearch();
-    } else {
-      // If search query is empty, fetch all courses
-      fetchData();
-    }
-  }, [searchQuery]);
 
 
   const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-  };
-  const fetchData = async () => {
-    try {
-      const response = await apiClient.get('/course');
-      setCourses(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -203,12 +175,6 @@ const fetchReviews = async (courseId: string, courseName: string) => {
       }
     }
   };
-  const MAX_DESCRIPTION_LENGTH = 50; // Maximum characters to display initially
-
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const toggleDescription = () => {
-    setShowFullDescription(!showFullDescription);
-  };
   const handleSubmitReview = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -256,91 +222,8 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           </Dropdown>
         </Col>
       </Row>
-      <Row className='pb-2'>
-        {courses.map((course) => (
-          <Col className='p-3' key={course._id} xs={12} sm={6} md={4} lg={3} >
-            <Card className='p-2' style={{ margin: '10px 0', height: '110%' }}>
-              <Card.Body style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div >
-                  <Card.Title>{course.name}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">{course.owner_name}</Card.Subtitle>
-                  <Card.Text>
-                    {showFullDescription ? course.description : course.description.slice(0, MAX_DESCRIPTION_LENGTH)}
-                    {course.description.length > MAX_DESCRIPTION_LENGTH && !showFullDescription && (
-                      <span>...</span>
-                    )}
-                  </Card.Text >
-                 </div>
-                <div style={{ position: 'relative', paddingTop: '56.25%' }}>
-                  <video controls style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                    <source src={course.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Button className='btn p-2' variant="primary">Buy ({course.Count})</Button>
-                  {course.description.length > MAX_DESCRIPTION_LENGTH && (
-                  <Button  onClick={toggleDescription} variant="outline-primary" size="sm">
-                  {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
-                 </Button>
-                  )}
-                  <Button className='btn p-2' variant="info" onClick={handleOpenAddReviewModal}>Add Review</Button>
-                  <Button className='btn p-2' variant="secondary" onClick={() => fetchReviews(course.owner,course.name)}>Reviews</Button>
-                </div>
-
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Modal show={showAddReviewModal} onHide={() => setShowAddReviewModal(false)}>
-  <Modal.Header closeButton>
-    <Modal.Title>Waiting for Your Insights!</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    {/* Form for adding review */}
-    <Form onSubmit={handleSubmitReview}>
-      const newReview = {
-        title: '',
-        message: '',
-        score: 0
-      };
-
-      <Form.Group controlId="formReviewTitle" className="p-2">
-        <Form.Label>Title</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter review title"
-          value={newReview.title}
-          onChange={(e) => setNewReview((prevState) => ({ ...prevState, title: e.target.value }))}
-        />
-      </Form.Group>
-      <Form.Group controlId="formReviewMessage" className="p-2">
-        <Form.Label>Message</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={3}
-          placeholder="Enter review message"
-          value={newReview.message}
-          onChange={(e) => setNewReview((prevState) => ({ ...prevState, message: e.target.value }))}
-        />
-      </Form.Group>
-      <Form.Group controlId="formReviewScore" className="p-2">
-        <Form.Label>Score</Form.Label>
-        <Form.Control
-          type="number"
-          placeholder="Enter review score"
-          value={newReview.score}
-          onChange={(e) => setNewReview((prevState) => ({ ...prevState, score: parseInt(e.target.value) }))}
-        />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit Review
-      </Button>
-    </Form>
-  </Modal.Body>
-</Modal>
-
+      <CourseCards searchQuery={searchQuery} selectedOption={selectedOption} fetchReviews={fetchReviews} />
+      
       <Modal show={showForm} onHide={() => setShowForm(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add New Course</Modal.Title>
@@ -408,3 +291,51 @@ const fetchReviews = async (courseId: string, courseName: string) => {
 };
 
 export default CourseList;
+
+
+{/* <Modal show={showAddReviewModal} onHide={() => setShowAddReviewModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Waiting for Your Insights!</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form onSubmit={handleSubmitReview}>
+      const newReview = {
+        title: '',
+        message: '',
+        score: 0
+      };
+
+      <Form.Group controlId="formReviewTitle" className="p-2">
+        <Form.Label>Title</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter review title"
+          value={newReview.title}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, title: e.target.value }))}
+        />
+      </Form.Group>
+      <Form.Group controlId="formReviewMessage" className="p-2">
+        <Form.Label>Message</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          placeholder="Enter review message"
+          value={newReview.message}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, message: e.target.value }))}
+        />
+      </Form.Group>
+      <Form.Group controlId="formReviewScore" className="p-2">
+        <Form.Label>Score</Form.Label>
+        <Form.Control
+          type="number"
+          placeholder="Enter review score"
+          value={newReview.score}
+          onChange={(e) => setNewReview((prevState) => ({ ...prevState, score: parseInt(e.target.value) }))}
+        />
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit Review
+      </Button>
+    </Form>
+  </Modal.Body>
+</Modal> */}
