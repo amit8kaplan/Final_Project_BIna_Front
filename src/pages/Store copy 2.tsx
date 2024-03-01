@@ -12,6 +12,7 @@ import { set } from 'react-hook-form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import CourseCards from '../components/Courses_cards';
 import NewCourseForm from '../components/new_course_form';
+import  {fetchData, fetchCoursesBySearch} from '../services/course-service';
 // Inside the CourseCard component:
 
 interface IcourseReview {
@@ -46,13 +47,14 @@ interface Form {
 export const CourseList: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   const [showForm, setShowForm] = useState(false);
-  const [vidSrc, setvidSrc] = useState<File>();
+  // const [vidSrc, setvidSrc] = useState<File>();
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
   const [vidError, setvidError] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
   const [reviews, setReviews] = useState<IcourseReview[]>([]);
   const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [courseAdded, setCourseAdded] = useState<boolean>(false); // State to track if a new course has been added
 const [newReview, setNewReview] = useState<IcourseReview>({
   _id: '',
   course_id: '',
@@ -66,6 +68,10 @@ const [newReview, setNewReview] = useState<IcourseReview>({
 const handleOpenAddReviewModal = () => {
   setShowAddReviewModal(true);
 };
+useEffect(() => {
+  setCourseAdded(false); // Toggle the courseAdded state to trigger a re-fetch of courses
+}, [courseAdded]); // You may need to adjust the dependencies based on your requirements
+
 
 // Function to handle selecting an option from the dropdown
 const handleSelectOption = (option: string) => {
@@ -134,35 +140,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
         },
       });
-      // // Post the course with the videoUrl
-      // await fetch('http://localhost:3000/course/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-      //   },
-      //   body: JSON.stringify({
-      //     owner: '', // this is the user id
-      //     Count: 0,
-      //     owner_name: '',
-      //     name: newCourse.name,
-      //     description: newCourse.description,
-      //     videoUrl: videoUploadResponse.data.url,
-      //   }),
-      // });
-
-      // setShowForm(false);
-      // setNewCourse({
-      //   _id: '',
-      //   name: '',
-      //   owner: '',
-      //   owner_name: '',
-      //   description: '',
-      //   Count: 0,
-      //   videoUrl: '',
-      // });
-      setvidSrc(undefined);
-      fetchData(); // Fetch updated course list after adding a new course
+     setCourseAdded(true);
     } catch (error) {
       console.error('Error adding new course:', error);
     }
@@ -174,21 +152,7 @@ const fetchReviews = async (courseId: string, courseName: string) => {
     }
   };
 
-  const vidSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime']; // Add more video types if needed
-      if (allowedTypes.includes(file.type)) {
-        setvidSrc(file);
-        setBooleanRandom(false);
-        setvidError(''); // Clear any previous error message
-        setSelectedVideoName(file.name); // Set the name of the selected video
-        setIsButtonGreen(true); // Set the button color to green
-      } else {
-        setvidError('Please select a valid video file (MP4, WebM, QuickTime).');
-      }
-    }
-  };
+ 
   const handleSubmitReview = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -244,52 +208,9 @@ const fetchReviews = async (courseId: string, courseName: string) => {
           </Dropdown>
         </Col>
       </Row>
-      <CourseCards searchQuery={searchQuery} selectedOption={selectedOption} fetchReviews={fetchReviews} />
-      <NewCourseForm sendDataToParent={receiveDataFromChild} showFormFromParent={showForm} />
-      {/* <Modal show={showForm} onHide={() => setShowForm(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Course</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formCourseName" className="p-2">
-              <Form.Label>Course Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter course name"
-                value={newCourse.name}
-                onChange={(e) => setNewCourse((prevState) => ({ ...prevState, name: e.target.value }))}
-              />
-            </Form.Group>
-            <Form.Group controlId="formDescription" className="p-2">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter course description"
-                value={newCourse.description}
-                onChange={(e) => setNewCourse((prevState) => ({ ...prevState, description: e.target.value }))}
-              />
-            </Form.Group>
-            <Form.Group controlId="formVideoUrl" className="p-2">
-              <Form.Label>Video File</Form.Label>
-
-              <Button
-                type="button"
-                className={`btn ${isButtonGreen ? 'btn-success' : 'btn-primary'}`} // Dynamically set button color
-                onClick={selectvid}
-              >
-                {selectedVideoName ? `Selected: ${selectedVideoName}` : 'Upload Video'}
-              </Button>
-              <input style={{ display: 'none' }} ref={fileInputRef} type="file" onChange={vidSelected}></input>
-              {vidError && <p className="text-danger">{vidError}</p>}
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal> */}
+      <CourseCards courseAdded={courseAdded} searchQuery={searchQuery} selectedOption={selectedOption} fetchReviews={fetchReviews} />
+      <NewCourseForm   sendDataToParent={receiveDataFromChild} showFormFromParent={showForm} />
+     
       <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} coursename={courseName} >
         <Modal.Header closeButton>
           <Modal.Title>Reviews for {courseName}</Modal.Title>
@@ -361,3 +282,78 @@ export default CourseList;
     </Form>
   </Modal.Body>
 </Modal> */}
+
+
+ // // Post the course with the videoUrl
+      // await fetch('http://localhost:3000/course/', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      //   },
+      //   body: JSON.stringify({
+      //     owner: '', // this is the user id
+      //     Count: 0,
+      //     owner_name: '',
+      //     name: newCourse.name,
+      //     description: newCourse.description,
+      //     videoUrl: videoUploadResponse.data.url,
+      //   }),
+      // });
+
+      // setShowForm(false);
+      // setNewCourse({
+      //   _id: '',
+      //   name: '',
+      //   owner: '',
+      //   owner_name: '',
+      //   description: '',
+      //   Count: 0,
+      //   videoUrl: '',
+      // });
+      // setvidSrc(undefined);
+
+      //  {/* <Modal show={showForm} onHide={() => setShowForm(false)}>
+      //   <Modal.Header closeButton>
+      //     <Modal.Title>Add New Course</Modal.Title>
+      //   </Modal.Header>
+      //   <Modal.Body>
+      //     <Form onSubmit={handleSubmit}>
+      //       <Form.Group controlId="formCourseName" className="p-2">
+      //         <Form.Label>Course Name</Form.Label>
+      //         <Form.Control
+      //           type="text"
+      //           placeholder="Enter course name"
+      //           value={newCourse.name}
+      //           onChange={(e) => setNewCourse((prevState) => ({ ...prevState, name: e.target.value }))}
+      //         />
+      //       </Form.Group>
+      //       <Form.Group controlId="formDescription" className="p-2">
+      //         <Form.Label>Description</Form.Label>
+      //         <Form.Control
+      //           as="textarea"
+      //           rows={3}
+      //           placeholder="Enter course description"
+      //           value={newCourse.description}
+      //           onChange={(e) => setNewCourse((prevState) => ({ ...prevState, description: e.target.value }))}
+      //         />
+      //       </Form.Group>
+      //       <Form.Group controlId="formVideoUrl" className="p-2">
+      //         <Form.Label>Video File</Form.Label>
+
+      //         <Button
+      //           type="button"
+      //           className={`btn ${isButtonGreen ? 'btn-success' : 'btn-primary'}`} // Dynamically set button color
+      //           onClick={selectvid}
+      //         >
+      //           {selectedVideoName ? `Selected: ${selectedVideoName}` : 'Upload Video'}
+      //         </Button>
+      //         <input style={{ display: 'none' }} ref={fileInputRef} type="file" onChange={vidSelected}></input>
+      //         {vidError && <p className="text-danger">{vidError}</p>}
+      //       </Form.Group>
+      //       <Button variant="primary" type="submit">
+      //         Submit
+      //       </Button>
+      //     </Form>
+      //   </Modal.Body>
+      // </Modal> */}

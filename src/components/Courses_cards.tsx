@@ -13,9 +13,15 @@ interface Course {
     Count: number;
     videoUrl: string;
   }
+  interface ChildProps {
+    searchQuery: any;
+    selectedOption: string;
+    courseAdded: boolean;
+  }
+//   const NewCourseForm: React.FC<ChildProps> = ({ sendDataToParent , showFormFromParent, setCourseAdded}): React.ReactNode => {
 
-  const CourseCards: React.FC<{ searchQuery: any; selectedOption: string }> = ({ searchQuery, selectedOption }) => {
-        
+  const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, courseAdded }) => {
+
     const [courses, setCourses] = useState<Course[]>([]);
     const MAX_DESCRIPTION_LENGTH = 50; // Maximum characters to display initially
 
@@ -24,7 +30,7 @@ interface Course {
         setShowFullDescription(!showFullDescription);
     };
     useEffect(() => {
-        if (searchQuery && searchQuery.trim() !== '') {
+        if (searchQuery && searchQuery.trim() !== '' && courseAdded) {
           console.log("the search query is:" + searchQuery)
           fetchCoursesBySearch(searchQuery, selectedOption).then((res)=> setCourses(res));
         } else {
@@ -32,7 +38,7 @@ interface Course {
           fetchData().then((res)=> setCourses(res));
         //   setCourses( res);
         }
-    }, [searchQuery]);
+    }, [searchQuery, courseAdded]);
     
     return (
         <Row className='pb-2'>
