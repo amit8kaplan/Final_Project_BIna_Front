@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import apiClient from '../services/api-client';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
-
+import  {fetchData, fetchCoursesBySearch} from '../services/course-service';
+import { set } from 'react-hook-form';
 interface Course {
     _id: string;
     name: string;
@@ -15,38 +16,21 @@ interface Course {
 
   const CourseCards: React.FC<{ searchQuery: any; selectedOption: string }> = ({ searchQuery, selectedOption }) => {
         
-        const [courses, setCourses] = useState<Course[]>([]);
-        const MAX_DESCRIPTION_LENGTH = 50; // Maximum characters to display initially
+    const [courses, setCourses] = useState<Course[]>([]);
+    const MAX_DESCRIPTION_LENGTH = 50; // Maximum characters to display initially
 
-    const fetchCoursesBySearch = async () => {
-        try {
-            const queryString = `/?${selectedOption}=${searchQuery}`;
-            const response = await apiClient.get(`/course${queryString}`);
-            setCourses(response.data);
-        } catch (error) {
-            console.error('Error fetching courses by search:', error);
-        }
-    };
     const [showFullDescription, setShowFullDescription] = useState(false);
     const toggleDescription = () => {
         setShowFullDescription(!showFullDescription);
     };
-    const fetchData = async () => {
-        try {
-          const response = await apiClient.get('/course');
-          setCourses(response.data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-
     useEffect(() => {
         if (searchQuery && searchQuery.trim() !== '') {
           console.log("the search query is:" + searchQuery)
-          fetchCoursesBySearch();
+          fetchCoursesBySearch(searchQuery, selectedOption).then((res)=> setCourses(res));
         } else {
           // If search query is empty or undefined, fetch all courses
-          fetchData();
+          fetchData().then((res)=> setCourses(res));
+        //   setCourses( res);
         }
     }, [searchQuery]);
     
