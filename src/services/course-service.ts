@@ -1,5 +1,5 @@
 import apiClient from "./api-client"
-
+import { handleAccessToken } from "./user-service";
 interface Course {
   name: string;
   owner: string;
@@ -8,19 +8,19 @@ interface Course {
   Count: number;
   videoUrl: string;
 }
-const handleAccessToken = () => {
-    const accessToken = sessionStorage.getItem('accessToken');
-    if (!accessToken) {
-        console.error('No access token found');
-        return null;
-    }
-    const headers = { 
-        'Content-Type': 'application/json',
-         Authorization: `Bearer ${accessToken}`,
-};
-    return headers;
+// const handleAccessToken = () => {
+//     const accessToken = sessionStorage.getItem('accessToken');
+//     if (!accessToken) {
+//         console.error('No access token found');
+//         return null;
+//     }
+//     const headers = { 
+//         'Content-Type': 'application/json',
+//          Authorization: `Bearer ${accessToken}`,
+// };
+//     return headers;
     
-}
+// }
 
 
 const fetchCourses = async () => {

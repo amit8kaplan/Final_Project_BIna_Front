@@ -23,7 +23,19 @@ export const googleSignin = async (credentialResponse: CredentialResponse) => {
     window.dispatchEvent(new CustomEvent('sessionStorageChange', { detail: { accessToken } }));
     return data;
 }
-
+export const handleAccessToken = () => {
+  const accessToken = sessionStorage.getItem('accessToken');
+  if (!accessToken) {
+      console.error('No access token found');
+      return null;
+  }
+  const headers = { 
+      'Content-Type': 'application/json',
+       Authorization: `Bearer ${accessToken}`,
+};
+  return headers;
+  
+}
 
 // This could be added to your user-service.js or kept within the same file
 export const loginUserWithEmailPassword = async (email: any, password: any) => {

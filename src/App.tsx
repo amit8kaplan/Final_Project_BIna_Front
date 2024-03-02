@@ -5,7 +5,7 @@ import { About } from "./pages/About";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
 import { CourseList } from "./pages/Store copy 2";
-import { Course_reviews } from "./pages/Coursr_reviews";
+import  CourseReviewsPage  from "./pages/Course_reviews";
 import { Nav_componnets } from "./components/Navbar";
 import { useEffect, useState } from "react";
 
@@ -53,7 +53,7 @@ function App() {
             path="/course_review"
             element={
               <ProtectedRoute>
-                <Course_reviews />
+                <CourseReviewsPage />
               </ProtectedRoute>
             }
           />
