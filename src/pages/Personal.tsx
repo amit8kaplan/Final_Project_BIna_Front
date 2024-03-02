@@ -3,6 +3,7 @@ import { fetchUser } from "../services/personal-service";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const Personal: React.FC = () => {
   const [userData, setUserData] = useState<any>(null); // State to hold user data
@@ -50,13 +51,22 @@ const Personal: React.FC = () => {
     setUserData(newUserData);
     setShowModal(false);
   };
-
+  const navigate = useNavigate(); // Hook for navigation
+  const navToMyCourses = () => {
+    // Navigate to the My Courses page
+    navigate("/personal/my-courses");
+  }
   return (
-    <div style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "50px" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <Button onClick={navToMyCourses} variant="primary" style={{ width: "150px", marginRight: "10px" }}>My Courses</Button>
+        <Button variant="primary" style={{ width: "150px" }}>My Reviews</Button>
+      </div>
+
       {userData && (
         <Card style={{ width: "400px", backgroundColor: "#f8f9fa", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" }}>
           <Card.Body>
-            <Card.Title className="text-center mb-4">Personal</Card.Title>
+            <Card.Title className="text-center mb-4">Personal Info</Card.Title>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <img src={`${userData.imgUrl}`} alt="User" style={{ width: "300px", height: "auto", borderRadius: "10px" }} />
               <div style={{ marginTop: "20px", textAlign: "center" }}>
