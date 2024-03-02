@@ -49,9 +49,6 @@ interface Form {
 export const CourseList: React.FC<ChildProps> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   const [showForm, setShowForm] = useState(false);
-  // const [vidSrc, setvidSrc] = useState<File>();
-  const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
-  const [vidError, setvidError] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
   const [reviews, setReviews] = useState<IcourseReview[]>([]);
@@ -72,7 +69,6 @@ const handleOpenAddReviewModal = () => {
 };
 useEffect(() => {
   setCourseAdded(false); // Toggle the courseAdded state to trigger a re-fetch of courses
-  // setShowForm(false); // Close the form after a new course is added
 }, [courseAdded]); // You may need to adjust the dependencies based on your requirements
 
 
@@ -109,18 +105,6 @@ const fetchReviews = async (courseId: string, courseName: string) => {
       console.log("upload to vid first")
       const videoUrl = await postVideo(data.vidSrc);
       console.log("the vid url is:" + videoUrl)
-      // Upload video file first
-      // const formData = new FormData();
-      // formData.append('video', data.vidSrc);
-
-      // const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-      //   },
-      // });
-
-      // const videoUrl = videoUploadResponse.data.url;
       const newCourse = {
         name: data.courseName,
         owner: '', // this is the user id
@@ -137,26 +121,15 @@ const fetchReviews = async (courseId: string, courseName: string) => {
     }
   };
 
-  // const toggleNewCourseForm = () => {
-  //   setShowForm(!showForm); // Toggle the showForm state
-  // };
- 
-
-    // const [receivedData, setReceivedData] = useState<Form>(); // Update the type of receivedData
-  
     // Define a callback function to receive data from the child
     const receiveDataFromChild = useCallback((data: Form) => {
-      // setReceivedData(data);
       console.log ('the received data is:', data)
       if (data!=undefined){
         handleSubmit(data);
       }
     }, []);
-  // const [recevicedShowForm, setReceivedShowForm] = useState<boolean>(false);
   const receiveShowFormFromChild = useCallback((data: boolean) => {
-    // setReceivedData(data);
     console.log ('the received show form is:', data)
-    // setReceivedShowForm(data);
     setShowForm(data);
   }, []);
 

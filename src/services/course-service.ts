@@ -48,11 +48,11 @@ const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string)
     }
 }
 
-const putCourse = async (course: Course) => {
+const putCourse = async (course: Course, courseID :string) => {
     const headers = await handleAccessToken();
     if (headers == null) return;
     try {
-        const response = await apiClient.put(`/course/${course._id}`,  course , {headers});
+        const response = await apiClient.put(`/course/${courseID}`,  course , {headers});
         return response.data
     } catch (error) {
         console.error('Error putCourse course:', error);
@@ -96,4 +96,5 @@ export {
     fetchCoursesBySearch,
     postCourse,
     postVideo,
+    putCourse
 }
