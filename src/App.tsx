@@ -4,7 +4,7 @@ import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
-import { CourseList } from "./pages/Store copy 2";
+import { CourseList } from "./pages/Store";
 import  CourseReviewsPage  from "./pages/Course_reviews";
 import { Nav_componnets } from "./components/Navbar";
 import { useEffect, useState } from "react";
