@@ -50,6 +50,18 @@ const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string)
         console.error('Error fetching courses by search:', error);
     }
 }
+const fetchCoursesByOwner = async () => {
+    try{
+        const headers = await handleAccessToken();
+        if (headers == null) return;
+        const response = await apiClient.get('/course/:1234', {headers});
+        return response.data
+    
+    }
+    catch (error) {
+        console.error('Error fetching courses by owner:', error);
+    }   
+}
 
 const putCourse = async (course: Course, courseID :string) => {
     const headers = await handleAccessToken();
@@ -92,6 +104,17 @@ const postVideo = async (vidScr: File) =>{
     }
 
 }
+const deleteCourse = async (courseID: string) => {
+    const headers = await handleAccessToken();
+    if (headers == null) return;
+    try {
+        const response = await apiClient.delete(`/course/${courseID}`, {headers});
+        console.log("the response is:", response.data)
+        return response.data
+    } catch (error) {
+        console.error('Error deleteCourse course:', error);
+    }
+}
 
 export {
     fetchCourses,
@@ -99,5 +122,7 @@ export {
     fetchCoursesBySearch,
     postCourse,
     postVideo,
-    putCourse
+    putCourse,
+    deleteCourse,
+    fetchCoursesByOwner
 }

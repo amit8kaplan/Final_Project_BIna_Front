@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import CourseCards from '../components/Courses_cards';
 import NewCourseForm from '../components/new_course_form';
 import { useNavigate } from 'react-router-dom';
+import { postCourse, postVideo } from '../services/course-service';
 
 // Inside the CourseCard component:
 
