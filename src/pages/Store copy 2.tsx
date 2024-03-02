@@ -12,7 +12,7 @@ import { set } from 'react-hook-form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import CourseCards from '../components/Courses_cards';
 import NewCourseForm from '../components/new_course_form';
-import  {fetchData, fetchCoursesBySearch} from '../services/course-service';
+import  {fetchData, fetchCoursesBySearch, postCourse, postVideo} from '../services/course-service';
 // Inside the CourseCard component:
 
 interface IcourseReview {
@@ -40,11 +40,13 @@ interface Form {
   vidSrc: File | null;
   }
   interface ChildProps {
-    sendDataToParent: (data: Form) => void;
+    // sendDataToParentFromCourses_cards: (data: Form) => void;
     showFormFromParent: boolean;
-  
+    // showFormFromParent: (data: boolean) => void;
+    sendDatatoParentFromNewCourseForm: (data: Form) => void;
+    
   }
-export const CourseList: React.FC = () => {
+export const CourseList: React.FC<ChildProps> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   const [showForm, setShowForm] = useState(false);
   // const [vidSrc, setvidSrc] = useState<File>();
@@ -70,22 +72,14 @@ const handleOpenAddReviewModal = () => {
 };
 useEffect(() => {
   setCourseAdded(false); // Toggle the courseAdded state to trigger a re-fetch of courses
+  // setShowForm(false); // Close the form after a new course is added
 }, [courseAdded]); // You may need to adjust the dependencies based on your requirements
 
 
 // Function to handle selecting an option from the dropdown
 const handleSelectOption = (option: string) => {
   setSelectedOption(option);
-};
-  const [newCourse, setNewCourse] = useState<Course>({
-    _id: '',
-    name: '',
-    owner: '',
-    owner_name: '',
-    description: '',
-    Count: 0,
-    videoUrl: '',
-  });
+}
   const [selectedVideoName, setSelectedVideoName] = useState<string>('');
   const [isButtonGreen, setIsButtonGreen] = useState<boolean>(false);
   const [courseName, setSelectedCourseName] = useState<string>('');
@@ -101,9 +95,6 @@ const fetchReviews = async (courseId: string, courseName: string) => {
   }
 };
 
-
-
-
   const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
@@ -115,77 +106,65 @@ const fetchReviews = async (courseId: string, courseName: string) => {
         console.error('Please select a video file.');
         return;
       }
+      console.log("upload to vid first")
+      const videoUrl = await postVideo(data.vidSrc);
+      console.log("the vid url is:" + videoUrl)
       // Upload video file first
-      const formData = new FormData();
-      formData.append('video', data.vidSrc);
+      // const formData = new FormData();
+      // formData.append('video', data.vidSrc);
 
-      const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-        },
-      });
+      // const videoUploadResponse = await apiClient.post('/course/upload_Video', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      //   },
+      // });
 
-      const videoUrl = videoUploadResponse.data.url;
-      await apiClient.post('/course/', {
-        owner: '', // this is the user id
-        Count: 0,
-        owner_name: '',
+      // const videoUrl = videoUploadResponse.data.url;
+      const newCourse = {
         name: data.courseName,
+        owner: '', // this is the user id
+        owner_name: '',
         description: data.description,
+        Count: 0,
         videoUrl: videoUrl,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-        },
-      });
-     setCourseAdded(true);
+      };
+      postCourse(newCourse);
+      setShowForm(false);
+      setCourseAdded(true);
     } catch (error) {
       console.error('Error adding new course:', error);
     }
   };
 
-  const selectvid = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
+  // const toggleNewCourseForm = () => {
+  //   setShowForm(!showForm); // Toggle the showForm state
+  // };
  
-  const handleSubmitReview = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      // Implement logic for submitting review
-      console.log("Submitting review:", newReview);
-      // Close the "Add Review" modal after submission
-      setShowAddReviewModal(false);
-      // Clear the newReview state
-      setNewReview({
-        title: '',
-        message: '',
-        score: undefined,
-      });
-    } catch (error) {
-      console.error('Error submitting review:', error);
-    }
-  };
-    const [receivedData, setReceivedData] = useState<Form>(); // Update the type of receivedData
+
+    // const [receivedData, setReceivedData] = useState<Form>(); // Update the type of receivedData
   
     // Define a callback function to receive data from the child
     const receiveDataFromChild = useCallback((data: Form) => {
-      setReceivedData(data);
+      // setReceivedData(data);
       console.log ('the received data is:', data)
-      handleSubmit(data);
+      if (data!=undefined){
+        handleSubmit(data);
+      }
     }, []);
-  
-
+  // const [recevicedShowForm, setReceivedShowForm] = useState<boolean>(false);
+  const receiveShowFormFromChild = useCallback((data: boolean) => {
+    // setReceivedData(data);
+    console.log ('the received show form is:', data)
+    // setReceivedShowForm(data);
+    setShowForm(data);
+  }, []);
 
   return (
     <Container>
       <Row  >
         <Col className='p-2'>
-          <Button onClick={() => setShowForm(true)}>Add New Course</Button>
+          <Button onClick={() => {setShowForm(true); console.log("in store the form is:" + showForm);}}>Add New Course</Button>
           <Form.Control
             type="text"
             placeholder="Search courses..."
@@ -209,8 +188,8 @@ const fetchReviews = async (courseId: string, courseName: string) => {
         </Col>
       </Row>
       <CourseCards courseAdded={courseAdded} searchQuery={searchQuery} selectedOption={selectedOption} fetchReviews={fetchReviews} />
-      <NewCourseForm   sendDataToParent={receiveDataFromChild} showFormFromParent={showForm} />
-     
+      {/* <NewCourseForm   toggleForm={toggleNewCourseForm}  sendDatatoParentFromNewCourseForm={receiveDataFromChild} showFormFromParent={receiveShowFormFromChild} /> */}
+      {showForm && <NewCourseForm showForm ={showForm}  sendDatatoParentFromNewCourseForm={receiveDataFromChild}  showFormFromParent={receiveShowFormFromChild} />}
       <Modal show={showReviewsModal} onHide={() => setShowReviewsModal(true)} coursename={courseName} >
         <Modal.Header closeButton>
           <Modal.Title>Reviews for {courseName}</Modal.Title>
@@ -284,6 +263,13 @@ export default CourseList;
 </Modal> */}
 
 
+
+// function postCourse(newCourse: {
+//   _id: string; name: string; owner: string; // this is the user id
+//   owner_name: string; description: string; Count: number; videoUrl: any;
+// }) {
+//   throw new Error('Function not implemented.');
+// }
  // // Post the course with the videoUrl
       // await fetch('http://localhost:3000/course/', {
       //   method: 'POST',
@@ -357,3 +343,21 @@ export default CourseList;
       //     </Form>
       //   </Modal.Body>
       // </Modal> */}
+
+      // const handleSubmitReview = async (event: React.FormEvent<HTMLFormElement>) => {
+      //   event.preventDefault();
+      //   try {
+      //     // Implement logic for submitting review
+      //     console.log("Submitting review:", newReview);
+      //     // Close the "Add Review" modal after submission
+      //     setShowAddReviewModal(false);
+      //     // Clear the newReview state
+      //     setNewReview({
+      //       title: '',
+      //       message: '',
+      //       score: undefined,
+      //     });
+      //   } catch (error) {
+      //     console.error('Error submitting review:', error);
+      //   }
+      // };

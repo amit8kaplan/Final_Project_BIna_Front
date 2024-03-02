@@ -29,8 +29,14 @@ interface Course {
     const toggleDescription = () => {
         setShowFullDescription(!showFullDescription);
     };
+    const HandleBuyCourse = (courseId: string) => {
+        console.log("the course id is:" + courseId)
+        apiClient.put('/course/buy', {courseId: courseId}).then((res) => {
+            console.log("the response is:" + res)
+        })
+    }
     useEffect(() => {
-        if (searchQuery && searchQuery.trim() !== '' && courseAdded) {
+        if (searchQuery && searchQuery.trim() !== '') {
           console.log("the search query is:" + searchQuery)
           fetchCoursesBySearch(searchQuery, selectedOption).then((res)=> setCourses(res));
         } else {
@@ -63,7 +69,7 @@ interface Course {
                   </video>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Button className='btn p-2' variant="primary">Buy ({course.Count})</Button>
+                  <Button className='btn p-2' onClick={()=>HandleBuyCourse(course._id)} variant="primary">Buy ({course.Count})</Button>
                   {course.description.length > MAX_DESCRIPTION_LENGTH && (
                   <Button  onClick={toggleDescription} variant="outline-primary" size="sm">
                   {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
