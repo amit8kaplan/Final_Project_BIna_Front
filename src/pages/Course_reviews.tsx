@@ -1,4 +1,4 @@
-
+import '../css/CourseReviewsPage.css'; // Import CSS file for styling
 import { fetchReviewsByCourseID, postReview } from '../services/reivew-serivce';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -6,9 +6,13 @@ import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap'; // 
 import { FaStar } from 'react-icons/fa'; // Import star icon from react-icons/fa
 interface IcourseReview {
   _id: string;
+  course_id: string;
+  course_name: string;
   title: string;
   message: string;
   score: number;
+  owner_id: string;
+  owner_name: string;
 }
 interface RevForm{
   title: string;
@@ -38,12 +42,11 @@ interface Review{
 
 const CourseReviewsPage: React.FC = () => {
   const location = useLocation();
-  
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+
   const searchParams = new URLSearchParams(location.search);
   const TheCourse = location.state.course;
   const courseID = searchParams.get('course_id');
-  const [course, setCourse] = useState<Course>(); // State to store the course details
-  const [submitRev, setSubmitRev] = useState<Review>();
   const [reviews, setReviews] = useState<IcourseReview[]>([]);
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [reviewForm, setReviewForm] = useState<RevForm>({
@@ -53,7 +56,10 @@ const CourseReviewsPage: React.FC = () => {
     course_id: courseID ,
   });
 
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModal(false);
+    setSelectedReview(null);
+  }
   const handleShow = () => setShowModal(true);
   
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,32 +122,58 @@ const CourseReviewsPage: React.FC = () => {
       <h1>Reviews for Course {TheCourse.name}</h1>
       <ListGroup>
         {reviews.map(review => (
-          <ListGroup.Item key={review._id} action href={`#${review._id}`}>
+          <ListGroup.Item key={review._id} action onClick={() => setSelectedReview(review)}>
             {review.title}
           </ListGroup.Item>
         ))}
       </ListGroup>
-      {/* Render review details */}
-      {reviews.map(review => (
-        <div key={review._id} id={review._id}>
-          <h2>{review.title}</h2>
-          <p>{review.message}</p>
-          {/* Add more details if needed */}
+
+      {/* Modal for showing review details */}
+      <Modal show={selectedReview !== null} onHide={handleClose}>
+       
+          <Modal.Header closeButton>
+          <div style={{ textAlign: 'center' }}>
+            <Modal.Title>Review From: {selectedReview?.owner_name}</Modal.Title>
         </div>
-      ))}
+          </Modal.Header>
+        <Modal.Body>
+          {selectedReview && (
+            <>
+              <div style={{ textAlign: 'center' }}>
+              <h2>{selectedReview.title}</h2>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+              <p>{selectedReview.message}</p>
+              </div>
+              <div style={{textAlign:'center'}}>
+                {[...Array(5)].map((star, index) => {
+                  const score = index + 1;
+                  return (
+                    <FaStar
+                      key={index}
+                      color={score <= selectedReview.score ? "#ffc107" : "#e4e5e9"}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+
       {/* Add new review button */}
       <div style={{ textAlign: 'center', margin: '20px auto' }}>
         <Button variant="primary" onClick={handleShow}>Add new review!</Button>
         <Button variant="secondary" onClick={() => window.location.href = '/store'} style={{ marginLeft: '10px' }}>Return to Store</Button>
-   
       </div>
+
       {/* Modal for adding new review */}
-      <Modal show={showModal} onHide={handleClose} >
+      <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Your review for the course</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleSubmit(e)}>
+          <Form onSubmit={handleSubmit}>
             <Form.Group controlId="title">
               <Form.Label>Title</Form.Label>
               <Form.Control type="text" placeholder="Enter review title" name="title" value={reviewForm.title} onChange={handleInputChange} />
@@ -156,17 +188,17 @@ const CourseReviewsPage: React.FC = () => {
                 {[...Array(5)].map((star, index) => {
                   const score = index + 1;
                   return (
-                    <FaStar 
-                      key={index} 
-                      color={score <= reviewForm.score ? "#ffc107" : "#e4e5e9"} 
-                      style={{ cursor: 'pointer' }} 
-                      onClick={() => handleStarClick(score)} 
+                    <FaStar
+                      key={index}
+                      color={score <= reviewForm.score ? "#ffc107" : "#e4e5e9"}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleStarClick(score)}
                     />
                   );
                 })}
               </div>
             </Form.Group>
-            <div  style={{textAlign: 'center'}} >
+            <div style={{ textAlign: 'center' }}>
               <Button variant="primary" type="submit">
                 Submit
               </Button>

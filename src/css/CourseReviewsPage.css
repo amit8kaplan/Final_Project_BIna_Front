@@ -1,0 +1,28 @@
+/* CourseReviewsPage.css */
+
+.heading {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font for heading */
+    font-size: 24px; /* Increase font size for heading */
+    color: #333; /* Darken text color for better readability */
+    margin-bottom: 20px; /* Add spacing below heading */
+  }
+  
+  .review-list {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font for review list */
+  }
+  
+  .review-modal {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font for review modal */
+  }
+  
+  .review-form-modal {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font for review form modal */
+  }
+  
+  .button-group {
+    text-align: center; /* Center align buttons */
+    margin-top: 20px; /* Add spacing above button group */
+  }
+  
+  /* Add more CSS styles as needed */
+  
