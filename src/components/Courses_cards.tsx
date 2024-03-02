@@ -17,7 +17,8 @@ interface ChildProps {
   searchQuery: any;
   selectedOption: string;
   courseAdded: boolean;
-  sendCourseIDToParent: (courseID: string) => void;
+//   sendCourseIDToParent: (courseID: string) => void;
+sendCourseIDToParent: (spesificCourse: Course) => void;
 }
 
 const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, courseAdded , sendCourseIDToParent}) => {
@@ -42,10 +43,13 @@ const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, course
       setShowPopup(true);
     });
   }
-  const handleReviews = (showReviews: boolean, courseId: string) => {
-    console.log("the course id is:" + courseId)
-    sendCourseIDToParent(courseId);
-  }
+const handleReviews = async (showReviews: boolean, courseId: string) => {
+    const course = await courses.find((course) => course._id === courseId);
+    console.log("the course is: " + course)
+    if (course) {
+        await sendCourseIDToParent(course);
+    }
+}
 
   useEffect(() => {
     if (searchQuery && searchQuery.trim() !== '') {

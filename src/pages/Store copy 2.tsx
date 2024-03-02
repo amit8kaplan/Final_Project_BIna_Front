@@ -39,7 +39,7 @@ interface Form {
   interface ChildProps {
     showFormFromParent: boolean;
     sendDatatoParentFromNewCourseForm: (data: Form) => void;
-    sendCourseIDToParent: (courseID: string) => void;
+    sendCourseIDToParent: (spesificCourse: Course) => void;
   
   }
 export const CourseList: React.FC<ChildProps> = () => {
@@ -124,12 +124,15 @@ const handleSelectOption = (option: string) => {
   const navigate = useNavigate(); // Hook for navigation
 
   const [courseID, setCourseID] = useState<string>('');
-  const fetchReviews = useCallback((courseID: string) => {
-      
-      console.log("the course id is in fetchRev:" + courseID)
-      setCourseID(courseID);
-      const queryString = `?course_id=${courseID}`;
-      navigate(`/course_review/${queryString}`); // Navigate to the reviews page
+  const fetchReviews = useCallback((spes_course: Course) => {
+      console.log("the course id is in fetchRev:" + spes_course._id)
+      // console.log("the course id is in fetchRev:" + courseID)
+      setCourseID(spes_course._id);
+      const queryString = `?course_id=${spes_course._id}`;
+      navigate(`/course_review/${queryString}`,
+  {
+    state: { course: spes_course} 
+  }); // Navigate to the reviews page
       // const response = await apiClient.get(`/review/${courseId}`);
       // setReviews(response.data);
       // setSelectedCourseName(courseName); // Set the selected course name
