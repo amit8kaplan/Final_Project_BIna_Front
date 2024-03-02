@@ -20,7 +20,7 @@ interface IcourseReview {
   const fetchReviewsByCourseID = async (courseID: string) => {
     try {
         const quaryString = `/?$course_id=${courseID}`;
-        const response = await apiClient.get(`/review/${quaryString}`);
+        const response = await apiClient.get(`/review${quaryString}`);
         console.log("the response is:" + response.data)
         return response.data
     } catch (error) {

@@ -4,9 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form from react-bootstrap
 import { FaStar } from 'react-icons/fa'; // Import star icon from react-icons/fa
-import { post } from 'jquery';
-import { fetchCoursesBySearch } from '../services/course-service';
-import { set } from 'react-hook-form';
 interface IcourseReview {
   _id: string;
   title: string;
@@ -58,29 +55,7 @@ const CourseReviewsPage: React.FC = () => {
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
-  // const fetchCourseData = async () => {
-  //   try {
-  //     console.log("the course id in fetch is:", courseID);
-  //     if (!courseID) return;
-
-  //     // Fetch course details by courseID
-  //     const res = await fetchCoursesBySearch(courseID, "id");
-  //     setCourse(res);
-  //     setSubmitRev({
-  //       course_id: res._id,
-  //       course_name: res.name,
-  //       title: '',
-  //       message: '',
-  //       score: 0,
-  //       owner_id: res.owner,
-  //       owner_name: res.owner_name
-  //     });
-  //     console.log(submitRev)
-  //     console.log(JSON.stringify(res) + "the course is:" + res); // Log the fetched course details
-  //   } catch (error) {
-  //     console.error('Error fetching course details:', error);
-  //   }
-  // }
+  
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setReviewForm(prevState => ({
@@ -138,7 +113,7 @@ const CourseReviewsPage: React.FC = () => {
 
   return (
     <Container>
-      <h1>Reviews for Course {course?.name}</h1>
+      <h1>Reviews for Course {TheCourse.name}</h1>
       <ListGroup>
         {reviews.map(review => (
           <ListGroup.Item key={review._id} action href={`#${review._id}`}>
@@ -157,6 +132,8 @@ const CourseReviewsPage: React.FC = () => {
       {/* Add new review button */}
       <div style={{ textAlign: 'center', margin: '20px auto' }}>
         <Button variant="primary" onClick={handleShow}>Add new review!</Button>
+        <Button variant="secondary" onClick={() => window.location.href = '/store'} style={{ marginLeft: '10px' }}>Return to Store</Button>
+   
       </div>
       {/* Modal for adding new review */}
       <Modal show={showModal} onHide={handleClose} >
