@@ -1,9 +1,9 @@
-import '../css/CourseReviewsPage.css'; // Import CSS file for styling
-import { fetchReviewsByCourseID, postReview } from '../services/reivew-serivce';
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form from react-bootstrap
-import { FaStar } from 'react-icons/fa'; // Import star icon from react-icons/fa
+import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap';
+import { FaStar } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
+import { fetchReviewsByCourseID, postReview, updateReview } from '../services/reviews-serivce';
+
 interface IcourseReview {
   _id: string;
   course_id: string;
@@ -14,195 +14,107 @@ interface IcourseReview {
   owner_id: string;
   owner_name: string;
 }
-interface RevForm{
-  title: string;
-  message: string;
-  score: number;
-  course_id: string | null;
-}
-interface Course{
-  _id: string;
-  name: string;
-  owner: string;
-  owner_name: string;
-  description: string;
-  Count: number;
-  videoUrl: string;
-}
-interface Review{
-  course_id: string;
-  course_name: string;
-  title: string;
-  message: string;
-  score: number;
-  owner_id: string;
-  owner_name: string;
 
+interface RevForm {
+  title: string;
+  message: string;
+  score: number;
+  course_id: string;
 }
 
 const CourseReviewsPage: React.FC = () => {
   const location = useLocation();
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
-
-  const searchParams = new URLSearchParams(location.search);
-  const TheCourse = location.state.course;
-  const courseID = searchParams.get('course_id');
+  const TheCourse = location.state.course; // Assuming course is passed via state
   const [reviews, setReviews] = useState<IcourseReview[]>([]);
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [reviewForm, setReviewForm] = useState<RevForm>({
-    title: '',
-    message: '',
-    score: 0,
-    course_id: courseID ,
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [editReview, setEditReview] = useState<IcourseReview | null>(null);
+  const [reviewForm, setReviewForm] = useState<RevForm>({ title: '', message: '', score: 1, course_id: TheCourse._id });
 
-  const handleClose = () => {
-    setShowModal(false);
-    setSelectedReview(null);
-  }
-  const handleShow = () => setShowModal(true);
-  
+  useEffect(() => {
+    fetchReviewsByCourseID(TheCourse._id).then(setReviews);
+  }, [TheCourse._id]);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setReviewForm(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    if (editReview) {
+      setEditReview({ ...editReview, [name]: value });
+    } else {
+      setReviewForm({ ...reviewForm, [name]: value });
+    }
   };
 
   const handleStarClick = (score: number) => {
-    setReviewForm(prevState => ({
-      ...prevState,
-      score: score
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); 
-    try {
-      console.log('Submitted Review:', reviewForm);
-      const submitRev: Review = {
-        course_id: courseID || '', // Set a default value of an empty string if courseID is null
-        course_name: TheCourse.name,
-        title: reviewForm.title || '',
-        message: reviewForm.message,
-        score: reviewForm.score || 3,
-        owner_id: TheCourse.owner,
-        owner_name: TheCourse.owner_name
-      };
-      console.log("the temp form is:", submitRev);
-      await postReview(submitRev);
-      setNewRev(true);
-      handleClose();
-    } catch (error) {
-      console.error('Error submitting review:', error);
+    if (editReview) {
+      setEditReview({ ...editReview, score });
+    } else {
+      setReviewForm({ ...reviewForm, score });
     }
   };
 
-  const fetchReviews = async () => {
-    try {
-      if (!courseID) return;
-      const res = await fetchReviewsByCourseID(courseID);
-      setReviews(res);
-      console.log("the reviews are:", res); // Log the fetched reviews
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (editReview) {
+      await updateReview(editReview);
+      setEditReview(null); // Clear edit review state
+    } else {
+      await postReview({ ...reviewForm, course_name: TheCourse.name, owner_id: 'ownerId', owner_name: 'ownerName' }); // Adjust as per your user identification logic
     }
+    fetchReviewsByCourseID(TheCourse._id).then(setReviews); // Refresh reviews list
+    setShowModal(false);
   };
 
-  const [newRev, setNewRev] = useState(false);
-  useEffect(() => {
-    fetchReviews();
-    newRev ? setNewRev(false) : null;
+  const handleEditClick = (review: IcourseReview) => {
+    setEditReview(review);
+    setShowModal(true);
+  };
 
-  }, [courseID, TheCourse, newRev]);
+  const handleClose = () => {
+    setShowModal(false);
+    setEditReview(null); // Reset edit review state on close
+  };
 
   return (
     <Container>
-      <h1>Reviews for Course {TheCourse.name}</h1>
+      <h1>Reviews for {TheCourse.name}</h1>
       <ListGroup>
         {reviews.map(review => (
-          <ListGroup.Item key={review._id} action onClick={() => setSelectedReview(review)}>
-            {review.title}
+          <ListGroup.Item key={review._id}>
+            <strong>{review.title}</strong> - {review.message}
+            <div>
+              {Array.from({ length: 5 }, (_, index) => (
+                <FaStar key={index} color={index < review.score ? "#ffc107" : "#e4e5e9"} />
+              ))}
+            </div>
+            <Button variant="outline-primary" size="sm" onClick={() => handleEditClick(review)}>Edit</Button>
           </ListGroup.Item>
         ))}
       </ListGroup>
+      <Button onClick={() => setShowModal(true)}>Add Review</Button>
 
-      {/* Modal for showing review details */}
-      <Modal show={selectedReview !== null} onHide={handleClose}>
-       
-          <Modal.Header closeButton>
-          <div style={{ textAlign: 'center' }}>
-            <Modal.Title>Review From: {selectedReview?.owner_name}</Modal.Title>
-        </div>
-          </Modal.Header>
-        <Modal.Body>
-          {selectedReview && (
-            <>
-              <div style={{ textAlign: 'center' }}>
-              <h2>{selectedReview.title}</h2>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-              <p>{selectedReview.message}</p>
-              </div>
-              <div style={{textAlign:'center'}}>
-                {[...Array(5)].map((star, index) => {
-                  const score = index + 1;
-                  return (
-                    <FaStar
-                      key={index}
-                      color={score <= selectedReview.score ? "#ffc107" : "#e4e5e9"}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </Modal.Body>
-      </Modal>
-
-      {/* Add new review button */}
-      <div style={{ textAlign: 'center', margin: '20px auto' }}>
-        <Button variant="primary" onClick={handleShow}>Add new review!</Button>
-        <Button variant="secondary" onClick={() => window.location.href = '/store'} style={{ marginLeft: '10px' }}>Return to Store</Button>
-      </div>
-
-      {/* Modal for adding new review */}
+      {/* Modal for adding/editing a review */}
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Your review for the course</Modal.Title>
+          <Modal.Title>{editReview ? 'Edit Review' : 'New Review'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="title">
+            <Form.Group controlId="formTitle">
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="Enter review title" name="title" value={reviewForm.title} onChange={handleInputChange} />
+              <Form.Control type="text" name="title" value={editReview ? editReview.title : reviewForm.title} onChange={handleInputChange} />
             </Form.Group>
-            <Form.Group controlId="message">
+            <Form.Group controlId="formMessage">
               <Form.Label>Message</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Enter your review" name="message" value={reviewForm.message} onChange={handleInputChange} />
+              <Form.Control as="textarea" name="message" value={editReview ? editReview.message : reviewForm.message} onChange={handleInputChange} />
             </Form.Group>
-            <Form.Group controlId="score">
-              <Form.Label>Score</Form.Label>
-              <div>
-                {[...Array(5)].map((star, index) => {
-                  const score = index + 1;
-                  return (
-                    <FaStar
-                      key={index}
-                      color={score <= reviewForm.score ? "#ffc107" : "#e4e5e9"}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => handleStarClick(score)}
-                    />
-                  );
-                })}
-              </div>
-            </Form.Group>
-            <div style={{ textAlign: 'center' }}>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
+            <Form.Label>Score</Form.Label>
+            <div>
+              {[1, 2, 3, 4, 5].map(score => (
+                <FaStar key={score} onClick={() => handleStarClick(score)} color={score <= (editReview ? editReview.score : reviewForm.score) ? "#ffc107" : "#e4e5e9"} />
+              ))}
             </div>
+            <Button variant="primary" type="submit" style={{ marginTop: '10px' }}>
+              Submit Review
+            </Button>
           </Form>
         </Modal.Body>
       </Modal>
@@ -211,4 +123,3 @@ const CourseReviewsPage: React.FC = () => {
 };
 
 export default CourseReviewsPage;
-

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { fetchUser } from "../services/personal-service";
+import { fetchReviewsByUserID } from "../services/reviews-serivce"; // Make sure this service is implemented
 import { Card, Button, Modal, Form } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const Personal: React.FC = () => {
   const [userData, setUserData] = useState<any>(null); // State to hold user data
+  const [userReviews, setUserReviews] = useState([]); // Add this line
   const [showModal, setShowModal] = useState(false);
+  const [showUserReviewsModal, setShowUserReviewsModal] = useState(false); // Add this line
   const [newUserData, setNewUserData] = useState({
     userName: "",
     email: "",
@@ -15,17 +16,18 @@ const Personal: React.FC = () => {
     imgUrl: "",
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchUserfromServer();
   }, []);
 
   const fetchUserfromServer = async () => {
     const data = await fetchUser();
-    setUserData(data); // Set user data to state
-    console.log("the user data is:", data);
+    setUserData(data);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewUserData((prevUserData) => ({
       ...prevUserData,
@@ -34,33 +36,36 @@ const Personal: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Submit updated user data to the server
-    // For demo purposes, simply log the updated data
     console.log("Updated User Data:", newUserData);
-    setShowModal(false); // Close the modal after submission
+    setShowModal(false);
   };
+
   const handleModalClose = () => {
-    // Close the modal and reset newUserData
     setShowModal(false);
     setNewUserData({});
   };
-  
+
   const handleSaveChanges = () => {
-    // Here you can perform the logic to save the changes
-    // For simplicity, let's just update the userData with newUserData
     setUserData(newUserData);
     setShowModal(false);
   };
-  const navigate = useNavigate(); // Hook for navigation
+
+  const handleMyReviewsClick = async () => {
+    const userId = userData._id; // Update this line to use your actual logic for getting the current user's ID
+    const reviews = await fetchReviewsByUserID(userId);
+    setUserReviews(reviews);
+    setShowUserReviewsModal(true);
+  };
+
   const navToMyCourses = () => {
-    // Navigate to the My Courses page
     navigate("/personal/my-courses");
-  }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "50px" }}>
       <div style={{ marginBottom: "20px" }}>
         <Button onClick={navToMyCourses} variant="primary" style={{ width: "150px", marginRight: "10px" }}>My Courses</Button>
-        <Button variant="primary" style={{ width: "150px" }}>My Reviews</Button>
+        <Button variant="primary" style={{ width: "150px" }} onClick={handleMyReviewsClick}>My Reviews</Button>
       </div>
 
       {userData && (
@@ -68,9 +73,9 @@ const Personal: React.FC = () => {
           <Card.Body>
             <Card.Title className="text-center mb-4">Personal Info</Card.Title>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <img src={`${userData.imgUrl}`} alt="User" style={{ width: "300px", height: "auto", borderRadius: "10px" }} />
+              <img src={userData.imgUrl} alt="User" style={{ width: "300px", height: "auto", borderRadius: "10px" }} />
               <div style={{ marginTop: "20px", textAlign: "center" }}>
-                <p><strong>Name:</strong> {userData.user_name}</p>
+                <p><strong>Name:</strong> {userData.userName}</p> {/* Make sure the property names match your userData object structure */}
                 <p><strong>Email:</strong> {userData.email}</p>
               </div>
               <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginTop: "20px" }}>Change Info</Button>
@@ -79,36 +84,28 @@ const Personal: React.FC = () => {
         </Card>
       )}
 
-   {/* Modal for changing user information */}
+      {/* Modal for changing user information */}
       <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Change Information</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="mb-3">
-            <label htmlFor="userName" className="form-label">User Name</label>
-            <input type="text" className="form-control" id="userName" value={newUserData.user_name || ""} onChange={(e) => handleInputChange(e, "user_name")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" className="form-control" id="email" value={newUserData.email || ""} onChange={(e) => handleInputChange(e, "email")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" className="form-control" id="password" value={newUserData.password || ""} onChange={(e) => handleInputChange(e, "password")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="newPhoto" className="form-label">New Photo</label>
-            <div className="input-group">
-              <input type="file" className="form-control" id="newPhoto" style={{ display: "none" }} />
-              <label htmlFor="newPhoto" className="input-group-text"><FontAwesomeIcon icon={faImage} /></label>
-            </div>
-          </div>
+          {/* User information form */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
           <Button variant="primary" onClick={handleSubmit}>Save Changes</Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Add a Modal here to display and potentially edit user reviews */}
+      <Modal show={showUserReviewsModal} onHide={() => setShowUserReviewsModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>My Reviews</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* Loop through userReviews to display them */}
+        </Modal.Body>
       </Modal>
     </div>
   );

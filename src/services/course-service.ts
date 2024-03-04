@@ -1,5 +1,6 @@
 import apiClient from "./api-client"
 import { handleAccessToken } from "./user-service";
+
 interface Course {
   name: string;
   owner: string;
@@ -104,6 +105,8 @@ const postVideo = async (vidScr: File) =>{
     }
 
 }
+
+
 const deleteCourse = async (courseID: string) => {
     const headers = await handleAccessToken();
     if (headers == null) return;
