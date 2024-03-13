@@ -1,5 +1,5 @@
 import '../css/CourseReviewsPage.css'; // Import CSS file for styling
-import { fetchReviewsByCourseID, postReview } from '../services/reivew-serivce';
+import { fetchReviewsByCourseID, postReview } from '../services/review-service';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form from react-bootstrap

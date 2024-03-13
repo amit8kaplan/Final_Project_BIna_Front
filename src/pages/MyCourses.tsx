@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Modal, Form } from 'react-bootstrap';
 import { BsChevronDown, BsChevronUp, BsTrash, BsPencil } from 'react-icons/bs';
 import { fetchData, fetchCoursesBySearch, putCourse, deleteCourse, fetchCoursesByOwner } from '../services/course-service';
+import { postCourse, postVideo } from '../services/course-service';
 
 interface Course {
   _id: string;
@@ -33,18 +34,30 @@ const MyCourses: React.FC<ChildProps> = () => {
         courseName: '',
         description: '',
         vidSrc: null,
-    });  const [deletedCourseName, setDeletedCourseName] = useState('');
+    });
+    const [editTheCourse, setEditTheCourse] = useState<Course>({
+        _id: '',
+        name: '',
+        owner: '',
+        owner_name: '',
+        description: '',
+        Count: 0,
+        videoUrl: '',
+    });
+      const [deletedCourseName, setDeletedCourseName] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const MAX_DESCRIPTION_LENGTH = 50; // Maximum characters to display initially
 
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
-
+  const findAcourseInCourses = (courseId: string) => {
+    return courses.find((course) => course._id === courseId);
+  }
   useEffect(() => {
      fetchCoursesByOwner().then((res) => setCourses(res));
     
-  }, [showDeletePopup]);
+  }, [showDeletePopup, showEditModal]);
 
   const handleDeleteCourse = async (courseId: string) => {
     const courseToDelete = courses.find((course) => course._id === courseId);
@@ -59,6 +72,7 @@ const MyCourses: React.FC<ChildProps> = () => {
     console.log("the course is: " + course)
   }
   const handleEditCourse = (course: Course) => {
+    setEditTheCourse(course);
     setEditedCourse(course);
     setEditedName(course.name);
     setEditedDescription(course.description);
@@ -66,18 +80,24 @@ const MyCourses: React.FC<ChildProps> = () => {
   };
 
   const saveEditedCourse = async () => {
-    if (editedCourse) {
-      const updatedCourse: Course = { ...editedCourse, name: editedName, description: editedDescription };
-      await putCourse(updatedCourse, updatedCourse._id);
-      setCourses(courses.map(course => (course._id === updatedCourse._id ? updatedCourse : course)));
+    if (editTheCourse)
+    {
+      setEditTheCourse({ ...editTheCourse, name: editedName, description: editedDescription });
+      // const updatedCourse: Course = { ...editedCourse, name: editedName, description: editedDescription };
+      await putCourse(editTheCourse, editTheCourse._id);
+      setCourses(courses.map(course => (course._id === editTheCourse._id ? editTheCourse : course)));
       setShowEditModal(false);
     }
   };
-  const handleVideoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
         const file = e.target.files[0];
         const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
         if (allowedTypes.includes(file.type)) {
+            const videoURL = await postVideo(file);
+            console.log("the vid url:" + videoURL)
+            setEditTheCourse({ ...editTheCourse, videoUrl: videoURL });
+            console.log("the edit course is: " + editTheCourse)
             setVidSrc(file);
             setVidError('');
             setSelectedVideoName(file.name);
@@ -94,6 +114,7 @@ const selectVideo = () => {
     }
 };
   return (
+
     <Row className='pb-2'>
       {courses.map((course) => (
         <Col className='p-3' key={course._id} xs={12} sm={6} md={4} lg={3}>
@@ -173,6 +194,7 @@ const selectVideo = () => {
         </Modal.Footer>
       </Modal>
     </Row>
+                    
   );
 }
 

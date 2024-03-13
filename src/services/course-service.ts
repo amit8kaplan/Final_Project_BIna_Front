@@ -52,9 +52,11 @@ const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string)
 }
 const fetchCoursesByOwner = async () => {
     try{
+        console.log("the headers are:", await handleAccessToken())
         const headers = await handleAccessToken();
         if (headers == null) return;
         const response = await apiClient.get('/course/:1234', {headers});
+        console.log("the response is:", response.data)
         return response.data
     
     }

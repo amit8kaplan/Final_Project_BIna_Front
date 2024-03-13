@@ -56,11 +56,15 @@ const Personal: React.FC = () => {
     // Navigate to the My Courses page
     navigate("/personal/my-courses");
   }
+  const navToMyReviews = () => {
+    // Navigate to the My Reviews page
+    navigate("/personal/my-reviews");
+  }
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "50px" }}>
       <div style={{ marginBottom: "20px" }}>
         <Button onClick={navToMyCourses} variant="primary" style={{ width: "150px", marginRight: "10px" }}>My Courses</Button>
-        <Button variant="primary" style={{ width: "150px" }}>My Reviews</Button>
+        <Button onClick={navToMyReviews} variant="primary" style={{ width: "150px" }}>My Reviews</Button>
       </div>
 
       {userData && (

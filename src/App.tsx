@@ -10,6 +10,7 @@ import { Nav_componnets } from "./components/Navbar";
 import { useEffect, useState } from "react";
 import Personal from "./pages/Personal";
 import MyCourses from "./pages/MyCourses";
+import MyReviews from "./pages/MyReviews";
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const isAuthenticated = Boolean(sessionStorage.getItem("accessToken"));
 
@@ -71,6 +72,13 @@ function App() {
               <MyCourses/>
               </ProtectedRoute>
            }
+            />
+            <Route path = "/personal/my-reviews"
+            element={
+              <ProtectedRoute>
+                <MyReviews/>
+                </ProtectedRoute>
+            }
             />
         </Routes>
       </Container>
