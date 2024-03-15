@@ -1,4 +1,5 @@
 import apiClient from "./api-client";
+import { uploadPhoto } from "./file-service";
 import { handleAccessToken } from "./user-service";
 
 interface User {
@@ -10,16 +11,22 @@ interface User {
     accessToken?: string;
     refreshToken?: string;
 }
-
-export const updateUserDetails = async (userId: string, userDetails: any) => {
+interface newData {
+  email: string;
+  user_name: string;
+  password: string;
+}
+export const updateUserDetails = async (userId: string, updateUser: newData ) => {
   const headers = await handleAccessToken();
   if (!headers) return null;
-
+  console.log("headers: ", headers)
   try {
-    // Correctly append userId to the URL
-    const response = await apiClient.put(`/user/${userId}`, userDetails, { headers });
-    return response.data;
-  } catch (error) {
+      const change_pesonal_Data = await apiClient.put(`/user/${userId}`, updateUser, { headers });
+      console.log("the register response: ", change_pesonal_Data) 
+      return change_pesonal_Data
+    }
+
+   catch (error) {
     console.error("Error updating user:", error);
     throw error; 
   }
