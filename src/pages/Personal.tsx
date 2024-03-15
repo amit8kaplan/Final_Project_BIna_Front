@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { fetchUser } from "../services/personal-service";
+import { fetchUser, updateUserDetails } from "../services/personal-service";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
+
+// Define a type for your user data that allows imgUrl to be a string or a File
+type NewUserData = {
+  userName: string;
+  email: string;
+  password: string;
+  imgUrl: string | File;
+};
+
 const Personal: React.FC = () => {
-  const [userData, setUserData] = useState<any>(null); // State to hold user data
+  const [userData, setUserData] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [newUserData, setNewUserData] = useState({
+  const [newUserData, setNewUserData] = useState<NewUserData>({
     userName: "",
     email: "",
     password: "",
@@ -21,97 +30,181 @@ const Personal: React.FC = () => {
 
   const fetchUserfromServer = async () => {
     const data = await fetchUser();
-    setUserData(data); // Set user data to state
-    console.log("the user data is:", data);
+    setUserData(data); 
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
     setNewUserData((prevUserData) => ({
       ...prevUserData,
-      [name]: value,
+      [id]: value,
     }));
   };
 
-  const handleSubmit = () => {
-    // Submit updated user data to the server
-    // For demo purposes, simply log the updated data
-    console.log("Updated User Data:", newUserData);
-    setShowModal(false); // Close the modal after submission
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewUserData((prevUserData) => ({
+        ...prevUserData,
+        imgUrl: e.target.files[0],
+      }));
+    }
   };
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("userName", newUserData.userName);
+    formData.append("email", newUserData.email);
+    formData.append("password", newUserData.password); // Ensure secure handling of passwords
+
+    if (newUserData.imgUrl instanceof File) {
+      formData.append("imgUrl", newUserData.imgUrl);
+    }
+
+    try {
+      const updatedUser = await updateUserDetails(userData._id, formData); // This function must be defined in your personal-service file
+      setUserData(updatedUser); // Update the user data state
+      setShowModal(false); // Close the modal after a successful update
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      // Here you can add some UI feedback for the error
+    }
+  };
+
   const handleModalClose = () => {
-    // Close the modal and reset newUserData
     setShowModal(false);
-    setNewUserData({});
+    setNewUserData({ userName: "", email: "", password: "", imgUrl: "" }); // Reset the modal form
   };
-  
-  const handleSaveChanges = () => {
-    // Here you can perform the logic to save the changes
-    // For simplicity, let's just update the userData with newUserData
-    setUserData(newUserData);
-    setShowModal(false);
-  };
-  const navigate = useNavigate(); // Hook for navigation
-  const navToMyCourses = () => {
-    // Navigate to the My Courses page
-    navigate("/personal/my-courses");
-  }
-  const navToMyReviews = () => {
-    // Navigate to the My Reviews page
-    navigate("/personal/my-reviews");
-  }
+
+  const navigate = useNavigate();
+  const navToMyCourses = () => navigate("/personal/my-courses");
+  const navToMyReviews = () => navigate("/personal/my-reviews");
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "50px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "50px",
+      }}
+    >
       <div style={{ marginBottom: "20px" }}>
-        <Button onClick={navToMyCourses} variant="primary" style={{ width: "150px", marginRight: "10px" }}>My Courses</Button>
-        <Button onClick={navToMyReviews} variant="primary" style={{ width: "150px" }}>My Reviews</Button>
+        <Button
+          onClick={navToMyCourses}
+          variant="primary"
+          style={{ width: "150px", marginRight: "10px" }}
+        >
+          My Courses
+        </Button>
+        <Button
+          onClick={navToMyReviews}
+          variant="primary"
+          style={{ width: "150px" }}
+        >
+          My Reviews
+        </Button>
       </div>
 
       {userData && (
-        <Card style={{ width: "400px", backgroundColor: "#f8f9fa", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" }}>
+        <Card
+          style={{
+            width: "400px",
+            backgroundColor: "#f8f9fa",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <Card.Body>
             <Card.Title className="text-center mb-4">Personal Info</Card.Title>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <img src={`${userData.imgUrl}`} alt="User" style={{ width: "300px", height: "auto", borderRadius: "10px" }} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={
+                  typeof newUserData.imgUrl === "string"
+                    ? newUserData.imgUrl
+                    : URL.createObjectURL(newUserData.imgUrl)
+                }
+                alt="User"
+                style={{ width: "300px", height: "auto", borderRadius: "10px" }}
+              />
               <div style={{ marginTop: "20px", textAlign: "center" }}>
-                <p><strong>Name:</strong> {userData.user_name}</p>
-                <p><strong>Email:</strong> {userData.email}</p>
+                <p>
+                  <strong>Name:</strong> {userData.userName}
+                </p>
+                <p>
+                  <strong>Email:</strong> {userData.email}
+                </p>
               </div>
-              <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginTop: "20px" }}>Change Info</Button>
+              <Button
+                variant="primary"
+                onClick={() => setShowModal(true)}
+                style={{ marginTop: "20px" }}
+              >
+                Change Info
+              </Button>
             </div>
           </Card.Body>
         </Card>
       )}
 
-   {/* Modal for changing user information */}
+      {/* Modal for changing user information */}
       <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Change Information</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="mb-3">
-            <label htmlFor="userName" className="form-label">User Name</label>
-            <input type="text" className="form-control" id="userName" value={newUserData.user_name || ""} onChange={(e) => handleInputChange(e, "user_name")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" className="form-control" id="email" value={newUserData.email || ""} onChange={(e) => handleInputChange(e, "email")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" className="form-control" id="password" value={newUserData.password || ""} onChange={(e) => handleInputChange(e, "password")} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="newPhoto" className="form-label">New Photo</label>
+          <Form.Group className="mb-3">
+            <Form.Label>User Name</Form.Label>
+            <Form.Control
+              type="text"
+              id="userName"
+              value={newUserData.userName}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              id="email"
+              value={newUserData.email}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              id="password"
+              value={newUserData.password}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>New Photo</Form.Label>
             <div className="input-group">
-              <input type="file" className="form-control" id="newPhoto" style={{ display: "none" }} />
-              <label htmlFor="newPhoto" className="input-group-text"><FontAwesomeIcon icon={faImage} /></label>
+              <Form.Control
+                type="file"
+                id="newPhoto"
+                onChange={handleFileChange}
+              />
+              {/* <Form.Label className="input-group-text" htmlFor="newPhoto">
+                <FontAwesomeIcon icon={faImage} /> Upload
+              </Form.Label> */}
             </div>
-          </div>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>Cancel</Button>
-          <Button variant="primary" onClick={handleSubmit}>Save Changes</Button>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Save Changes
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

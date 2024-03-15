@@ -49,7 +49,6 @@ const MyReviews: React.FC = () => {
 
     const handleShowEdit = (review: IcourseReview) => {
         setSelectedReview(review);
-        console.log(review);
         setShowModal(true);
     };
 

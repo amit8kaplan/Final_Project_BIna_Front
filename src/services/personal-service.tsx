@@ -11,6 +11,21 @@ interface User {
     refreshToken?: string;
 }
 
+export const updateUserDetails = async (userId: string, userDetails: any) => {
+  const headers = await handleAccessToken();
+  if (!headers) return null;
+
+  try {
+    // Correctly append userId to the URL
+    const response = await apiClient.put(`/user/${userId}`, userDetails, { headers });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error; 
+  }
+};
+  
+
 const fetchUser = async () => {
 
     const headers = await handleAccessToken();
