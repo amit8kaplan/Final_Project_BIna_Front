@@ -77,6 +77,7 @@ const handleSelectOption = (option: string) => {
   const [courseName, setSelectedCourseName] = useState<string>('');
 
   const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("the search query is:" + event.target.value)
     setSearchQuery(event.target.value);
   };
 

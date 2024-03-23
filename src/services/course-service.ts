@@ -26,7 +26,7 @@ const fetchData = async () => {
 
 const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string) => {
     try {
-        const queryString = `/?${selectedOption}=${searchQuery}`;
+        const queryString = `?${selectedOption}=${searchQuery}`;
         console.log("the query string is:" + queryString)
         const response = await apiClient.get(`/course${queryString}`);
         console.log("the response is:", response.data)

@@ -20,14 +20,15 @@ interface IcourseReview {
 
   const fetchReviewsByCourseID = async (courseID: string) => {
     try {
-        const quaryString = `/?$course_id=${courseID}`;
-        const response = await apiClient.get(`/review${quaryString}`);
-        console.log("the response is:" + response.data)
-        return response.data
+        const queryString = `?course_id=${courseID}`;
+        const response = await apiClient.get(`/review${queryString}`);
+        console.log("the response is:", response.data);
+        return response.data;
     } catch (error) {
         console.error('Error fetching reviews:', error);
     }
-  }
+}
+
   const postReview = async (rev: IcourseReview) => {
     const headers = handleAccessToken();
     if (headers == null || rev.course_id=='') return;
