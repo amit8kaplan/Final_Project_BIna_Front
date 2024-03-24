@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getRandomPhoto, homepagephoto } from '../services/rest_api_photos';
+import {  homepagephoto } from '../services/rest_api_photos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function Home() {

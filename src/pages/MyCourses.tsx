@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Modal, Form } from 'react-bootstrap';
 import { BsChevronDown, BsChevronUp, BsTrash, BsPencil } from 'react-icons/bs';
-import { fetchData, fetchCoursesBySearch, putCourse, deleteCourse, fetchCoursesByOwner } from '../services/course-service';
-import { postCourse, postVideo } from '../services/course-service';
+import { putCourse, deleteCourse, fetchCoursesByOwner } from '../services/course-service';
+import { postVideo } from '../services/course-service';
 
 interface Course {
   _id: string;
@@ -23,14 +23,13 @@ const MyCourses: React.FC<ChildProps> = () => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [editedCourse, setEditedCourse] = useState<Course | null>(null);
     const [editedName, setEditedName] = useState('');
     const [editedDescription, setEditedDescription] = useState('');
     const [isButtonGreen, setIsButtonGreen] = useState(false);
-    const [vidSrc, setVidSrc] = useState<File | null>(null);
+    const [ setVidSrc] = useState<File | null>(null);
     const [vidError, setVidError] = useState<string>('');
     const [selectedVideoName, setSelectedVideoName] = useState<string>('');
-    const [newFormSubmit, setFormSubmit] = useState<Form>({
+    const [setFormSubmit] = useState<Form>({
         courseName: '',
         description: '',
         vidSrc: null,
@@ -51,9 +50,7 @@ const MyCourses: React.FC<ChildProps> = () => {
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
-  const findAcourseInCourses = (courseId: string) => {
-    return courses.find((course) => course._id === courseId);
-  }
+
   useEffect(() => {
      fetchCoursesByOwner().then((res) => setCourses(res));
     
@@ -68,12 +65,9 @@ const MyCourses: React.FC<ChildProps> = () => {
       setCourses(courses.filter(course => course._id !== courseId));
     }
   };
-  const handleChangeCourse = (course: Course) => {
-    console.log("the course is: " + course)
-  }
+
   const handleEditCourse = (course: Course) => {
     setEditTheCourse(course);
-    setEditedCourse(course);
     setEditedName(course.name);
     setEditedDescription(course.description);
     setShowEditModal(true);

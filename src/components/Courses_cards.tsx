@@ -56,7 +56,6 @@ const handleReviews = async (showReviews: boolean, courseId: string) => {
       console.log("the search query is:" + searchQuery)
       fetchCoursesBySearch(searchQuery, selectedOption).then((res) => setCourses(res));
     } else {
-      // If search query is empty or undefined, fetch all courses
       fetchData().then((res) => setCourses(res));
     }
     buyCourse ? setBuyCourse(false) : null;

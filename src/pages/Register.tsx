@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { googleSignin } from '../services/user-service';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import avatar from '../assets/avatar.jpeg';
 import { useNavigate } from 'react-router-dom'; // Assuming you're using react-router-dom
@@ -103,9 +103,6 @@ export function Registerfunc() {
         />
         <button type="button" className="btn position-absolute bottom-0 end-0" onClick={selectImg}>
           <FontAwesomeIcon icon={faImage} className="fa-xl" />
-        </button>
-        <button type="button" className="btn position-absolute bottom-0 start-0" onClick={randomImg}>
-          <FontAwesomeIcon icon={faRandom} className="fa-xl" />
         </button>
       </div>
 

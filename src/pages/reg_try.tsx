@@ -5,7 +5,7 @@ import { z } from 'zod';
 import {  googleSignin, loginUserWithEmailPassword, registrUser, } from '../services/user-service'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 import {  useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
@@ -53,13 +53,13 @@ export function YourComponent() {
   
   const onsubmit = async (data: any) => {
     console.log(data)
-    setShowModal(false); // Ensure the modal is not shown by default on each submit attempt
+    setShowModal(false); 
     try {
         const registrationResponse = await registrUser({
             email: data.email,
             password: data.password,
             user_name: data.userName,
-            imgUrl: '', // Include imgUrl if applicable
+            imgUrl: '',
         });
         console.log("the user register:", registrationResponse);
         console.log("the imgSrc: ", imgSrc)
@@ -152,9 +152,6 @@ return (
       <img src={imgSrc ? (booleanRandom ? imgSrc : URL.createObjectURL(imgSrc)) : avatar} style={{ height: "230px", width: "230px" }} className="img-fluid" />
       <button type="button" className="btn position-absolute bottom-0 end-0" onClick={selectImg}>
         <FontAwesomeIcon icon={faImage} className="fa-xl" />
-      </button>
-      <button type="button" className="btn position-absolute bottom-0 start-0" onClick={randomImg}>
-        <FontAwesomeIcon icon={faRandom} className="fa-xl" />
       </button>
     </div>
     {imgError && <p className="text-danger">{imgError}</p>}

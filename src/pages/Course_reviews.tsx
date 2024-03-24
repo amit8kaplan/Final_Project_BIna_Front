@@ -78,7 +78,7 @@ const CourseReviewsPage: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); 
+    e.preventDefault();
     try {
       console.log('Submitted Review:', reviewForm);
       const submitRev: Review = {
@@ -92,12 +92,20 @@ const CourseReviewsPage: React.FC = () => {
       };
       console.log("the temp form is:", submitRev);
       await postReview(submitRev);
-      setNewRev(true);
-      handleClose();
+      // Reset the form to its initial state here
+      setReviewForm({
+        title: '',
+        message: '',
+        score: 0,
+        course_id: courseID,
+      });
+      setNewRev(true); // Assuming this is intended to trigger a re-fetch of reviews
+      handleClose(); // Close the modal after submission
     } catch (error) {
       console.error('Error submitting review:', error);
     }
   };
+  
 
   const fetchReviews = async () => {
     try {
