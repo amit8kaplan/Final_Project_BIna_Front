@@ -91,7 +91,7 @@ const handleReviews = async (courseId: string) => {
                     {showFullDescription ? 'Show Less' : 'Show More'} {showFullDescription ? <BsChevronUp /> : <BsChevronDown />}
                   </Button>
                 )}
-                <Button className='btn p-2' variant="secondary" onClick={() => handleReviews(true,course._id)}>Reviews</Button>
+                <Button className='btn p-2' variant="secondary" onClick={() => handleReviews(course._id)}>Reviews</Button>
 
               </div>
             </Card.Body>
