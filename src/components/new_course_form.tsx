@@ -14,10 +14,9 @@ interface ChildProps {
     showFormFromParent: (data: boolean) => void;
 }
 
-const NewCourseForm: React.FC<ChildProps> = ({ sendDatatoParentFromNewCourseForm, showForm, showFormFromParent }): React.ReactNode => {
+const NewCourseForm: React.FC<ChildProps> = ({ sendDatatoParentFromNewCourseForm, showForm, showFormFromParent }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isButtonGreen, setIsButtonGreen] = useState(false);
-    const [setVidSrc] = useState<File | null>(null);
     const [vidError, setVidError] = useState<string>('');
     const [selectedVideoName, setSelectedVideoName] = useState<string>('');
     const [newFormSubmit, setFormSubmit] = useState<Form>({
@@ -37,16 +36,16 @@ const NewCourseForm: React.FC<ChildProps> = ({ sendDatatoParentFromNewCourseForm
             const file = e.target.files[0];
             const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
             if (allowedTypes.includes(file.type)) {
-                setVidSrc(file);
+                setFormSubmit(prevState => ({ ...prevState, vidSrc: file }));
                 setVidError('');
                 setSelectedVideoName(file.name);
                 setIsButtonGreen(true);
-                setFormSubmit(prevState => ({ ...prevState, vidSrc: file }));
             } else {
                 setVidError('Please select a valid video file (MP4, WebM, QuickTime).');
             }
         }
     };
+    
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

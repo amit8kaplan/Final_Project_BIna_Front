@@ -146,7 +146,7 @@ const CourseReviewsPage: React.FC = () => {
               <p>{selectedReview.message}</p>
               </div>
               <div style={{textAlign:'center'}}>
-                {[...Array(5)].map((star, index) => {
+                {[...Array(5)].map((_star, index) => {
                   const score = index + 1;
                   return (
                     <FaStar
