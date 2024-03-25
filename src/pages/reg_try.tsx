@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import {  useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
-import axios from 'axios';
 import 'bootstrap';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/api-client';
@@ -26,9 +25,9 @@ export function YourComponent() {
   const [modalMessage, setModalMessage] = useState('');
   const [, setModalButtonLabel] = useState('');
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
-  const handleUserNameChange = (e) => setUserName(e.target.value);
+  const handleEmailChange = (e: any) => setEmail(e.target.value);
+  const handlePasswordChange = (e: any) => setPassword(e.target.value);
+  const handleUserNameChange = (e: any) => setUserName(e.target.value);
   const handleModalClose = () => {
     setShowModal(false);
     setModalMessage('');
@@ -165,7 +164,8 @@ return (
     <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
     
     {showModal && (
-      <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+
+      <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1} aria-labelledby="ModalLabel" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
