@@ -62,12 +62,13 @@ const Personal: React.FC = () => {
     }));
   };
 
-  const imgSelected = (e: { target: { files: string | any[] } }) => {
+  const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setNewPhoto(file);
+      setNewPhoto(file); 
     }
   };
+  
 
   const selectImg = () => {
     fileInputRef.current?.click();
@@ -96,7 +97,7 @@ const Personal: React.FC = () => {
   
   const handleModalClose = () => {
     setShowModal(false);
-    setNewUserData({ user_name: "", email: "", imgUrl: "" }); // Reset the modal form
+    setNewUserData({ user_name: "", email: "", imgUrl: "", password: "" }); 
   };
 
   const navigate = useNavigate();
