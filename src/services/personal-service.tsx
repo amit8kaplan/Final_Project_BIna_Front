@@ -1,16 +1,6 @@
 import apiClient from "./api-client";
-import { uploadPhoto } from "./file-service";
 import { handleAccessToken } from "./user-service";
 
-interface User {
-    email: string;
-    user_name: string;
-    password?: string;
-    imgUrl?: string;
-    _id?: string;
-    accessToken?: string;
-    refreshToken?: string;
-}
 interface newData {
   email: string;
   user_name: string;

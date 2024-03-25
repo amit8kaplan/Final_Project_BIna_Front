@@ -22,7 +22,7 @@ type UpdateUserExaptImg = {
 
 const Personal: React.FC = () => {
   const fileInputRef = useRef(null);
-  const [newPhoto, setNewPhoto] = useState<File>(null); // New photo selected by the user
+  const [, setNewPhoto] = useState<File>(null); // New photo selected by the user
   const [userData, setUserData] = useState<UpdateUserExaptImg>({
     user_name: "",
     email: "",

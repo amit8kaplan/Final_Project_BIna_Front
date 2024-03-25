@@ -5,7 +5,7 @@ import { z } from 'zod';
 import {  googleSignin, loginUserWithEmailPassword, registrUser, } from '../services/user-service'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
 import {  useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
@@ -53,13 +53,13 @@ export function YourComponent() {
   
   const onsubmit = async (data: any) => {
     console.log(data)
-    setShowModal(false); 
+    setShowModal(false); // Ensure the modal is not shown by default on each submit attempt
     try {
         const registrationResponse = await registrUser({
             email: data.email,
             password: data.password,
             user_name: data.userName,
-            imgUrl: '',
+            imgUrl: '', // Include imgUrl if applicable
         });
         console.log("the user register:", registrationResponse);
         console.log("the imgSrc: ", imgSrc)

@@ -24,7 +24,6 @@ export async function downloadPhoto() {
       url: res2.data.urls.full,
       downloadLocation: res2.data.links.download_location,
     };
-    console.log("Downloaded photo:", file);
   } catch (error) {
     console.error("Error downloading photo:", error);
   }

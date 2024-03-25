@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import  { useEffect, useState, useRef } from 'react';
 import {  homepagephoto } from '../services/rest_api_photos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

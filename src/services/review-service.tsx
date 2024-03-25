@@ -1,6 +1,6 @@
 import apiClient from "./api-client"
 import { handleAccessToken } from "./user-service";
-import { fetchCoursesBySearch } from "./course-service";
+
 interface IcourseReview {
     _id?: string;
     course_id: string;
@@ -11,12 +11,7 @@ interface IcourseReview {
     owner_id: string;
     owner_name: string;
   }
-  interface IcourseReviewForm {
-    title: string;
-    message: string;
-    score: number;
-    course_id: string;
-  }
+
 
   const fetchReviewsByCourseID = async (courseID: string) => {
     try {

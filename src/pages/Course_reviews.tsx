@@ -1,7 +1,7 @@
 import '../css/CourseReviewsPage.css'; // Import CSS file for styling
 import { fetchReviewsByCourseID, postReview } from '../services/review-service';
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Container, ListGroup, Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form from react-bootstrap
 import { FaStar } from 'react-icons/fa'; // Import star icon from react-icons/fa
 interface IcourseReview {
@@ -20,15 +20,7 @@ interface RevForm{
   score: number;
   course_id: string | null;
 }
-interface Course{
-  _id: string;
-  name: string;
-  owner: string;
-  owner_name: string;
-  description: string;
-  Count: number;
-  videoUrl: string;
-}
+
 interface Review{
   course_id: string;
   course_name: string;
