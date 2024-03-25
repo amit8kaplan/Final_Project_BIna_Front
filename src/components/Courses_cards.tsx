@@ -32,7 +32,6 @@ const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, course
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
-  const [showReviews, setShowReviews] = useState(false);
 
   const HandleBuyCourse = (course: Course, courseId: string) => {
     console.log("the course id is:" + courseId)
@@ -43,7 +42,8 @@ const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, course
       setShowPopup(true);
     });
   }
-const handleReviews = async (showReviews: boolean, courseId: string) => {
+
+const handleReviews = async (courseId: string) => {
     const course = await courses.find((course) => course._id === courseId);
     console.log("the course is: " + course)
     if (course) {

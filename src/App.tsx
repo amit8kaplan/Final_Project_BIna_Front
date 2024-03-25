@@ -47,7 +47,11 @@ function App() {
             path="/store"
             element={
               <ProtectedRoute>
-                <CourseList />
+                <CourseList showFormFromParent={false} sendDatatoParentFromNewCourseForm={function (): void {
+                  throw new Error("Function not implemented.");
+                } } sendCourseIDToParent={function (): void {
+                  throw new Error("Function not implemented.");
+                } } />
               </ProtectedRoute>
             }
           />
