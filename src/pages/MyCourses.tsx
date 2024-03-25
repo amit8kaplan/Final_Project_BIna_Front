@@ -109,7 +109,8 @@ const selectVideo = () => {
     }
 };
   return (
-
+  <>
+  <h1 className="text-center">My Courses</h1>
     <Row className='pb-2'>
       {courses.map((course) => (
         <Col className='p-3' key={course._id} xs={12} sm={6} md={4} lg={3}>
@@ -189,7 +190,7 @@ const selectVideo = () => {
         </Modal.Footer>
       </Modal>
     </Row>
-                    
+    </>      
   );
 }
 
