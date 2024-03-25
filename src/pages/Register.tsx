@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { googleSignin } from '../services/user-service';
@@ -11,7 +11,7 @@ import avatar from '../assets/avatar.jpeg';
 import { useNavigate } from 'react-router-dom'; // Assuming you're using react-router-dom
 
 export function Registerfunc() {
-  const [imgSrc, setImgSrc] = useState();
+  const [imgSrc, setImgSrc] = useState<string | undefined>();
   const [booleanRandom,] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate(); // Hook for navigation
@@ -21,10 +21,10 @@ export function Registerfunc() {
       .min(1, { message: "Required" })
       .email({ message: "Invalid email format" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
-    userName: z.string().min(3, { message: "Username must be at least 3 characters long" }),
+    username: z.string().min(3, { message: "Username must be at least 3 characters long" }),
   });
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormFields>({
     resolver: zodResolver(schemaFormUser),
   });
 
@@ -34,7 +34,6 @@ export function Registerfunc() {
     username: string;
     imgUrl: string; 
   };
-
 
   
   const onSubmit: SubmitHandler<FormFields> = async (data: FormFields) => {
@@ -81,7 +80,6 @@ export function Registerfunc() {
   const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      // @ts-ignore
       setImgSrc(URL.createObjectURL(file)); // Assuming setImgSrc is expecting a string URL
     }
   };
@@ -96,6 +94,7 @@ export function Registerfunc() {
       {/* Image upload section */}
       <div className="d-flex justify-content-center position-relative">
         <img
+        // @ts-ignore
           src={imgSrc ? (booleanRandom ? imgSrc : URL.createObjectURL(imgSrc)) : avatar}
           alt="profile"
           style={{ height: "230px", width: "230px" }}
@@ -140,15 +139,18 @@ export function Registerfunc() {
 
         {/* Username input */}
         <div className="form-group">
-          <label htmlFor="userName">Username</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
-            id="userName"
-            {...register("userName")}
-            className={`form-control ${errors.userName ? 'is-invalid' : ''}`}
+            id="username"
+            {...register("username")}
+            className={`form-control ${errors.username ? 'is-invalid' : ''}`}
           />
-          {errors.userName && <div className="invalid-feedback">{errors.userName.message as string}</div>}
+          {errors.username && <div className="invalid-feedback">{errors.username.message as string}</div>}
         </div>
+
+        {/* ImgUrl input (hidden) */}
+        <input type="hidden" {...register("imgUrl")} />
 
         {/* Submit button */}
         <button type="submit" className="btn btn-primary">Register</button>
