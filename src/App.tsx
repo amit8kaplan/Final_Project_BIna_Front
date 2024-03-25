@@ -21,7 +21,7 @@ function App() {
   const [isLogin, setIsLogin] = useState(Boolean(sessionStorage.getItem("accessToken")));
 
   useEffect(() => {
-    const handleStorageChange = (event: any) => {
+    const handleStorageChange = () => {
       setIsLogin(Boolean(sessionStorage.getItem("accessToken")));
     };
 
