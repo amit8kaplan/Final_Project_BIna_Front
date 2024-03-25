@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { googleSignin } from '../services/user-service';
@@ -12,8 +12,8 @@ import { useNavigate } from 'react-router-dom'; // Assuming you're using react-r
 
 export function Registerfunc() {
   const [imgSrc, setImgSrc] = useState();
-  const [booleanRandom, setBooleanRandom] = useState(false);
-  const fileInputRef = useRef(null);
+  const [booleanRandom,] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate(); // Hook for navigation
   const schemaFormUser = z.object({
     email: z
@@ -28,7 +28,16 @@ export function Registerfunc() {
     resolver: zodResolver(schemaFormUser),
   });
 
-  const onSubmit = async (data) => {
+  type FormFields = {
+    email: string;
+    password: string;
+    username: string;
+    imgUrl: string; 
+  };
+
+
+  
+  const onSubmit: SubmitHandler<FormFields> = async (data: FormFields) => {
     try {
         const response = await axios.post('http://localhost:3000/auth/register', {
             email: data.email,
@@ -47,42 +56,39 @@ export function Registerfunc() {
             // Handle errors or unsuccessful registration
             throw new Error(response.data.message || "Registration failed. Please try again.");
         }
-    } catch (error) {
+      } catch (error: any) {
         console.error("Registration error:", error);
         alert(error.response?.data?.message || "Registration failed. Please try again.");
-    }
+      }      
   };
   
 
   const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     try {
-      const response = await googleSignin(credentialResponse);
+      await googleSignin(credentialResponse);
       navigate('/store'); // Redirect to store page
     } catch (error) {
       console.error("Google sign-in error:", error);
     }
   };
+  
 
-  const onGoogleLoginFailure = (error: any) => {
-    console.error("Google login failed:", error);
+  const onGoogleLoginFailure = () => {
+    console.error("Google login failed");
   };
+  
 
-  const imgSelected = (e: { target: { files: string | any[]; }; }) => {
+  const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImgSrc(e.target.files[0]);
-      setBooleanRandom(false);
+      const file = e.target.files[0];
+      // @ts-ignore
+      setImgSrc(URL.createObjectURL(file)); // Assuming setImgSrc is expecting a string URL
     }
   };
+  
 
   const selectImg = () => {
     fileInputRef.current?.click();
-  };
-
-  const randomImg = async () => {
-    setBooleanRandom(true);
-    // Assuming your API for random photos is '/auth/register/randomPhoto'
-    const resPhoto = await axios.get('http://localhost:3000/auth/register/randomPhoto');
-    setImgSrc(resPhoto.data.url);
   };
 
   return (
@@ -117,7 +123,7 @@ export function Registerfunc() {
             {...register("email")}
             className={`form-control ${errors.email ? 'is-invalid' : ''}`}
           />
-          {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+          {errors.email && <div className="invalid-feedback">{errors.email.message as string}</div>}
         </div>
 
         {/* Password input */}
@@ -129,7 +135,7 @@ export function Registerfunc() {
             {...register("password")}
             className={`form-control ${errors.password ? 'is-invalid' : ''}`}
           />
-          {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+          {errors.password && <div className="invalid-feedback">{errors.password.message as string}</div>}
         </div>
 
         {/* Username input */}
@@ -141,7 +147,7 @@ export function Registerfunc() {
             {...register("userName")}
             className={`form-control ${errors.userName ? 'is-invalid' : ''}`}
           />
-          {errors.userName && <div className="invalid-feedback">{errors.userName.message}</div>}
+          {errors.userName && <div className="invalid-feedback">{errors.userName.message as string}</div>}
         </div>
 
         {/* Submit button */}
