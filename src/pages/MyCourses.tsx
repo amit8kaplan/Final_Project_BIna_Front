@@ -194,7 +194,7 @@ const selectVideo = () => {
 }
 
 export default MyCourses;
-function setFormSubmit(arg0: (prevState: Form) => { vidSrc: File; courseName: string; description: string; }) {
+function setFormSubmit(_arg0: (prevState: Form) => { vidSrc: File; courseName: string; description: string; }) {
   throw new Error('Function not implemented.');
 }
 
