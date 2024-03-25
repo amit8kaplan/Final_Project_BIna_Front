@@ -17,7 +17,7 @@ interface ChildProps {
 const NewCourseForm: React.FC<ChildProps> = ({ sendDatatoParentFromNewCourseForm, showForm, showFormFromParent }): React.ReactNode => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isButtonGreen, setIsButtonGreen] = useState(false);
-    const [vidSrc, setVidSrc] = useState<File | null>(null);
+    const [setVidSrc] = useState<File | null>(null);
     const [vidError, setVidError] = useState<string>('');
     const [selectedVideoName, setSelectedVideoName] = useState<string>('');
     const [newFormSubmit, setFormSubmit] = useState<Form>({
