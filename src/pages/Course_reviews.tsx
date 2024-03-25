@@ -69,7 +69,7 @@ const CourseReviewsPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLAnchorElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       console.log('Submitted Review:', reviewForm);
@@ -146,7 +146,7 @@ const CourseReviewsPage: React.FC = () => {
               <p>{selectedReview.message}</p>
               </div>
               <div style={{textAlign:'center'}}>
-                {[...Array(5)].map((_star, index) => {
+                {[...Array(5)].map((_, index) => {
                   const score = index + 1;
                   return (
                     <FaStar
@@ -185,7 +185,7 @@ const CourseReviewsPage: React.FC = () => {
             <Form.Group controlId="score">
               <Form.Label>Score</Form.Label>
               <div>
-                {[...Array(5)].map((star, index) => {
+                {[...Array(5)].map((_star, index) => {
                   const score = index + 1;
                   return (
                     <FaStar
