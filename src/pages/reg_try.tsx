@@ -5,7 +5,7 @@ import { z } from 'zod';
 import {  googleSignin, loginUserWithEmailPassword, registrUser, } from '../services/user-service'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faRandom } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 import {  useRef, useState } from 'react';
 import avatar from '../assets/avatar.jpeg'
 import axios from 'axios';
@@ -16,16 +16,15 @@ import apiClient from '../services/api-client';
 
 export function YourComponent() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [, setEmail] = useState('');
+  const [, setPassword] = useState('');
+  const [, setUserName] = useState('');
   const [imgSrc, setImgSrc] = useState<File>()
   const [booleanRandom, setBooleanRandom] = useState<boolean>(false);
   const [imgError, setImgError] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [modalButtonLabel, setModalButtonLabel] = useState('');
-  const [modalButtonAction, setModalButtonAction] = useState(() => {});
+  const [, setModalButtonLabel] = useState('');
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -134,17 +133,7 @@ const selectImg = () => {
     console.log("Selecting image..." + fileInputRef.current)
   }
 }
-const randomImg =async () => {
-  console.log("Random image...")
-  setBooleanRandom(true)
-  const resPhoto = await axios.get("http://localhost:3000/auth/register/randomphoto")
-  console.log(resPhoto.data.url.toString())
-  console.log("type of resPhoto: ", typeof resPhoto.data.url.toString())
-  console.log("Random image...")
-  console.log(JSON.stringify(resPhoto, null, 2))
-  // const photourtostring toString() // Remove the argument
-  setImgSrc(resPhoto.data.url)
-}
+
 
 return (
   <div className="vstack gap-3 col-md-7 mx-auto">
