@@ -17,23 +17,23 @@ interface Course {
 interface ChildProps {
 }
 
-const MyCourses: React.FC<ChildProps> = () => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
+interface Form {
+  courseName: string;
+  description: string;
+  vidSrc: File | null;
+}
 
+const MyCourses: React.FC<ChildProps> = () => {
+  const [, setVidSrc] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
     const [courses, setCourses] = useState<Course[]>([]);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [editedDescription, setEditedDescription] = useState('');
     const [isButtonGreen, setIsButtonGreen] = useState(false);
-    const [ setVidSrc] = useState<File | null>(null);
     const [vidError, setVidError] = useState<string>('');
     const [selectedVideoName, setSelectedVideoName] = useState<string>('');
-    const [setFormSubmit] = useState<Form>({
-        courseName: '',
-        description: '',
-        vidSrc: null,
-    });
     const [editTheCourse, setEditTheCourse] = useState<Course>({
         _id: '',
         name: '',
@@ -83,6 +83,7 @@ const MyCourses: React.FC<ChildProps> = () => {
       setShowEditModal(false);
     }
   };
+
   const handleVideoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
         const file = e.target.files[0];
@@ -96,8 +97,8 @@ const MyCourses: React.FC<ChildProps> = () => {
             setVidError('');
             setSelectedVideoName(file.name);
             setIsButtonGreen(true);
-            setFormSubmit(prevState => ({ ...prevState, vidSrc: file }));
-        } else {
+            setFormSubmit((prevState: Form) => ({ ...prevState, vidSrc: file }));
+          } else {
             setVidError('Please select a valid video file (MP4, WebM, QuickTime).');
         }
     }
@@ -193,3 +194,7 @@ const selectVideo = () => {
 }
 
 export default MyCourses;
+function setFormSubmit(arg0: (prevState: Form) => { vidSrc: File; courseName: string; description: string; }) {
+  throw new Error('Function not implemented.');
+}
+
