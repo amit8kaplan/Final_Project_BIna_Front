@@ -10,18 +10,8 @@ import NewCourseForm from '../components/new_course_form';
 import { useNavigate } from 'react-router-dom';
 import { postCourse, postVideo } from '../services/course-service';
 
-// Inside the CourseCard component:
 
-interface IcourseReview {
-  _id: string;
-  course_id: string;
-  course_name: string;
-  title: string;
-  message: string;
-  score: number;
-  owner_id: string;
-  owner_name: string;
-}
+
 interface Course {
   _id: string;
   name: string;
@@ -43,26 +33,12 @@ interface Form {
   
   }
 export const CourseList: React.FC<ChildProps> = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null); // useRef for the file input
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<string>('name'); // Default selected option
-  const [reviews, setReviews] = useState<IcourseReview[]>([]);
-  const [showReviewsModal, setShowReviewsModal] = useState(false);
   const [courseAdded, setCourseAdded] = useState<boolean>(false); // State to track if a new course has been added
-const [newReview, setNewReview] = useState<IcourseReview>({
-  _id: '',
-  course_id: '',
-  course_name: '',
-  title: '',
-  message: '',
-  score: null,
-  owner_id: '',
-  owner_name: '',
-});
-const handleOpenAddReviewModal = () => {
-  setShowAddReviewModal(true);
-};
+
+
 useEffect(() => {
   setCourseAdded(false); // Toggle the courseAdded state to trigger a re-fetch of courses
 }, [courseAdded]); // You may need to adjust the dependencies based on your requirements
@@ -72,9 +48,6 @@ useEffect(() => {
 const handleSelectOption = (option: string) => {
   setSelectedOption(option);
 }
-  const [selectedVideoName, setSelectedVideoName] = useState<string>('');
-  const [isButtonGreen, setIsButtonGreen] = useState<boolean>(false);
-  const [courseName, setSelectedCourseName] = useState<string>('');
 
   const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("the search query is:" + event.target.value)
@@ -118,13 +91,11 @@ const handleSelectOption = (option: string) => {
     console.log ('the received show form is:', data)
     setShowForm(data);
   }, []);
-  const receiveShowRevFromChile = useCallback((data: boolean) => {
-    console.log ('the received show rev is:', data)
-    setShowReviewsModal(data);
-  } , []);
+
+
   const navigate = useNavigate(); // Hook for navigation
 
-  const [courseID, setCourseID] = useState<string>('');
+  const [ ,setCourseID] = useState<string>('');
   const fetchReviews = useCallback((spes_course: Course) => {
       console.log("the course id is in fetchRev:" + spes_course._id)
       // console.log("the course id is in fetchRev:" + courseID)
@@ -133,15 +104,7 @@ const handleSelectOption = (option: string) => {
       navigate(`/course_review/${queryString}`,
   {
     state: { course: spes_course} 
-  }); // Navigate to the reviews page
-      // const response = await apiClient.get(`/review/${courseId}`);
-      // setReviews(response.data);
-      // setSelectedCourseName(courseName); // Set the selected course name
-      // setShowReviewsModal(true);
-
-    // } catch (error) {
-    //   console.error('Error fetching reviews:', error);
-    // }
+  }); 
   }, [navigate]);
   
   return (
@@ -173,7 +136,6 @@ const handleSelectOption = (option: string) => {
       </Row>
       <CourseCards courseAdded={courseAdded} searchQuery={searchQuery} selectedOption={selectedOption} sendCourseIDToParent={fetchReviews} />
      {showForm && <NewCourseForm showForm ={showForm}  sendDatatoParentFromNewCourseForm={receiveDataFromChild}  showFormFromParent={receiveShowFormFromChild} />}
-     {showReviewsModal && <ReviewsModal sendCourseIDToReviews={courseID}  showReviewsModal={showReviewsModal} showRevFromParent={receiveShowRevFromChile}/>}
     </Container>
   );
 };
