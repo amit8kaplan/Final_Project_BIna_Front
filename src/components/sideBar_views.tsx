@@ -15,7 +15,6 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         group: '',
         session: '',
         syllabus: '',
-        grade: '',
         finalGrade: '',
         changeToBeCommander: '',
         startDate: '',
@@ -29,7 +28,6 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         group: false,
         session: false,
         syllabus: false,
-        grade: false,
         finalGrade: false,
         changeToBeCommander: false,
         startDate: false,
@@ -105,11 +103,6 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     <input type="checkbox" className="form-check-input" id="filterSyllabus" name="syllabus" onChange={handleCheckboxChange} />
                     <label className="form-check-label" htmlFor="filterSyllabus">Syllabus No.</label>
                     <input type="text" className="form-control mt-2" name="syllabus" value={filters.syllabus} onChange={handleFilterChange} disabled={!enabledFilters.syllabus} />
-                </div>
-                <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterGrade" name="grade" onChange={handleCheckboxChange} />
-                    <label className="form-check-label" htmlFor="filterGrade">Grade</label>
-                    <input type="text" className="form-control mt-2" name="grade" value={filters.grade} onChange={handleFilterChange} disabled={!enabledFilters.grade} />
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterFinalGrade" name="finalGrade" onChange={handleCheckboxChange} />

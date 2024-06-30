@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
-import { View } from "./pages/view";
+import View from "./pages/view";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
 import { CourseList } from "./pages/Store";
