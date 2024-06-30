@@ -1,59 +1,49 @@
-import { Container, Navbar, Nav, Button } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import avatar from "../assets/avatar.jpeg";
+import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { matrics, megama, piano, wall } from "../public/dropDown_NavBar";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface NavComponnetsProps {
-  isLogin: boolean;
-}
-
-export function Nav_componnets(props: NavComponnetsProps) {
-  const { isLogin } = props;
-
-  const handleLogout = () => {
-    // Implement your logout logic here
-    sessionStorage.clear(); // Clear the session storage
-    window.dispatchEvent(new Event("sessionStorageChange")); // Trigger sessionStorageChange event
-  };
-
+export function Nav_componnets() {
   return (
-    <Navbar sticky="top" className="bg-while shadow-sm mb-3 mt-0">
+    <Navbar sticky="top" bg="light" expand="lg" className="shadow-sm mb-3 mt-0">
       <Container>
-        <Nav className="me-auto">
-          <Nav.Link to={"/"} as={NavLink}>
-            Home
-          </Nav.Link>
-          <Nav.Link to={"/about"} as={NavLink}>
-            About
-          </Nav.Link>
-          {!isLogin && (
-            <Nav.Link to={"/register"} as={NavLink}>
-              Register
-            </Nav.Link>
-          )}
-          <Nav.Link to={isLogin ? "/store" : "/login"} as={NavLink}>
-            {isLogin ? "Store" : "Login"}
-          </Nav.Link>
-        </Nav>
-        <Nav className="me-2">
-          {isLogin && (
-            <>
-              <Nav.Link to={"/personal"} as={NavLink}>
-                <img
-                  className="rounded-circle"
-                  src={avatar}
-                  alt="Avatar"
-                  style={{ width: "30px" }}
-                />
-              </Nav.Link>
-              <Nav.Link disabled className="me-2"> {/* Empty Nav.Link for spacing */}
-                &nbsp;
-              </Nav.Link>
-              <Button variant="outline-primary" onClick={handleLogout}>
-                Logout
-              </Button>
-            </>
-          )}
-        </Nav>
+        <Navbar.Brand as={Link} to="/">Bina</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/newDapit">Dapit</Nav.Link>
+            <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
+            <NavDropdown title="Wall" id="basic-nav-dropdown">
+              {wall[0].items.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={item.to}>
+                  {item.label}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+            <NavDropdown title="Piano" id="basic-nav-dropdown">
+              {piano[0].items.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={item.to}>
+                  {item.label}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+            <NavDropdown title="Megame" id="basic-nav-dropdown">
+              {megama[0].items.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={item.to}>
+                  {item.label}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+            <NavDropdown title="Matrics" id="basic-nav-dropdown">
+              {matrics[0].items.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={item.to}>
+                  {item.label}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );

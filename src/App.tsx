@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
+import { View } from "./pages/view";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
 import { CourseList } from "./pages/Store";
@@ -38,9 +39,10 @@ function App() {
 
   return (
     <div>
-      <Nav_componnets isLogin={isLogin} />
+      <Nav_componnets/>
       <Container className="mb-4">
         <Routes>
+          
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           {isLogin ? null : <Route path="/register" element={<YourComponent />} />}
@@ -65,6 +67,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/viewDapit" element={<View />} />
           <Route path="/personal"
            element={
            <ProtectedRoute>
