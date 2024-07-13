@@ -17,8 +17,8 @@ export function Login() {
   // Email and password login handler
   const handleLogin = async (e: any) => {
     e.preventDefault();
-    if (!email || !password) {
-      setLoginError('Email and password must not be empty.');
+    if (!userName || !password) {
+      setLoginError('UserName and password must not be empty.');
       return;
     }
     try {

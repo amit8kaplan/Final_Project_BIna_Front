@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
+import AddDapit  from "./pages/add_dapit";
 import View from "./pages/view";
 import { YourComponent } from "./pages/reg_try";
 import { Login } from "./pages/Login";
@@ -47,6 +48,14 @@ function App() {
           <Route path="/about" element={<About />} />
           {isLogin ? null : <Route path="/register" element={<YourComponent />} />}
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/AddDapit"
+            element={<AddDapit instructors={[]} trainers={[]} sessions={[]} onClose={function (): void {
+              throw new Error("Function not implemented.");
+            } } onSubmit={function (dapitData: any): void {
+              throw new Error("Function not implemented.");
+            } } />}
+          />
           <Route
             path="/store"
             element={

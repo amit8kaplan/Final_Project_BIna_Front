@@ -12,7 +12,7 @@ export function Nav_componnets() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/newDapit">Dapit</Nav.Link>
+            <Nav.Link as={Link} to="/AddDapit">Dapit</Nav.Link>
             <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
             <NavDropdown title="Wall" id="basic-nav-dropdown">
               {wall[0].items.map((item, index) => (
