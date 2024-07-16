@@ -1,9 +1,24 @@
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link , useNavigate, useLocation, NavLink} from "react-router-dom";
 import { matrics, megama, piano, wall } from "../public/dropDown_NavBar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
+
+
+
 export function Nav_componnets() {
+  const location = useLocation();
+  const navigate = useNavigate();
+const instructors = ["Instructor 1", "Instructor 2", "Instructor 3"];
+const trainers = ["Trainer 1", "Trainer 2", "Trainer 3"];
+const sessions = ["Session 1", "Session 2", "Session 3"];
+  const handleAddDapit = () => {
+    navigate('/newDapit',{
+      state: {instructors: instructors, trainers: trainers, sessions: sessions}
+    
+    });
+  }
   return (
     <Navbar sticky="top" bg="light" expand="lg" className="shadow-sm mb-3 mt-0">
       <Container>
@@ -12,7 +27,11 @@ export function Nav_componnets() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/AddDapit">Dapit</Nav.Link>
+            <NavLink 
+              className="nav-link"
+              to="/AddDapit"
+              state={{instructors: instructors, trainers: trainers, sessions: sessions}}
+            >Dapit</NavLink>
             <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
             <NavDropdown title="Wall" id="basic-nav-dropdown">
               {wall[0].items.map((item, index) => (

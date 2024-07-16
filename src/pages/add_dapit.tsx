@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { useLocation } from 'react-router-dom';
+import { postDapit, IDapitforSubmit } from '../services/Dapit-serivce';
+import {getIdpersonalInstractor} from '../services/id-service';
 interface IDapitData {
     nameInstructor: string;
     nameTrainer: string;
@@ -11,84 +13,105 @@ interface IDapitData {
     group: string;
     session: string;
     syllabus: string;
-    tags: string;
-    identification: { value: string; description: string; }[];
-    payload: { value: string; description: string; }[];
-    decryption: { value: string; description: string; }[];
-    workingMethod: { value: string; description: string; }[];
-    understandingTheAir: { value: string; description: string; }[];
-    flight: { value: string; description: string; }[];
-    theoretical: { value: string; description: string; }[];
-    thinkingInAir: { value: string; description: string; }[];
-    safety: { value: string; description: string; }[];
-    briefing: { value: string; description: string; }[];
-    debriefing: { value: string; description: string; }[];
-    debriefingInAir: { value: string; description: string; }[];
-    implementationExecise: { value: string; description: string; }[];
-    dealingWithFailures: { value: string; description: string; }[];
-    dealingWithStress: { value: string; description: string; }[];
-    makingDecisions: { value: string; description: string; }[];
-    pilotNature: { value: string; description: string; }[];
-    crewMember: { value: string; description: string; }[];
-    advantage: { value1: string; value2: string; value3: string; }[];
-    disavantage: { value1: string; value2: string; value3: string; }[];
+    tags?: string[];
+    identification: Array<{ value: number | undefined | undefined, description: string }>;
+    payload: Array<{ value: number | undefined, description: string }>;
+    decryption: Array<{ value: number | undefined, description: string }>;
+    workingMethod: Array<{ value: number | undefined, description: string }>;
+    understandingTheAir: Array<{ value: number | undefined, description: string }>;
+    flight: Array<{ value: number | undefined, description: string }>;
+    theoretical: Array<{ value: number | undefined, description: string }>;
+    thinkingInAir: Array<{ value: number | undefined, description: string }>;
+    safety: Array<{ value: number | undefined, description: string }>;
+    briefing: Array<{ value: number | undefined, description: string }>;
+    debriefing: Array<{ value: number | undefined, description: string }>;
+    debriefingInAir: Array<{ value: number | undefined, description: string }>;
+    implementationExecise: Array<{ value: number | undefined, description: string }>;
+    dealingWithFailures: Array<{ value: number | undefined, description: string }>;
+    dealingWithStress: Array<{ value: number | undefined, description: string }>;
+    makingDecisions: Array<{ value: number | undefined, description: string }>;
+    pilotNature: Array<{ value: number | undefined, description: string }>;
+    crewMember: Array<{ value: number | undefined, description: string }>;
+    advantage: string[];
+    disavantage: string[];
+    changeTobeCommender: number | undefined;
+    finalGrade: number |  undefined;
     summerize: string;
-    finalGrade: string;
-    changeToBeCommender: string;
-    [key: string]: any; // Index signature to handle dynamic access
-  }
-  
-interface IData {
-  value: number;
-  description: string;
 }
 
 interface IAddDapitProps {
   instructors: string[];
   trainers: string[];
   sessions: string[];
-  onClose: () => void;
-  onSubmit: (dapitData: any) => void; // Adjust this type based on your actual data
 }
 
-const AddDapit: React.FC<IAddDapitProps> = ({ instructors, trainers, sessions, onClose, onSubmit }) => {
+const AddDapit: React.FC = () => {
+    const location = useLocation();
+    console.log(location.state)
+    const instructors = location.state.instructors;
+    const trainers = location.state.trainers;
+    const sessions = location.state.sessions;
+    console.log("Instructors: ", instructors)
+    console.log("Trainers: ", trainers)
+    console.log("Sessions: ", sessions)
+
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [dapitData, setDapitData] = useState({
+  const [dapitData, setDapitData] = useState<IDapitData>({
     nameInstructor: '',
     nameTrainer: '',
     namePersonalInstructor: '', // Will be automatically set later
     group: '',
     session: '',
     syllabus: '',
-    tags: '',
-    identification: [{ value: '', description: '' }],
-    payload: [{ value: '', description: '' }],
-    decryption: [{ value: '', description: '' }],
-    workingMethod: [{ value: '', description: '' }],
-    understandingTheAir: [{ value: '', description: '' }],
-    flight: [{ value: '', description: '' }],
-    theoretical: [{ value: '', description: '' }],
-    thinkingInAir: [{ value: '', description: '' }],
-    safety: [{ value: '', description: '' }],
-    briefing: [{ value: '', description: '' }],
-    debriefing: [{ value: '', description: '' }],
-    debriefingInAir: [{ value: '', description: '' }],
-    implementationExecise: [{ value: '', description: '' }],
-    dealingWithFailures: [{ value: '', description: '' }],
-    dealingWithStress: [{ value: '', description: '' }],
-    makingDecisions: [{ value: '', description: '' }],
-    pilotNature: [{ value: '', description: '' }],
-    crewMember: [{ value: '', description: '' }],
-    advantage: [{ value1: '', value2: '', value3: '' }],
-    disavantage: [{ value1: '', value2: '', value3: '' }],
+    tags: [''],
+    identification: [{ value:  undefined, description: '' }],
+    payload: [{ value:  undefined, description: '' }],
+    decryption: [{ value:  undefined, description: '' }],
+    workingMethod: [{ value:  undefined, description: '' }],
+    understandingTheAir: [{ value:  undefined, description: '' }],
+    flight: [{ value:  undefined, description: '' }],
+    theoretical: [{ value:  undefined, description: '' }],
+    thinkingInAir: [{ value:  undefined, description: '' }],
+    safety: [{ value:  undefined, description: '' }],
+    briefing: [{ value:  undefined, description: '' }],
+    debriefing: [{ value:  undefined, description: '' }],
+    debriefingInAir: [{ value:  undefined, description: '' }],
+    implementationExecise: [{ value:  undefined, description: '' }],
+    dealingWithFailures: [{ value:  undefined, description: '' }],
+    dealingWithStress: [{ value:  undefined, description: '' }],
+    makingDecisions: [{ value:  undefined, description: '' }],
+    pilotNature: [{ value:  undefined, description: '' }],
+    crewMember: [{ value:  undefined, description: '' }],
+    advantage: [],
+    disavantage: [],
     summerize: '',
-    finalGrade: '',
-    changeToBeCommender: '',
+    finalGrade: undefined,
+    changeTobeCommender: undefined,
   });
+  useEffect(() => {
+    const updatePersonalInstructor = async () => {
+        if (dapitData.nameInstructor && dapitData.nameTrainer) {
+            const { trainerID, personalInstructorID, instructorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
+            console.log("the ids are:", trainerID, personalInstructorID, instructorID, personalName);
+            setDapitData((prevData) => ({ ...prevData, namePersonalInstructor: personalName }));
+        }
+    };
+    updatePersonalInstructor();
+}, [dapitData.nameInstructor, dapitData.nameTrainer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
     setDapitData({ ...dapitData, [field]: e.target.value });
   };
+  const handleNamesChange = async(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+    setDapitData({ ...dapitData, [field]: e.target.value });
+    console.log("the name is:",dapitData.nameInstructor, dapitData.nameTrainer)
+    if (dapitData.nameInstructor !== '' && dapitData.nameTrainer !== '') {
+        const {trainerID, personalInstructorID, instructorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        console.log("the ids are:",trainerID, personalInstructorID, instructorID, personalName)
+        setDapitData({ ...dapitData, namePersonalInstructor: personalName });
+    }
+};
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
     const updatedCategory = (dapitData[category] as { [key: string]: string }[]).map((item, i) =>
       i === index ? { ...item, [field]: e.target.value } : item
@@ -99,15 +122,96 @@ const AddDapit: React.FC<IAddDapitProps> = ({ instructors, trainers, sessions, o
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
-  
+  const onClose = () => {
+    // onClose();
+  };
 
   const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: string) => {
     setDapitData({ ...dapitData, [category]: e.target.value.split(',').map((item: string) => item.trim()) });
   };
 
-  const handleSubmit = () => {
-    onSubmit(dapitData);
-  };
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Submitting dapit details');
+    try{
+        const {trainerID, personalInstructorID, instructorID , personalInsName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        console.log("the ids are:",trainerID, personalInstructorID, instructorID)
+        const submitDapit: IDapitforSubmit = {
+            nameInstractor: dapitData.nameInstructor,
+            namePersonalInstractor: personalInsName,
+            nameTrainer: dapitData.nameTrainer,
+            idPersonalInstractor: personalInstructorID,
+            idInstractor: instructorID,
+            idTrainer: trainerID,
+            group: dapitData.group,
+            session: dapitData.session,
+            silabus: parseInt(dapitData.syllabus),
+            date: selectedDate as Date,
+            identification: dapitData.identification,
+            payload: dapitData.payload,
+            decryption: dapitData.decryption,
+            workingMethod: dapitData.workingMethod,
+            understandingTheAir: dapitData.understandingTheAir,
+            flight: dapitData.flight,
+            theoretical: dapitData.theoretical,
+            thinkingInAir: dapitData.thinkingInAir,
+            safety: dapitData.safety,
+            briefing: dapitData.briefing,
+            debriefing: dapitData.debriefing,
+            debriefingInAir: dapitData.debriefingInAir,
+            implementationExecise: dapitData.implementationExecise,
+            dealingWithFailures: dapitData.dealingWithFailures,
+            dealingWithStress: dapitData.dealingWithStress,
+            makingDecisions: dapitData.makingDecisions,
+            pilotNature: dapitData.pilotNature,
+            crewMember: dapitData.crewMember,
+            advantage: dapitData.advantage,
+            disavantage: dapitData.disavantage,
+            changeTobeCommender: dapitData.changeTobeCommender,
+            finalGrade: dapitData.finalGrade,
+            summerize: dapitData.summerize
+        
+        };
+        console.log("the submit dapit is",submitDapit);
+        await postDapit(submitDapit);
+        // Reset the form to its initial state here
+        setDapitData({
+            nameInstructor: '',
+            nameTrainer: '',
+            namePersonalInstructor: '',
+            group: '',
+            session: '',
+            syllabus: '',
+            tags: '',
+            identification: [{ value:  undefined, description: '' }],
+            payload: [{ value:  undefined, description: '' }],
+            decryption: [{ value:  undefined, description: '' }],
+            workingMethod: [{ value:  undefined, description: '' }],
+            understandingTheAir: [{ value:  undefined, description: '' }],
+            flight: [{ value:  undefined, description: '' }],
+            theoretical: [{ value:  undefined, description: '' }],
+            thinkingInAir: [{ value:  undefined, description: '' }],
+            safety: [{ value:  undefined, description: '' }],
+            briefing: [{ value:  undefined, description: '' }],
+            debriefing: [{ value:  undefined, description: '' }],
+            debriefingInAir: [{ value:  undefined, description: '' }],
+            implementationExecise: [{ value:  undefined, description: '' }],
+            dealingWithFailures: [{ value:  undefined, description: '' }],
+            dealingWithStress: [{ value:  undefined, description: '' }],
+            makingDecisions: [{ value:  undefined, description: '' }],
+            pilotNature: [{ value:  undefined, description: '' }],
+            crewMember: [{ value:  undefined, description: '' }],
+            advantage: [],
+            disavantage: [],
+            summerize: '',
+            finalGrade:  undefined,
+            changeToBeCommender:  undefined,
+        });
+        onClose(); // Close the modal after submission
+    }catch(error){
+        console.error('Error submitting dapit:', error);    
+    }
+};
 
   const handleSendDraft = () => {
     console.log('Sending draft of dapit details');
@@ -206,9 +310,9 @@ const AddDapit: React.FC<IAddDapitProps> = ({ instructors, trainers, sessions, o
             <Col md={3}>
               <h4>Instructor</h4>
               <Form.Control as="select" value={dapitData.nameInstructor} onChange={(e) => handleChange(e, 'nameInstructor')}>
-                <option value="">Select Instructor</option>
-                {instructors.map((instructor, idx) => (
-                  <option key={idx} value={instructor}>
+              <option value="">Select Instructor</option>
+                {instructors.map((instructor) => (
+                  <option key={instructor} value={instructor}>
                     {instructor}
                   </option>
                 ))}
@@ -216,14 +320,14 @@ const AddDapit: React.FC<IAddDapitProps> = ({ instructors, trainers, sessions, o
             </Col>
             <Col md={3}>
               <h4>Personal Instructor</h4>
-              <Form.Control type="text" value={dapitData.namePersonalInstructor} readOnly />
-            </Col>
+              <Form.Control type="text" value={dapitData.namePersonalInstructor} onChange={(e) => handleChange(e, 'namePersonalInstructor')} />
+              </Col>
             <Col md={3}>
               <h4>Trainer</h4>
               <Form.Control as="select" value={dapitData.nameTrainer} onChange={(e) => handleChange(e, 'nameTrainer')}>
-                <option value="">Select Trainer</option>
-                {trainers.map((trainer, idx) => (
-                  <option key={idx} value={trainer}>
+              <option value="">Select Trainer</option>
+                {trainers.map((trainer) => (
+                  <option key={trainer} value={trainer}>
                     {trainer}
                   </option>
                 ))}

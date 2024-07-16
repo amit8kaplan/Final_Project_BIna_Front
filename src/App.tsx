@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import Personal from "./pages/Personal";
 import MyCourses from "./pages/MyCourses";
 import MyReviews from "./pages/MyReviews";
+import NewDapit from "./pages/new_dapit";
 import './App.css';
 import './css/Login.css';
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -56,6 +57,7 @@ function App() {
               throw new Error("Function not implemented.");
             } } />}
           />
+          <Route path="/newDapit" element={<NewDapit/>} />
           <Route
             path="/store"
             element={
@@ -98,6 +100,7 @@ function App() {
                 </ProtectedRoute>
             }
             />
+            
         </Routes>
       </Container>
     </div>
