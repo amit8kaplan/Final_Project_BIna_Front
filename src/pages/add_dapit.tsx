@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -43,18 +44,23 @@ interface IAddDapitProps {
   instructors?: string[];
   trainers?: string[];
   sessions?: string[];
+  groups?: string[];
 }
 
 const AddDapit: React.FC<IAddDapitProps> = (props) => {
+    const navigate = useNavigate();
+    // const route = useRoute();
     const location = useLocation();
     const state = location.state as IAddDapitProps || {};
 
     const instructors = state.instructors || props.instructors || [];
     const trainers = state.trainers || props.trainers || [];
     const sessions = state.sessions || props.sessions || [];
+    const groups = state.groups || props.groups || [];
     console.log("Instructors: ", instructors)
     console.log("Trainers: ", trainers)
     console.log("Sessions: ", sessions)
+    console.log("groups: ", groups)
 
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
@@ -84,8 +90,9 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     makingDecisions: [{ value:  undefined, description: '' }],
     pilotNature: [{ value:  undefined, description: '' }],
     crewMember: [{ value:  undefined, description: '' }],
-    advantage: [],
-    disavantage: [],
+    advantage: ['','',''],
+    disavantage: ['','', '' ],
+    
     summerize: '',
     finalGrade: undefined,
     changeTobeCommender: undefined,
@@ -93,8 +100,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
   useEffect(() => {
     const updatePersonalInstructor = async () => {
         if (dapitData.nameInstructor && dapitData.nameTrainer) {
-            const { trainerID, personalInstructorID, instructorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
-            console.log("the ids are:", trainerID, personalInstructorID, instructorID, personalName);
+            const { trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
+            console.log("the ids are:", trainerID, PersonalInstractorID, InstractorID, personalName);
             setDapitData((prevData) => ({ ...prevData, namePersonalInstructor: personalName }));
         }
     };
@@ -108,23 +115,32 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     setDapitData({ ...dapitData, [field]: e.target.value });
     console.log("the name is:",dapitData.nameInstructor, dapitData.nameTrainer)
     if (dapitData.nameInstructor !== '' && dapitData.nameTrainer !== '') {
-        const {trainerID, personalInstructorID, instructorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
-        console.log("the ids are:",trainerID, personalInstructorID, instructorID, personalName)
+        const {trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        console.log("the ids are:",trainerID, PersonalInstractorID, InstractorID, personalName)
         setDapitData({ ...dapitData, namePersonalInstructor: personalName });
     }
 };
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
-    const updatedCategory = (dapitData[category] as { [key: string]: string }[]).map((item, i) =>
-      i === index ? { ...item, [field]: e.target.value } : item
-    );
-    setDapitData({ ...dapitData, [category]: updatedCategory });
+    if (dapitData[category]!=undefined){
+    if (Array.isArray(dapitData[category]) && dapitData[category].length > 0 && typeof dapitData[category][0] === 'object') {
+        const updatedCategory = (dapitData[category] as Array<{ value: number | undefined, description: string }>).map((item, i) =>
+          i === index ? { ...item, [field]: e.target.value } : item
+        );
+        setDapitData({ ...dapitData, [category]: updatedCategory });
+    }
+}
   };
   
+  const handleAdandDis =  (index: number, e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof IDapitData) => {
+    const updatedArray = [...dapitData[field]];
+    updatedArray[index] = e.target.value;
+    setDapitData({ ...dapitData, [field]: updatedArray });
+  };
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
   const onClose = () => {
-    // onClose();
+    navigate("/")
   };
 
   const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: string) => {
@@ -135,15 +151,19 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     e.preventDefault();
     console.log('Submitting dapit details');
     try{
-        const {trainerID, personalInstructorID, instructorID , personalInsName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
-        console.log("the ids are:",trainerID, personalInstructorID, instructorID)
+        //trainerID: trainerID, PersonalInstractorID: PersonalInstractorID, InstractorID: InstractorID, personalName: personalName
+        const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        console.log("trainerID:",trainerID)
+        console.log("PersonalInstractorID:",PersonalInstractorID)
+        console.log("InstractorID:",InstractorID)
+
         const submitDapit: IDapitforSubmit = {
             nameInstractor: dapitData.nameInstructor,
-            namePersonalInstractor: personalInsName,
+            namePersonalInstractor: personalName[0],
             nameTrainer: dapitData.nameTrainer,
-            idPersonalInstractor: personalInstructorID,
-            idInstractor: instructorID,
-            idTrainer: trainerID,
+            idPersonalInstractor: PersonalInstractorID[0],
+            idInstractor: InstractorID[0],
+            idTrainer: trainerID[0],
             group: dapitData.group,
             session: dapitData.session,
             silabus: parseInt(dapitData.syllabus),
@@ -312,8 +332,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
               <h4>Instructor</h4>
               <Form.Control as="select" value={dapitData.nameInstructor} onChange={(e) => handleChange(e, 'nameInstructor')}>
               <option value="">Select Instructor</option>
-                {instructors.map((instructor) => (
-                  <option key={instructor} value={instructor}>
+                {instructors.map((instructor, idx) => (
+                  <option key={idx} value={instructor}>
                     {instructor}
                   </option>
                 ))}
@@ -345,7 +365,14 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
           <Row className="mb-3">
             <Col md={3}>
               <h4>Group</h4>
-              <Form.Control type="text" value={dapitData.group} onChange={(e) => handleChange(e, 'group')} />
+              <Form.Control as="select" value={dapitData.group} onChange={(e) => handleChange(e, 'group')}>
+                <option value="">Select Group</option>
+                {groups.map((group, idx) => (
+                        <option key={idx} value={group}>
+                        {group}
+                        </option>
+                ))}
+                </Form.Control>
             </Col>
             <Col md={3}>
               <h4>Session</h4>
@@ -384,26 +411,15 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
           {renderDetailedRatings()}
 
           <Row className="mb-3">
-  <Col md={6}>
+          <Col md={6}>
     <h4>Advantages</h4>
     {dapitData.advantage.map((adv, idx) => (
       <div key={idx} className="mb-2">
         <Form.Control
           type="text"
-          value={adv.value1}
-          onChange={(e) => handleNestedChange(idx, e, 'value1', 'advantage')}
+          value={adv}
+          onChange={(e) => handleAdandDis(idx, e, 'advantage')}
           className="mb-1"
-        />
-        <Form.Control
-          type="text"
-          value={adv.value2}
-          onChange={(e) => handleNestedChange(idx, e, 'value2', 'advantage')}
-          className="mb-1"
-        />
-        <Form.Control
-          type="text"
-          value={adv.value3}
-          onChange={(e) => handleNestedChange(idx, e, 'value3', 'advantage')}
         />
       </div>
     ))}
@@ -414,27 +430,14 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       <div key={idx} className="mb-2">
         <Form.Control
           type="text"
-          value={dis.value1}
-          onChange={(e) => handleNestedChange(idx, e, 'value1', 'disavantage')}
+          value={dis}
+          onChange={(e) => handleAdandDis(idx, e, 'disavantage')}
           className="mb-1"
-        />
-        <Form.Control
-          type="text"
-          value={dis.value2}
-          onChange={(e) => handleNestedChange(idx, e, 'value2', 'disavantage')}
-          className="mb-1"
-        />
-        <Form.Control
-          type="text"
-          value={dis.value3}
-          onChange={(e) => handleNestedChange(idx, e, 'value3', 'disavantage')}
         />
       </div>
     ))}
   </Col>
-</Row>
-
-
+            </Row>
           <Row className="mb-3">
             <Col>
               <h4>Summary</h4>

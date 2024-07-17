@@ -14,7 +14,7 @@ import Personal from "./pages/Personal";
 import MyCourses from "./pages/MyCourses";
 import MyReviews from "./pages/MyReviews";
 import NewDapit from "./pages/new_dapit";
-import { instructorsData, trainersData, sessionsData } from "./public/data";
+import { instructorsData, trainersData, sessionsData, groupsData } from "./public/data";
 import './App.css';
 import './css/Login.css';
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -52,7 +52,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route
             path="/AddDapit"
-            element={<AddDapit instructors={instructorsData} trainers={trainersData} sessions={sessionsData}  />}
+            element={<AddDapit instructors={instructorsData} trainers={trainersData} sessions={sessionsData} groups ={groupsData}  />}
           />
           <Route path="/newDapit" element={<NewDapit/>} />
           <Route

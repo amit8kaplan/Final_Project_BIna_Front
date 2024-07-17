@@ -2,7 +2,8 @@ import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link , useNavigate, useLocation, NavLink} from "react-router-dom";
 import { matrics, megama, piano, wall } from "../public/dropDown_NavBar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { instructorsData, trainersData, sessionsData } from "../public/data";
+import { instructorsData, trainersData, sessionsData, groupsData } from "../public/data";
+import { group } from "console";
 
 
 
@@ -13,9 +14,10 @@ export function Nav_componnets() {
 const instructors = instructorsData;
 const trainers = trainersData
 const sessions = sessionsData
+const groups = groupsData
   const handleAddDapit = () => {
     navigate('/newDapit',{
-      state: {instructors: instructors, trainers: trainers, sessions: sessions}
+      state: {instructors: instructors, trainers: trainers, sessions: sessions, groups: groups}
     
     });
   }
@@ -30,7 +32,7 @@ const sessions = sessionsData
             <NavLink 
               className="nav-link"
               to="/AddDapit"
-              state={{instructors: instructors, trainers: trainers, sessions: sessions}}
+              state={{instructors: instructors, trainers: trainers, sessions: sessions, groups: groups}}
             >Dapit</NavLink>
             <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
             <NavDropdown title="Wall" id="basic-nav-dropdown">

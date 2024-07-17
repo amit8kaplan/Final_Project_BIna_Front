@@ -40,6 +40,7 @@ export interface IDapitforSubmit {
 }
 
 export const postDapit = async (dapit: IDapitforSubmit) => {
+    console.log("dapit: ", dapit)
     try{
         const response = await apiClient.post("/dapit", dapit );
         console.log("the response is:", response.data);
