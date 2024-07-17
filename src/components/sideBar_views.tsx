@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {groupsData, instructorsData, sessionsData, trainersData} from '../public/data';
 import { megama, piano } from "../public/dropDown_NavBar";
 import { right } from '@popperjs/core';
 
@@ -67,12 +68,26 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterNameInstructor" name="nameInstructor" onChange={handleCheckboxChange} />
                     <label className="form-check-label" htmlFor="filterNameInstructor">Instructor Name</label>
-                    <input type="text" className="form-control mt-2" name="nameInstructor" value={filters.nameInstructor} onChange={handleFilterChange} disabled={!enabledFilters.nameInstructor} />
+                    <select className="form-control mt-2" name="nameInstructor" value={filters.nameInstructor} onChange={handleFilterChange} disabled={!enabledFilters.nameInstructor}>
+                        <option value="">Select Instructor</option>
+                        {instructorsData.map((instructor, idx) => (
+                            <option key={idx} value={instructor}>
+                                {instructor}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterNameTrainer" name="nameTrainer" onChange={handleCheckboxChange} />
                     <label className="form-check-label" htmlFor="filterNameTrainer">Trainer Name</label>
-                    <input type="text" className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={handleFilterChange} disabled={!enabledFilters.nameTrainer} />
+                    <select className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={handleFilterChange} disabled={!enabledFilters.nameTrainer} >
+                        <option value="">Select Trainer</option>
+                        {trainersData.map((trainer, idx) => (
+                            <option key={idx} value={trainer}>
+                                {trainer}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterNamePersonalInstructor" name="namePersonalInstructor" onChange={handleCheckboxChange} />
@@ -84,9 +99,12 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     <label className="form-check-label" htmlFor="filterGroup">Group</label>
                     <select className="form-control mt-2" name="group" value={filters.group} onChange={handleFilterChange} disabled={!enabledFilters.group}>
                         <option value="">Select Group</option>
-                        {megama[0].items.map((item, index) => (
-                            <option key={index} value={item.label}>{item.label}</option>
-                        ))}
+                        {groupsData.map((group, idx) => (
+                        <option key={idx} value={group}>
+                        {group}
+                        </option>
+                ))}
+                      
                     </select>
                 </div>
                 <div className="form-check mt-3">
@@ -94,8 +112,8 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     <label className="form-check-label" htmlFor="filterSession">Session</label>
                     <select className="form-control mt-2" name="session" value={filters.session} onChange={handleFilterChange} disabled={!enabledFilters.session}>
                         <option value="">Select Session</option>
-                        {piano[0].items.map((item, index) => (
-                            <option key={index} value={item.label}>{item.label}</option>
+                        {sessionsData.map((session, index) => (
+                            <option key={index} value={session}>{session}</option>
                         ))}
                     </select>
                 </div>

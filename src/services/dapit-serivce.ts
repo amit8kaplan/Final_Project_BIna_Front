@@ -53,7 +53,7 @@ export const postDapit = async (dapit: IDapitforSubmit) => {
 
 export const getDapits = async (filters) => {
     try {
-        const response = await apiClient.get("/dapit", { params: filters });
+        const response = await apiClient.get("/dapit/getByFilterBasicInfo", { params: filters });
         return response.data;
     } catch (error) {
         console.error('Error fetching dapits:', error);
@@ -63,8 +63,10 @@ export const getDapits = async (filters) => {
 
 
 export const handleFiltersSubmit = async (filterData) => {
+    console.log("handleFiltersSubmit: ", filterData)
     try {
       const dapits = await getDapits(filterData);
+      console.log("dapits: ", dapits)
       return dapits;
     } catch (error) {
       console.error('Error handling filter submission:', error);

@@ -60,7 +60,18 @@ const View: React.FC = () => {
     }
   };
 
-  
+  const handleFilterSubmitinFront = async (filters: any) => {
+    console.log("handleFilterSubmitinFront: ", filters)
+    console.log("filters: ", filters)
+
+    try {
+      const filteredDapits = await handleFiltersSubmit(filters);
+      setDapits(filteredDapits);
+    } catch (error) {
+      console.error('Error fetching filtered dapits:', error);
+    }
+  };
+
 
   const handleRowClick = (id: string) => {
     // Fetch detailed data for the selected dapit
@@ -106,7 +117,7 @@ const View: React.FC = () => {
   };
   return (
     <div className="d-flex">
-      <Sidebar_com onSubmit={handleFiltersSubmit} />
+      <Sidebar_com onSubmit={handleFilterSubmitinFront} />
 
       <div className="container-fluid">
         <div className="row">
