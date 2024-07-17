@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Sidebar_com } from '../components/sideBar_views';
 import ViewDapit from '../components/view_Dapit';
-import  {handleFiltersSubmit}  from '../services/dapit-serivce';
+import { handleFiltersSubmit } from '../services/dapit-serivce';
 interface Dapit {
   _id: string;
   nameInstructor: string;
@@ -75,41 +75,13 @@ const View: React.FC = () => {
 
   const handleRowClick = (id: string) => {
     // Fetch detailed data for the selected dapit
-    const detailedDapit: DetailedDapit = {
-      _id: "6676f72a25f53ea3cbaf023b",
-      nameInstructor: "Jonh Doe",
-      namePersonalInstructor: "Kaplan",
-      nameTrainer: "Moshiko",
-      group: "A",
-      session: "A",
-      syllabus: 1,
-      finalGrade: 8,
-      changeToBeCommender: 9,
-      tags: ["tag1", "tag2"],
-      identification: [{ value: 4, description: "good" }],
-      payload: [{ value: 5, description: "good" }],
-      decryption: [{ value: 6, description: "good" }],
-      workingMethod: [{ value: 7, description: "good" }],
-      understandingTheAir: [{ value: 8, description: "good" }],
-      flight: [{ value: 9, description: "good" }],
-      theoretical: [{ value: 10, description: "good" }],
-      thinkingInAir: [{ value: 4, description: "good" }],
-      safety: [{ value: 5, description: "good" }],
-      briefing: [{ value: 6, description: "good" }],
-      debriefing: [{ value: 7, description: "good" }],
-      debriefingInAir: [{ value: 8, description: "good" }],
-      implementationExecise: [{ value: 9, description: "good" }],
-      dealingWithFailures: [{ value: 10, description: "good" }],
-      dealingWithStress: [{ value: 4, description: "good" }],
-      makingDecisions: [{ value: 5, description: "good" }],
-      pilotNature: [{ value: 6, description: "good" }],
-      crewMember: [{ value: 7, description: "good" }],
-      advantage: ["advantage1", "advantage2"],
-      disavantage: ["disavantage1", "disavantage2"],
-      summerize: "good",
-      date: "2022-01-01T00:00:00.000Z"
-    };
-    setSelectedDapit(detailedDapit);
+    try{ 
+        const detailedDapit = dapits.find(dapit => dapit._id === id);
+        setSelectedDapit(detailedDapit as DetailedDapit);
+      }
+    catch (error) {
+      console.error('Error fetching detailed dapit:', error);
+    }
   };
 
   const handleCloseModal = () => {
