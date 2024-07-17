@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation } from 'react-router-dom';
-import { postDapit, IDapitforSubmit } from '../services/Dapit-serivce';
+import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import {getIdpersonalInstractor} from '../services/id-service';
 interface IDapitData {
     nameInstructor: string;
@@ -40,17 +40,18 @@ interface IDapitData {
 }
 
 interface IAddDapitProps {
-  instructors: string[];
-  trainers: string[];
-  sessions: string[];
+  instructors?: string[];
+  trainers?: string[];
+  sessions?: string[];
 }
 
-const AddDapit: React.FC = () => {
+const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const location = useLocation();
-    console.log(location.state)
-    const instructors = location.state.instructors;
-    const trainers = location.state.trainers;
-    const sessions = location.state.sessions;
+    const state = location.state as IAddDapitProps || {};
+
+    const instructors = state.instructors || props.instructors || [];
+    const trainers = state.trainers || props.trainers || [];
+    const sessions = state.sessions || props.sessions || [];
     console.log("Instructors: ", instructors)
     console.log("Trainers: ", trainers)
     console.log("Sessions: ", sessions)

@@ -2,7 +2,7 @@ import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link , useNavigate, useLocation, NavLink} from "react-router-dom";
 import { matrics, megama, piano, wall } from "../public/dropDown_NavBar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { instructorsData, trainersData, sessionsData } from "../public/data";
 
 
 
@@ -10,9 +10,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 export function Nav_componnets() {
   const location = useLocation();
   const navigate = useNavigate();
-const instructors = ["Instructor 1", "Instructor 2", "Instructor 3"];
-const trainers = ["Trainer 1", "Trainer 2", "Trainer 3"];
-const sessions = ["Session 1", "Session 2", "Session 3"];
+const instructors = instructorsData;
+const trainers = trainersData
+const sessions = sessionsData
   const handleAddDapit = () => {
     navigate('/newDapit',{
       state: {instructors: instructors, trainers: trainers, sessions: sessions}
