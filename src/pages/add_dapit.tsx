@@ -122,13 +122,13 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
 };
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
     if (dapitData[category]!=undefined){
-    if (Array.isArray(dapitData[category]) && dapitData[category].length > 0 && typeof dapitData[category][0] === 'object') {
-        const updatedCategory = (dapitData[category] as Array<{ value: number | undefined, description: string }>).map((item, i) =>
-          i === index ? { ...item, [field]: e.target.value } : item
-        );
-        setDapitData({ ...dapitData, [category]: updatedCategory });
+      if (Array.isArray(dapitData[category])) {
+          const updatedCategory = (dapitData[category] as Array<{ value: number | undefined, description: string }>).map((item, i) =>
+            i === index ? { ...item, [field]: e.target.value } : item
+          );
+          setDapitData({ ...dapitData, [category]: updatedCategory });
+      }
     }
-}
   };
   
   const handleAdandDis =  (index: number, e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof IDapitData) => {
@@ -203,7 +203,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             group: '',
             session: '',
             syllabus: '',
-            tags: '',
+            tags: [],
             identification: [{ value:  undefined, description: '' }],
             payload: [{ value:  undefined, description: '' }],
             decryption: [{ value:  undefined, description: '' }],
@@ -226,7 +226,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             disavantage: [],
             summerize: '',
             finalGrade:  undefined,
-            changeToBeCommender:  undefined,
+            changeTobeCommender:  undefined,
         });
         onClose(); // Close the modal after submission
     }catch(error){
@@ -468,7 +468,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 min="4"
                 max="10"
                 required
-                value={dapitData.changeToBeCommender}
+                value={dapitData.changeTobeCommender}
                 onChange={(e) => handleChange(e, 'changeToBeCommender')}
               />
             </Col>

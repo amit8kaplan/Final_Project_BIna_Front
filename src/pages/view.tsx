@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Sidebar_com } from '../components/sideBar_views';
 import ViewDapit from '../components/view_Dapit';
-
+import  {handleFiltersSubmit}  from '../services/dapit-serivce';
 interface Dapit {
   _id: string;
   nameInstructor: string;
@@ -48,38 +48,19 @@ const View: React.FC = () => {
   const [selectedDapit, setSelectedDapit] = useState<DetailedDapit | null>(null);
 
   useEffect(() => {
-    // Placeholder for fetching data from the server
-    const fetchedDapits: Dapit[] = [
-      {
-        _id: "6676f72a25f53ea3cbaf023b",
-        nameInstructor: "Jonh Doe",
-        namePersonalInstructor: "Kaplan",
-        nameTrainer: "Moshiko",
-        group: "A",
-        session: "A",
-        syllabus: 1,
-        finalGrade: 8,
-        changeToBeCommender: 9
-      },
-      {
-        _id: "6676f72a25f53ea3cbaf0396",
-        nameInstructor: "Jonh Doe",
-        namePersonalInstructor: "Kaplan",
-        nameTrainer: "Moshiko",
-        group: "A",
-        session: "A",
-        syllabus: 1,
-        finalGrade: 8,
-        changeToBeCommender: 9
-      }
-    ];
-    setDapits(fetchedDapits);
+    fetchInitialDapits();
   }, []);
 
-  const handleFiltersSubmit = (filterData: any) => {
-    setFilters(filterData);
-    // Fetch filtered data from the server based on `filterData` and set it to `dapits`
+  const fetchInitialDapits = async () => {
+    try {
+      const fetchedDapits = await handleFiltersSubmit({});
+      setDapits(fetchedDapits);
+    } catch (error) {
+      console.error('Error fetching initial dapits:', error);
+    }
   };
+
+  
 
   const handleRowClick = (id: string) => {
     // Fetch detailed data for the selected dapit
@@ -123,7 +104,6 @@ const View: React.FC = () => {
   const handleCloseModal = () => {
     setSelectedDapit(null);
   };
-
   return (
     <div className="d-flex">
       <Sidebar_com onSubmit={handleFiltersSubmit} />
@@ -170,3 +150,4 @@ const View: React.FC = () => {
 }
 
 export default View;
+
