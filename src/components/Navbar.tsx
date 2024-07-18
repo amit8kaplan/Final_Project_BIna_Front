@@ -43,9 +43,14 @@ const groups = groupsData
               ))}
             </NavDropdown>
             <NavDropdown title="Piano" id="basic-nav-dropdown">
-              {piano[0].items.map((item, index) => (
-                <NavDropdown.Item key={index} as={Link} to={item.to}>
-                  {item.label}
+              {groupsData.map((item, index) => (
+                <NavDropdown.Item
+                 key={index}
+                  as={Link}
+                   to={"/Piano"}
+                   state={{group: item}}
+                   >
+                  {item}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>

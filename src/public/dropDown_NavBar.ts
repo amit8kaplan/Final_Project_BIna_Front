@@ -1,8 +1,10 @@
 // dropdownData.ts
+
+import {groupsData} from './data';
 export const wall = [
     {
         items: [
-            { label: 'Kaplan1', to: '/wall?option=Kaplan1' },
+            { label: 'Kaplan1', to: '/waldl?option=Kaplan1' },
             { label: 'Yossi1', to: '/wall?option=Yossi1' },
             { label: 'Tal1', to: '/wall?option=Tal1' },
             { label: 'Kaplan2', to: '/wall?option=Kaplan2' },
@@ -18,7 +20,7 @@ export const wall = [
 export const piano = [
     {
         items: [
-            { label: 'Megama1', to: '/piano?option=megama1' },
+            { label: groupsData[0], to: '/piano?option='+groupsData[0] },
             { label: 'Megama2', to: '/piano?option=megama2' },
             { label: 'Megama3', to: '/piano?option=megama3' }
         ]
