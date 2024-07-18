@@ -2,7 +2,7 @@ import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link , useNavigate, useLocation, NavLink} from "react-router-dom";
 import { matrics, megama, piano, wall } from "../public/dropDown_NavBar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { instructorsData, trainersData, sessionsData, groupsData } from "../public/data";
+import { instructorsData, trainersData, sessionsData, groupsData, matricsData } from "../public/data";
 import { group } from "console";
 
 
@@ -36,9 +36,10 @@ const groups = groupsData
             >Dapit</NavLink>
             <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
             <NavDropdown title="Wall" id="basic-nav-dropdown">
-              {wall[0].items.map((item, index) => (
-                <NavDropdown.Item key={index} as={Link} to={item.to}>
-                  {item.label}
+              {trainersData.map((item, index) => (
+                <NavDropdown.Item
+                 key={index} as={Link} to={"/Wall"} state={{trainer: item}}>
+                  {item}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
@@ -55,16 +56,16 @@ const groups = groupsData
               ))}
             </NavDropdown>
             <NavDropdown title="Megame" id="basic-nav-dropdown">
-              {megama[0].items.map((item, index) => (
-                <NavDropdown.Item key={index} as={Link} to={item.to}>
-                  {item.label}
+              {groupsData.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={'/Megama'} state={{group: item}}>
+                  {item}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
             <NavDropdown title="Matrics" id="basic-nav-dropdown">
-              {matrics[0].items.map((item, index) => (
-                <NavDropdown.Item key={index} as={Link} to={item.to}>
-                  {item.label}
+              {matricsData.map((item, index) => (
+                <NavDropdown.Item key={index} as={Link} to={'/Matrics'} state={{matrics: item}}>
+                  {item}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
