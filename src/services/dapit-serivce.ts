@@ -1,3 +1,4 @@
+import exp from "constants";
 import apiClient from "./api-client";
 import { handleAccessToken } from "./user-service";
 
@@ -51,7 +52,7 @@ export const postDapit = async (dapit: IDapitforSubmit) => {
     }
 }
 
-export const getDapits = async (filters) => {
+export const getDapits = async (filters: any) => {
     try {
         const response = await apiClient.get("/dapit/getByFilterBasicInfo", { params: filters });
         return response.data;
@@ -62,7 +63,7 @@ export const getDapits = async (filters) => {
 }
 
 
-export const handleFiltersSubmit = async (filterData) => {
+export const handleFiltersSubmit = async (filterData: any) => {
     console.log("handleFiltersSubmit: ", filterData)
     try {
       const dapits = await getDapits(filterData);
@@ -73,4 +74,12 @@ export const handleFiltersSubmit = async (filterData) => {
     }
   }
 
+export const getDapitById = async (id: string) => {
+    try {
+        const response = await apiClient.get(`/dapit/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching dapit by id:', error);
+    }
+}
 

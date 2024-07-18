@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import NavBar from './NavBar'; // Assuming you have a NavBar component
-import ViewDapit from './ViewDapit'; // Assuming you have a ViewDapit component
+import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDapit component
+import { SideBarWall } from '../components/sidebar_wall';
+
 
 const Wall = ({ trainerName, wallData }) => {
   const [selectedDapit, setSelectedDapit] = useState(null);
@@ -19,6 +20,10 @@ const Wall = ({ trainerName, wallData }) => {
   };
 
   return (
+    <div>
+        <div>
+            <SideBarWall img="https://via.placeholder.com/150" name="John Doe" age={30} job="Pilot" personalInstructor="Jane Doe" avgGrade={90} />
+        </div>
     <div>
       <NavBar />
       <Container>
@@ -49,6 +54,7 @@ const Wall = ({ trainerName, wallData }) => {
           )}
         </Modal.Body>
       </Modal>
+    </div>
     </div>
   );
 };

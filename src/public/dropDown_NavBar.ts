@@ -21,8 +21,8 @@ export const piano = [
     {
         items: [
             { label: groupsData[0], to: '/piano?option='+groupsData[0] },
-            { label: 'Megama2', to: '/piano?option=megama2' },
-            { label: 'Megama3', to: '/piano?option=megama3' }
+            { label: groupsData[1], to: '/piano?option='+groupsData[1] },
+            { label: groupsData[2], to: '/piano?option='+groupsData[2] }
         ]
     }
 ];
