@@ -1,4 +1,3 @@
-// View.tsx
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Sidebar_com } from '../components/sideBar_views';
@@ -6,14 +5,14 @@ import ViewDapit from '../components/view_Dapit';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
 interface Dapit {
   _id: string;
-  nameInstructor: string;
+  nameInstractor: string;
   namePersonalInstructor: string;
   nameTrainer: string;
   group: string;
   session: string;
-  syllabus: number;
+  silabus: number;
   finalGrade: number;
-  changeToBeCommender: number;
+  changeTobeCommender: number;
 }
 
 interface DetailedDapit extends Dapit {
@@ -72,14 +71,16 @@ const View: React.FC = () => {
     }
   };
 
-
-  const handleRowClick = (id: string) => {
+  const handleRowClick = async (id: string) => {
     // Fetch detailed data for the selected dapit
-    try{ 
-        const detailedDapit = dapits.find(dapit => dapit._id === id);
-        setSelectedDapit(detailedDapit as DetailedDapit);
+    try {
+      const detailedDapit = dapits.find(dapit => dapit._id === id);
+      if (detailedDapit) {
+        // Fetch the detailed data from the server
+        const detailedData = await fetch(`/api/dapit/${id}`).then(res => res.json());
+        setSelectedDapit({ ...detailedDapit, ...detailedData } as DetailedDapit);
       }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching detailed dapit:', error);
     }
   };
@@ -87,6 +88,7 @@ const View: React.FC = () => {
   const handleCloseModal = () => {
     setSelectedDapit(null);
   };
+
   return (
     <div className="d-flex">
       <Sidebar_com onSubmit={handleFilterSubmitinFront} />
@@ -102,7 +104,7 @@ const View: React.FC = () => {
                   <th>Instructor</th>
                   <th>Group</th>
                   <th>Session</th>
-                  <th>Syllabus</th>
+                  <th>silabus</th>
                   <th>Final Grade</th>
                   <th>Change to be Commander</th>
                 </tr>
@@ -111,12 +113,12 @@ const View: React.FC = () => {
                 {dapits.map(dapit => (
                   <tr key={dapit._id} onClick={() => handleRowClick(dapit._id)}>
                     <td>{dapit.nameTrainer}</td>
-                    <td>{dapit.nameInstructor}</td>
+                    <td>{dapit.nameInstractor}</td>
                     <td>{dapit.group}</td>
                     <td>{dapit.session}</td>
-                    <td>{dapit.syllabus}</td>
+                    <td>{dapit.silabus}</td>
                     <td>{dapit.finalGrade}</td>
-                    <td>{dapit.changeToBeCommender}</td>
+                    <td>{dapit.changeTobeCommender}</td>
                   </tr>
                 ))}
               </tbody>
@@ -133,4 +135,3 @@ const View: React.FC = () => {
 }
 
 export default View;
-
