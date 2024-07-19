@@ -156,7 +156,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
         console.log("trainerID:",trainerID)
         console.log("PersonalInstractorID:",PersonalInstractorID)
         console.log("InstractorID:",InstractorID)
-
+        console.log("dapitData.changetobecoma:",dapitData.changeTobeCommender)
         const submitDapit: IDapitforSubmit = {
             nameInstractor: dapitData.nameInstructor,
             namePersonalInstractor: personalName[0],
@@ -469,7 +469,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 max="10"
                 required
                 value={dapitData.changeTobeCommender}
-                onChange={(e) => handleChange(e, 'changeToBeCommender')}
+                onChange={(e) => handleChange(e, 'changeTobeCommender')}
               />
             </Col>
           </Row>
@@ -479,8 +479,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
         <Button variant="secondary" onClick={onClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
-          Submit
+        <Button variant="primary" onClick={(e: React.FormEvent<HTMLFormElement>) => handleSubmit(e)}>
+          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
