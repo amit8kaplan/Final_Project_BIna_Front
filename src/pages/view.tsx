@@ -17,7 +17,12 @@ interface Dapit {
 
 interface DetailedDapit extends Dapit {
   tags: string[];
-  identification: { value: number; description: string }[];
+  nameInstructor: string;
+  namePersonalInstructor: string;
+  nameTrainer: string;
+  silabus: number;
+
+identification: { value: number; description: string }[];
   payload: { value: number; description: string }[];
   decryption: { value: number; description: string }[];
   workingMethod: { value: number; description: string }[];
@@ -38,6 +43,9 @@ interface DetailedDapit extends Dapit {
   advantage: string[];
   disavantage: string[];
   summerize: string;
+  changeToBeCommender: number;
+  finalGrade: number;
+
   date: string;
 }
 
@@ -71,16 +79,17 @@ const View: React.FC = () => {
     }
   };
 
-  const handleRowClick = async (id: string) => {
+
+  const handleRowClick = (id: string) => {
     // Fetch detailed data for the selected dapit
-    try {
-      const detailedDapit = dapits.find(dapit => dapit._id === id);
-      if (detailedDapit) {
-        // Fetch the detailed data from the server
-        const detailedData = await fetch(`/api/dapit/${id}`).then(res => res.json());
-        setSelectedDapit({ ...detailedDapit, ...detailedData } as DetailedDapit);
+    try{ 
+        const detailedDapit = dapits.find(dapit => dapit._id === id);
+        setSelectedDapit(detailedDapit as DetailedDapit);
+
+
+
       }
-    } catch (error) {
+    catch (error) {
       console.error('Error fetching detailed dapit:', error);
     }
   };

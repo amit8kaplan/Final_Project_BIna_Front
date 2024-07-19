@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -9,12 +9,12 @@ interface IData {
 
 interface IDapitProps {
   selectedDapit: {
-    nameInstructor: string;
-    namePersonalInstructor: string;
+    nameInstractor: string;
+    namePersonalInstractor: string;
     nameTrainer: string;
     group: string;
     session?: string;
-    syllabus: number;
+    silabus: number;
     date: string;
     tags: string[];
     identification: IData[];
@@ -39,7 +39,7 @@ interface IDapitProps {
     disavantage: string[];
     summerize: string;
     finalGrade: number;
-    changeToBeCommender: number;
+    changeTobeCommender: number;
   };
   onClose: () => void;
 }
@@ -48,6 +48,9 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
     const onEmail = () => {
         console.log('Emailing dapit details');
     };
+    useEffect(() => {
+        console.log('selectedDapit: ', selectedDapit);
+    }, [selectedDapit]);
 
   const renderDetailedRatings = () => {
     const ratingCategories = [
@@ -119,11 +122,11 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
           <div className="row mb-3">
             <div className="col-md-3">
               <h4>Instructor</h4>
-              <p>{selectedDapit.nameInstructor}</p>
+              <p>{selectedDapit.nameInstractor}</p>
             </div>
             <div className="col-md-3">
               <h4>Personal Instructor</h4>
-              <p>{selectedDapit.namePersonalInstructor}</p>
+              <p>{selectedDapit.namePersonalInstractor}</p>
             </div>
             <div className="col-md-3">
               <h4>Trainer</h4>
@@ -145,7 +148,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
             </div>
             <div className="col-md-3">
               <h4>Syllabus</h4>
-              <p>{selectedDapit.syllabus}</p>
+              <p>{selectedDapit.silabus}</p>
             </div>
             <div className="col-md-3">
               <h4>Tags</h4>
@@ -188,7 +191,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
             </div>
             <div className="col-md-6">
               <h4>Change to be Commander</h4>
-              <p>{selectedDapit.changeToBeCommender}</p>
+              <p>{selectedDapit.changeTobeCommender}</p>
             </div>
           </div>
         </div>
