@@ -3,7 +3,8 @@ import { Container, Table, Collapse, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
 import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
-import {getMegamGradesAvg, getAveragePerformance} from '../services/matrics-serivce';
+import { getMegamGradesAvg, getAveragePerformance } from '../services/matrics-serivce';
+
 interface IpianoProps {
   group: string;
 }
@@ -16,30 +17,102 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [avgPerformance, setAvgPerformance] = useState<any | null>(null);
   const [openSessions, setOpenSessions] = useState<{ [key: string]: boolean }>({});
   const [openSilabus, setOpenSilabus] = useState<{ [key: string]: { [key: string]: boolean } }>({});
+  const [mapObjectsDapits, setMapObjectsDapits] = useState<any>({});
 
   useEffect(() => {
     fetchDapits();
   }, [group]);
 
+  const arrangeTheDapits = (dapits: any[]) => {
+    const sortedDapits = dapits.reduce((acc, dapit) => {
+      const { nameTrainer, session, silabus, key } = dapit;
+
+      if (!acc[nameTrainer]) {
+        acc[nameTrainer] = {};
+      }
+      if (!acc[nameTrainer][session]) {
+        acc[nameTrainer][session] = {};
+      }
+      if (!acc[nameTrainer][session][silabus]) {
+        acc[nameTrainer][session][silabus] = [];
+      }
+
+      acc[nameTrainer][session][silabus].push(dapit);
+      return acc;
+    }, {} as any);
+    return sortedDapits;
+  };
+
   const fetchDapits = async () => {
     try {
       const allDapits = await handleFiltersSubmit({ group: group });
-      setDapits(allDapits);
-      console.log("allDapits: ", allDapits);
+      const dapitsWithKeys = allDapits.map((item: any, index: any) => ({
+        ...item,
+        key: index
+      }));
+      const sortedDapits = dapitsWithKeys.sort((a: any, b: any) => {
+        if (a.nameTrainer > b.nameTrainer) return 1;
+        if (a.nameTrainer < b.nameTrainer) return -1;
+
+        if (a.session < b.session) return 1;
+        if (a.session > b.session) return -1;
+
+        if (a.silabus < b.silabus) return -1;
+        if (a.silabus > b.silabus) return 1;
+
+        return 0;
+      });
+      setDapits(sortedDapits);
+      const mapObjects = arrangeTheDapits(sortedDapits);
+    //   console.log('mapObjects:', mapObjects);
+      setMapObjectsDapits(mapObjects);
+    //   let check = 0;
+    // //   console.log("silabusPerSessionData: ", silabusPerSessionData)
+    // //   console.log("silabusPerSessionData[0]: ", silabusPerSessionData[0])
+    // //   console.log("silabusPerSessionData[0][session]: ", silabusPerSessionData[0]?.[sessionsData[1]])
+    //   const check2 = dapits.find(d => d.nameTrainer === "Amit3" && d.session === "Session 1" && d.silabus === 2 && d.payload[0].value == 4)?.payload[0]?.value
+    // //   console.log("check2: ", JSON.stringify(check2))
+      
+      
+    //   const check3 = dapits.find(d => d.nameTrainer === "Amit3" && d.session === "Session 1" && d.silabus === 2)
+    // //   console.log("check3: ", JSON.stringify(check3))
+
+
+    //   trainersData.forEach((trainer) => {
+    //     // console.log('trainer: ', trainer);
+    //     sessionsData.forEach((session) => {
+    //         console.log('session: ', session);
+    //         // silabusPerSessionData[0]?.[session]?.forEach((silabus:number) => {
+    //             // console.log('silabus: ', silabus);
+    //             categoriesData.forEach((category) => {
+    //                 // console.log("category: ", category)
+    //                 const res =dapits.find(d => d.nameTrainer === trainer && d.session === session && d[category][0].length < 3)?.d[category][0]?.value
+    //                if (res!= undefined) console.log("res + trainer + session + category: ", res + " " + trainer + " " + session + " " + category)
+
+    //                 // let res =dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === 2 )
+    //                 // if (res && res[category] && res[category][0]?.value ) {
+    //                 //     let check = res[category][0].value || 0;
+    //                 //     // console.log("check: ", JSON.stringify(check))
+    //                 // }
+    //              })
+    //         })
+    //     // })
+    //     // console.log("check: ", check)
+    // })
     } catch (error) {
       console.error('Error fetching dapits:', error);
     }
+
     try {
       const MegamGradesAvg = await getMegamGradesAvg(group);
       setAvgPerformance(MegamGradesAvg);
-      console.log("MegamGradesAvg: ", MegamGradesAvg);
     } catch (error) {
       console.error('Error fetching dapits:', error);
     }
+
     try {
       const AveragePerformance = await getAveragePerformance(group);
       setAvgPerformance(AveragePerformance);
-      console.log("AveragePerformance: ", AveragePerformance);
     } catch (error) {
       console.error('Error fetching dapits:', error);
     }
@@ -68,8 +141,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
     if (value > 6.8) return { backgroundColor: 'lightyellow' };
     if (value > 6.5) return { backgroundColor: 'yellow' };
     if (value > 6) return { backgroundColor: 'orange', color: 'white' };
-    if (value >4 )return { backgroundColor: 'red', color: 'white' };
-    return {backgroundColor: 'light-gray', color: 'black'}
+    if (value > 4) return { backgroundColor: 'red', color: 'white' };
+    return { backgroundColor: 'light-gray', color: 'black' };
   };
 
   const fixedCellStyle = {
@@ -79,7 +152,6 @@ const Piano: React.FC<IpianoProps> = (props) => {
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
   };
-
   return (
     <Container>
       <h1 className="mt-4">{group}</h1>
@@ -102,8 +174,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                 </td>
                 <td style={fixedCellStyle}>{trainer}</td>
                 {categoriesData.map((category, idx) => (
-                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits[trainer]?.[category] || 0) }}>
-                    {dapits[trainer]?.[category] || ''}
+                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits.find(d => d.nameTrainer === trainer && d.category === category)?.value || 0) }}>
+                    {dapits.find(d => d.nameTrainer === trainer && d.category === category)?.value || ''}
                   </td>
                 ))}
               </tr>
@@ -129,8 +201,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                               </td>
                               <td style={fixedCellStyle}>{session}</td>
                               {categoriesData.map((category, idx) => (
-                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits[trainer]?.[session]?.[category] || 0) }}>
-                                  {dapits[trainer]?.[session]?.[category] || ''}
+                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits.find(d => d.nameTrainer === trainer && d.session === session && d.category === category)?.value || 0) }}>
+                                  {dapits.find(d => d.nameTrainer === trainer && d.session === session && d.category === category)?.value || ''}
                                 </td>
                               ))}
                             </tr>
@@ -154,11 +226,18 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                             <Button variant="link" size="sm">+</Button>
                                           </td>
                                           <td style={fixedCellStyle}>{silabus}</td>
-                                          {categoriesData.map((category, idx) => (
-                                            <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits[trainer]?.[session]?.[silabus]?.[category] || 0) }}>
-                                              {dapits[trainer]?.[session]?.[silabus]?.[category] || ''}
-                                            </td>
-                                          ))}
+                                          {categoriesData.map((category, idx) => {
+                                            let res = dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus);
+                                            let check = '';
+                                            if (res && res[category] && res[category][0]?.value) {
+                                              check = res[category][0].value;
+                                            }
+                                            return (
+                                              <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(check || 0) }}>
+                                                {check}
+                                              </td>
+                                            );
+                                          })}
                                         </tr>
                                       ))}
                                     </tbody>
