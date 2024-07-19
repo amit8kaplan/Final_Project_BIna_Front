@@ -16,5 +16,5 @@ export const categoriesData = ["identification", "payload", "decryption",
      "workingMethod", "understandingTheAir", "flight", "theoretical", "thinkingInAir",
       "safety", "briefing", "debriefing", "debriefingInAir", "implementationExecise",
          "dealingWithFailures", "dealingWithStress", "makingDecisions", "pilotNature",
-          "crewMember", "finalGrade"];
+          "crewMember", "finalGrade", "changeTobeCommender"];
 

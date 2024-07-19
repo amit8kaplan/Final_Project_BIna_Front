@@ -231,7 +231,16 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                             let check = '';
                                             if (res && res[category] && res[category][0]?.value) {
                                               check = res[category][0].value;
+                                            //   console.log("res[0]" , JSON.stringify(res.finalGrade))
                                             }
+                                            if (res && category === "finalGrade") {
+                                                check = res.finalGrade;
+                                                }
+                                            else if (res && category === "changeTobeCommender") {
+                                                check = res.changeTobeCommender;
+                                                }
+
+                                          
                                             return (
                                               <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(check || 0) }}>
                                                 {check}
