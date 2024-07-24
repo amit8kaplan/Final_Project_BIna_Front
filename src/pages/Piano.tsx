@@ -234,7 +234,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {silabusPerSessionData[0][session]?.map((silabus, silabusIdx) => (
+                                      {silabusPerSessionData[0][session]?.map((silabus:any, silabusIdx:any) => (
                                         <tr key={silabusIdx}>
                                           <td style={fixedCellStyle}>
                                             <Button variant="link" size="sm">+</Button>
@@ -247,7 +247,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                               if (res && res[category] && res[category][0]?.value) {
                                                 check = res[category][0].value;
                                                 check2 = res[category][0].description;
-                                                console.log("res[category][0].description" , JSON.stringify(res[category][0].description))
+                                                // console.log("res[category][0].description" , JSON.stringify(res[category][0].description))
                                               //   console.log("res[0]" , JSON.stringify(res.finalGrade))
                                               }
                                               if (res && category === "finalGrade") {
@@ -289,6 +289,17 @@ const Piano: React.FC<IpianoProps> = (props) => {
             </React.Fragment>
           ))}
         </tbody>
+        <tfoot>
+            <tr>
+                <td style={fixedCellStyle}></td>
+                <td style={fixedCellStyle}>Avg Group</td>
+                {categoriesData.map((category, idx) => (
+                    <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) }}>
+                        {AveragePerformance?.["avgGroup"]?.[category] || ''}
+                    </td>
+                ))}
+            </tr>
+        </tfoot>
       </Table>
     </Container>
   );
