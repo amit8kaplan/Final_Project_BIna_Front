@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
 import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
 import { getMegamGradesAvg, getAveragePerformance } from '../services/matrics-serivce';
+import { set } from 'react-hook-form';
 
 interface IpianoProps {
   group: string;
@@ -18,6 +19,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [openSessions, setOpenSessions] = useState<{ [key: string]: boolean }>({});
   const [openSilabus, setOpenSilabus] = useState<{ [key: string]: { [key: string]: boolean } }>({});
   const [mapObjectsDapits, setMapObjectsDapits] = useState<any>({});
+  const [AveragePerformance, setAveragePerformance] = useState<any | null>(null);
+  
 
   useEffect(() => {
     fetchDapits();
@@ -66,6 +69,17 @@ const Piano: React.FC<IpianoProps> = (props) => {
       const mapObjects = arrangeTheDapits(sortedDapits);
     //   console.log('mapObjects:', mapObjects);
       setMapObjectsDapits(mapObjects);
+
+      const getMegamGradesAvg1 = await getMegamGradesAvg(group);
+        console.log('getMegamGradesAvg1:', getMegamGradesAvg1);
+
+    const AveragePerformance = await getAveragePerformance(group);
+    console.log('getAveragePerformance1:', AveragePerformance);
+    const avgHanichPerPreformance = AveragePerformance.avgHanichPerPreformance;
+    console.log('avgHanichPerPreformance:', avgHanichPerPreformance);
+
+    setAveragePerformance(AveragePerformance);
+
     //   let check = 0;
     // //   console.log("silabusPerSessionData: ", silabusPerSessionData)
     // //   console.log("silabusPerSessionData[0]: ", silabusPerSessionData[0])
@@ -141,7 +155,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
     if (value > 6.8) return { backgroundColor: 'lightyellow' };
     if (value > 6.5) return { backgroundColor: 'yellow' };
     if (value > 6) return { backgroundColor: 'orange', color: 'white' };
-    if (value > 4) return { backgroundColor: 'red', color: 'white' };
+    if (value >= 4) return { backgroundColor: 'red', color: 'white' };
     return { backgroundColor: 'light-gray', color: 'black' };
   };
 
@@ -174,8 +188,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                 </td>
                 <td style={fixedCellStyle}>{trainer}</td>
                 {categoriesData.map((category, idx) => (
-                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits.find(d => d.nameTrainer === trainer && d.category === category)?.value || 0) }}>
-                    {dapits.find(d => d.nameTrainer === trainer && d.category === category)?.value || ''}
+                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance["avgHanichPerPreformance"]?.[trainer]?.[category] || 0) }}>
+                    {AveragePerformance["avgHanichPerPreformance"]?.[trainer]?.[category] || ''}
                   </td>
                 ))}
               </tr>
@@ -201,8 +215,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                               </td>
                               <td style={fixedCellStyle}>{session}</td>
                               {categoriesData.map((category, idx) => (
-                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(dapits.find(d => d.nameTrainer === trainer && d.session === session && d.category === category)?.value || 0) }}>
-                                  {dapits.find(d => d.nameTrainer === trainer && d.session === session && d.category === category)?.value || ''}
+                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance["ResavgPerformance"]?.[trainer]?.[session]?.[category] || 0) }}>
+                                  {AveragePerformance["ResavgPerformance"]?.[trainer]?.[session]?.[category] || ''}
                                 </td>
                               ))}
                             </tr>
