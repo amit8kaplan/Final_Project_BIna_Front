@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table, Collapse, Button } from 'react-bootstrap';
+import { Container, Table, Collapse, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
 import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
@@ -188,8 +188,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                 </td>
                 <td style={fixedCellStyle}>{trainer}</td>
                 {categoriesData.map((category, idx) => (
-                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance["avgHanichPerPreformance"]?.[trainer]?.[category] || 0) }}>
-                    {AveragePerformance["avgHanichPerPreformance"]?.[trainer]?.[category] || ''}
+                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer]?.[category] || 0) }}>
+                    {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer]?.[category] || ''}
                   </td>
                 ))}
               </tr>
@@ -215,8 +215,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                               </td>
                               <td style={fixedCellStyle}>{session}</td>
                               {categoriesData.map((category, idx) => (
-                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance["ResavgPerformance"]?.[trainer]?.[session]?.[category] || 0) }}>
-                                  {AveragePerformance["ResavgPerformance"]?.[trainer]?.[session]?.[category] || ''}
+                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer]?.[session]?.[category] || 0) }}>
+                                  {AveragePerformance?.["ResavgPerformance"]?.[trainer]?.[session]?.[category] || ''}
                                 </td>
                               ))}
                             </tr>
@@ -241,24 +241,35 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                           </td>
                                           <td style={fixedCellStyle}>{silabus}</td>
                                           {categoriesData.map((category, idx) => {
-                                            let res = dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus);
-                                            let check = '';
-                                            if (res && res[category] && res[category][0]?.value) {
-                                              check = res[category][0].value;
-                                            //   console.log("res[0]" , JSON.stringify(res.finalGrade))
-                                            }
-                                            if (res && category === "finalGrade") {
-                                                check = res.finalGrade;
-                                                }
-                                            else if (res && category === "changeTobeCommender") {
-                                                check = res.changeTobeCommender;
-                                                }
-
-                                          
+                                              let res = dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus);
+                                              let check = '';
+                                              let check2 = '';
+                                              if (res && res[category] && res[category][0]?.value) {
+                                                check = res[category][0].value;
+                                                check2 = res[category][0].description;
+                                                console.log("res[category][0].description" , JSON.stringify(res[category][0].description))
+                                              //   console.log("res[0]" , JSON.stringify(res.finalGrade))
+                                              }
+                                              if (res && category === "finalGrade") {
+                                                  check = res.finalGrade;
+                                                  check2 = ''
+                                                  }
+                                              else if (res && category === "changeTobeCommender") {
+                                                  check = res.changeTobeCommender;
+                                                  check2 =''
+                                                  }
+                                           
                                             return (
-                                              <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(check || 0) }}>
-                                                {check}
-                                              </td>
+                                                
+                                                <OverlayTrigger
+                                                    key={idx}
+                                                    placement="top"
+                                                    overlay={<Tooltip id={`tooltip-${trainerIdx}-${sessionIdx}-${silabusIdx}-${idx}`}>{check2}</Tooltip>}
+                                                    >
+                                                    <td style={{ ...fixedCellStyle, ...getCellStyle(parseFloat(check) || 0) }}>
+                                                        {check}
+                                                    </td>
+                                                    </OverlayTrigger>
                                             );
                                           })}
                                         </tr>
