@@ -5,6 +5,7 @@ import { handleFiltersSubmit } from '../services/dapit-serivce';
 import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
 import { getMegamGradesAvg, getAveragePerformance } from '../services/matrics-serivce';
 import { set } from 'react-hook-form';
+import ViewDapit from '../components/view_Dapit';
 
 interface IpianoProps {
   group: string;
@@ -20,11 +21,24 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [openSilabus, setOpenSilabus] = useState<{ [key: string]: { [key: string]: boolean } }>({});
   const [mapObjectsDapits, setMapObjectsDapits] = useState<any>({});
   const [AveragePerformance, setAveragePerformance] = useState<any | null>(null);
+  const [selectedDapit, setSelectedDapit] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
 
   useEffect(() => {
     fetchDapits();
   }, [group]);
+
+  const handleShowModal = (dapit) => {
+    setSelectedDapit(dapit);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedDapit(null);
+  };
+
 
   const arrangeTheDapits = (dapits: any[]) => {
     const sortedDapits = dapits.reduce((acc, dapit) => {
@@ -158,7 +172,10 @@ const Piano: React.FC<IpianoProps> = (props) => {
     if (value >= 4) return { backgroundColor: 'red', color: 'white' };
     return { backgroundColor: 'light-gray', color: 'black' };
   };
-
+  const noUnderlineStyle = {
+    textDecoration: 'none'
+  };
+  
   const fixedCellStyle = {
     width: '150px',
     height: '50px',
@@ -184,7 +201,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
             <React.Fragment key={trainerIdx}>
               <tr>
                 <td style={fixedCellStyle}>
-                  <Button variant="link" size="sm" onClick={() => toggleSession(trainer)}>+</Button>
+                  <Button style= {noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSession(trainer)}>+</Button>
                 </td>
                 <td style={fixedCellStyle}>{trainer}</td>
                 {categoriesData.map((category, idx) => (
@@ -211,7 +228,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                           <React.Fragment key={sessionIdx}>
                             <tr>
                               <td style={fixedCellStyle}>
-                                <Button variant="link" size="sm" onClick={() => toggleSilabus(trainer, session)}>+</Button>
+                                <Button style= {noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSilabus(trainer, session)}>+</Button>
                               </td>
                               <td style={fixedCellStyle}>{session}</td>
                               {categoriesData.map((category, idx) => (
@@ -236,8 +253,14 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                     <tbody>
                                       {silabusPerSessionData[0][session]?.map((silabus:any, silabusIdx:any) => (
                                         <tr key={silabusIdx}>
-                                          <td style={fixedCellStyle}>
-                                            <Button variant="link" size="sm">+</Button>
+                                          <td >
+                                          <Button style= {noUnderlineStyle} 
+                                                variant="link" 
+                                                size="sm"
+                                                onClick={() => handleShowModal(dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus))}
+                                            >
+                                                +
+                                            </Button>
                                           </td>
                                           <td style={fixedCellStyle}>{silabus}</td>
                                           {categoriesData.map((category, idx) => {
@@ -301,7 +324,15 @@ const Piano: React.FC<IpianoProps> = (props) => {
             </tr>
         </tfoot>
       </Table>
+       {/* Modal */}
+       {showModal && (
+        <ViewDapit 
+          selectedDapit={selectedDapit} 
+          onClose={handleCloseModal} 
+        />
+      )}
     </Container>
+    
   );
 };
 
