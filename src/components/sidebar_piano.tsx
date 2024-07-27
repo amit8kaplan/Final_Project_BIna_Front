@@ -5,7 +5,7 @@ import { FaBars } from 'react-icons/fa';
 interface SidebarProps {
   categoriesData: string[];
   visibleColumns: string[];
-  setVisibleColumns: (columns: string[]) => void;
+  setVisibleColumns: (columns: string[] | any) => void;
   handleMoveColumn: (category: string, direction: 'left' | 'right') => void;
   isOpen: boolean;
   toggleSidebar: () => void;
@@ -20,10 +20,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
 }) => {
   const handleToggleColumn = (category: string) => {
-    setVisibleColumns(prev => {
+    setVisibleColumns((prev: string[]) => {
       const isVisible = prev.includes(category);
       if (isVisible) {
-        return prev.filter(col => col !== category);
+        return prev.filter((col: string) => col !== category);
       } else {
         return [...prev, category];
       }

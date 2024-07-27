@@ -21,7 +21,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [openSilabus, setOpenSilabus] = useState<{ [key: string]: { [key: string]: boolean } }>({});
   const [mapObjectsDapits, setMapObjectsDapits] = useState<any>({});
   const [AveragePerformance, setAveragePerformance] = useState<any | null>(null);
-  const [selectedDapit, setSelectedDapit] = useState(null);
+  const [selectedDapit, setSelectedDapit] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const [modelError, setModelError] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(categoriesData);

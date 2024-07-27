@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation } from 'react-router-dom';
 import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import {getIdpersonalInstractor} from '../services/id-service';
-interface IDapitData {
+export interface IDapitData {
     nameInstructor: string;
     nameTrainer: string;
     namePersonalInstructor: string;
