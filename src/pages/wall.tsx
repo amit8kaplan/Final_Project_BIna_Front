@@ -7,42 +7,38 @@ import { trainersData, sessionsData, categoriesData, silabusPerSessionData } fro
 import { getTrainerByname } from '../services/id-service';
 import { getWall, IPostforSubmit, postPost } from '../services/wall-service';
 import AddPostModal from '../components/AddPostModel';
+import PostCard from '../components/PostCard';
 
 interface IWallProps {
     trainerName: string;
 }
+
 export interface ITrainer {
     name: string;
     _id: string;
 }
 
 const Wall: React.FC<IWallProps> = (props) => {
-
     const location = useLocation();
     const state = location.state as IWallProps || {};
     const trainerName = state.trainerName || props.trainerName;
 
     const [TrainerId, setTrainerId] = useState<string | undefined>();
     const [wallData, setWallData] = useState<any[]>([]);
-
     const [showAddPostModal, setShowAddPostModal] = useState(false);
-    const [selectedDapit, setSelectedDapit] = useState(null);
+    const [selectedDapit, setSelectedDapit] = useState<any | null>(null);
     const [showDapitModal, setShowDapitModal] = useState(false);
 
     useEffect(() => {
-        console.log('trainerName: ', trainerName);
         fetchWallData();
     }, [trainerName]);
 
     const fetchWallData = async () => {
-        // Fetch wall data here
         try {
             const TrainerData = await getTrainerByname(trainerName);
-            console.log('TrainerData:', TrainerData);
             setTrainerId(TrainerData[0]._id);
 
             const wallData = await getWall(TrainerData[0]._id);
-            console.log('wallData:', wallData);
             setWallData(wallData);
         } catch (error) {
             console.error('Error fetching TrainerData:', error);
@@ -50,27 +46,21 @@ const Wall: React.FC<IWallProps> = (props) => {
     };
 
     const handleAddPost = async (title: string, text: string, instractorName: string) => {
-        console.log("handleAppPost")
         try {
-            console.log("TrainerId: ", TrainerId)
-            console.log("text: ", text)
-            console.log("title: ", title)
-            console.log("instractorName:", instractorName)
             const submitPost: IPostforSubmit = {
                 idTrainer: TrainerId,
                 idInstractor: TrainerId,
                 nameInstractor: instractorName,
                 title: title,
                 content: text,
-                date: new Date()
-            }
-            console.log("submitPost: ", submitPost)
+                date: new Date(),
+            };
             await postPost(submitPost);
             fetchWallData();
         } catch (error) {
-            console.error('Error fetching TrainerData:', error);
+            console.error('Error adding post:', error);
         }
-    }
+    };
 
     const handleLike = async (postId: string) => {
         // Handle like here
@@ -80,10 +70,14 @@ const Wall: React.FC<IWallProps> = (props) => {
         // Handle comment here
     };
 
-    const handleOpenDapitModal = (dapit) => {
+    const handleOpenDapitModal = (dapit: any) => {
         setSelectedDapit(dapit);
         setShowDapitModal(true);
     };
+
+    const handleOpenPostModal = (post: any) => {
+        // Handle opening post modal here
+    }
 
     const handleCloseDapitModal = () => {
         setSelectedDapit(null);
@@ -100,29 +94,37 @@ const Wall: React.FC<IWallProps> = (props) => {
             <Row>
                 {wallData.map((item, index) => (
                     <Col key={index} md={12} className="mb-3">
-                        <Card>
+                     <div>
+                        {item.title !== undefined || item.content !== undefined ? (
+                            <PostCard post={item} />
+                        ) : null}
+                    </div>
+                        {/* <Card onClick={() => item.type === 'dapit' && handleOpenDapitModal(item)}>
                             <Card.Body>
                                 <Row>
                                     <Col md={2}>
-                                        <img src="path/to/your/image.png" alt="Event" className="img-fluid" />
+                                        {item.title === undefined ? (
+                                            <Button variant="link" onClick={() => handleOpenDapitModal(item)}>View Dapit</Button>)
+                                            : <Button variant="link" onClick={() => handleOpenPostModal(item)}>View Post</Button>}
                                     </Col>
                                     <Col md={8}>
-                                        <Card.Title>{item.type === 'post' ? item.title : `Session: ${item.session}`}</Card.Title>
+                                        <Card.Title>{item.title !== undefined ? item.title : `Session: ${item.session}`}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">
                                             {item.type === 'post' ? `Instructor: ${item.instructorName}` : `Syllabus: ${item.syllabus}`}
                                         </Card.Subtitle>
                                         <Card.Text>
                                             {item.type === 'post' ? item.mainText : `Final Grade: ${item.finalGrade}`}
                                         </Card.Text>
-                                        {item.type === 'dapit' && <Button variant="link" onClick={() => handleOpenDapitModal(item)}>View Dapit</Button>}
+                                 
                                     </Col>
                                     <Col md={2} className="text-center">
+                                        
                                         <Button variant="outline-primary" onClick={() => handleLike(item.id)}>Like</Button>
                                         <Button variant="outline-secondary" onClick={() => handleComment(item.id, 'This is a comment')}>Comment</Button>
                                     </Col>
                                 </Row>
                             </Card.Body>
-                        </Card>
+                        </Card> */}
                     </Col>
                 ))}
             </Row>
@@ -133,16 +135,10 @@ const Wall: React.FC<IWallProps> = (props) => {
                 handleSave={handleAddPost}
             />
 
-            <Modal show={showDapitModal} onHide={handleCloseDapitModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Dapit Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
+            
                     {selectedDapit && (
                         <ViewDapit selectedDapit={selectedDapit} onClose={handleCloseDapitModal} />
                     )}
-                </Modal.Body>
-            </Modal>
         </Container>
     );
 };

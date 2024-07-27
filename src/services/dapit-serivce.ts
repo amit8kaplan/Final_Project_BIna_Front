@@ -83,3 +83,10 @@ export const getDapitById = async (id: string) => {
     }
 }
 
+export const dateOnly = (date: string) => {
+    let dateOnly = '';
+    if (date!==null && date!==undefined){
+        dateOnly = date.match(/\d{4}-\d{2}-\d{2}/)[0];
+    }
+    return dateOnly;
+}
