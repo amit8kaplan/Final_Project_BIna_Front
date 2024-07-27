@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { set } from 'react-hook-form';
  import ViewDapit  from '../components/view_Dapit'; // Assuming you have a ViewDapit component
 import {dateOnly} from '../services/dapit-serivce';
+import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike } from '../services/wall-service';
 
 
 interface IData {
@@ -10,6 +11,11 @@ interface IData {
     description: string;
   }
   
+interface ILikes {
+    _id: string;
+    idPostOrDapit: string;
+    count: number;
+}
   interface IDapitProps {
     selectedDapit: {
       _id: string;
@@ -45,18 +51,38 @@ interface IData {
       finalGrade: number;
       changeTobeCommender: number;
     };
+    idTrainer: string | undefined;
   }
 
-const DapitCard: React.FC<IDapitProps> = ({ selectedDapit }) => {
+const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const [newDate, setNewDate] = useState<string | null>(null);
+    const [likes, setLikes] = useState<ILikes[]>([]);
     useEffect(()=>{
         console.log('Dapit: ', selectedDapit);
         if (selectedDapit.date !==null && selectedDapit.date !== undefined) {
             setNewDate(dateOnly(selectedDapit.date));
         }
+        fetchLikes();
     }, [selectedDapit]);
+
+
     const [viewDapit, setViewDapit] = useState<any | null>(null);
     const [showViewDapitModal, setShowViewDapitModal] = useState(false);
+    
+    const fetchLikes = async () => {
+        try {
+            if (!idTrainer) {
+                return;
+            }
+            const likes = await getLikes(idTrainer);
+            console.log('likes: ', likes);
+            setLikes(likes);
+        } catch (error) {
+            console.error('Error fetching likes:', error);
+        }
+    }
+
+    
     const handleOpenViewDapitModal = (Dapit: any) => {
         console.log("Dapit: ", Dapit);
         setViewDapit(Dapit);
@@ -67,8 +93,24 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit }) => {
         setShowViewDapitModal(false);
     };
 
-    const handleLike = async (DapitId: string) => {
-        // Handle like here
+    const handleLike = async (idDapitOrPost: string) => {
+        console.log("handleLike: ", idDapitOrPost);
+        let flag = false
+        let count = 0
+        likes?.map((like: any) => {
+            if(like.idDapitOrPost === idDapitOrPost) {
+                flag = true;
+                count = like.count;
+                
+            }
+        })
+        if (flag) {
+            await putLike(idDapitOrPost, 'like', count + 1);
+        }
+        if (!flag) {
+            await postLike(idDapitOrPost);
+        }
+        fetchLikes();
     };
 
     const handleComment = async (DapitId: string, comment: string) => {

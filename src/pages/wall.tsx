@@ -5,12 +5,11 @@ import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDap
 import { SideBarWall } from '../components/sidebar_wall';
 import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
 import { getTrainerByname } from '../services/id-service';
-import { getWall, IPostforSubmit, postPost } from '../services/wall-service';
+import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike } from '../services/wall-service';
 import AddPostModal from '../components/AddPostModel';
 import PostCard from '../components/PostCard';
 import DapitCard from '../components/DapitCard';
 import { set } from 'react-hook-form';
-import { isEmptyObject } from 'jquery';
 interface IWallProps {
     trainerName: string;
 }
@@ -30,7 +29,7 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [showAddPostModal, setShowAddPostModal] = useState(false);
     const [selectedDapit, setSelectedDapit] = useState<any | null>(null);
     const [showDapitModal, setShowDapitModal] = useState(false);
-
+    const [likesData, setLikesData] = useState<any[]>([]);
     useEffect(() => {
         setWallData([]);
         setTrainerId(undefined);
@@ -43,7 +42,12 @@ const Wall: React.FC<IWallProps> = (props) => {
             setTrainerId(TrainerData[0]._id);
 
             const wallData = await getWall(TrainerData[0]._id);
+            console.log('wallData: ', wallData);
             setWallData(wallData);
+
+            // const likes = await getLikes(TrainerData[0]._id);
+            // console.log('likes: ', likes);
+            // setLikesData(likes);
         } catch (error) {
             console.error('Error fetching TrainerData:', error);
         }
@@ -66,9 +70,13 @@ const Wall: React.FC<IWallProps> = (props) => {
         }
     };
 
-    const handleLike = async (postId: string) => {
-        // Handle like here
-    };
+    const handleLike = async (id: string) => {
+      // console.log("handleLike: ", id);
+      // likesData.find((like) => like.idDapitOrPost === id) ? 
+      // await putLike(id, 'like', likesData.find((like) => like.idDapitOrPost === id).count + 1)
+      //  : await postLike(id);
+      //   fetchWallData();
+    }
 
     const handleComment = async (postId: string, comment: string) => {
         // Handle comment here
@@ -100,8 +108,8 @@ const Wall: React.FC<IWallProps> = (props) => {
                     <Col key={index} md={12} className="mb-3">
                         <div>
                             {item.title !== undefined || item.content !== undefined ? (
-                                <PostCard post={item} />
-                            ) : <DapitCard selectedDapit={item} />}
+                                <PostCard post={item} idTrainer={TrainerId}  />
+                            ) : <DapitCard selectedDapit={item} idTrainer={TrainerId} />}
                         </div>
                     </Col>
                 )) : <div>There is no data to display</div>}
