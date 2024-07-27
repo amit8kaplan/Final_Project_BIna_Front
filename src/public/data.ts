@@ -3,7 +3,7 @@ import exp from "constants";
 export const instructorsData =  ["Kaplan1", "Kaplan2", "Kaplan2"];
 export const trainersData = ["Amit1", "Amit2", "Amit3"];
 export const sessionsData = ["Session 1", "Session 2", "Session 3"];
-export const silabusPerSessionData = [
+export const silabusPerSessionData:any = [
     {
         "Session 1": [1,2,3,4,5],
         "Session 2": [1,2],
