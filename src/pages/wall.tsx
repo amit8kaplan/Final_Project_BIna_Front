@@ -8,7 +8,7 @@ import { getTrainerByname } from '../services/id-service';
 import { getWall, IPostforSubmit, postPost } from '../services/wall-service';
 import AddPostModal from '../components/AddPostModel';
 import PostCard from '../components/PostCard';
-
+import DapitCard from '../components/DapitCard';
 interface IWallProps {
     trainerName: string;
 }
@@ -97,34 +97,8 @@ const Wall: React.FC<IWallProps> = (props) => {
                      <div>
                         {item.title !== undefined || item.content !== undefined ? (
                             <PostCard post={item} />
-                        ) : null}
+                        ) : <DapitCard selectedDapit={item} />}
                     </div>
-                        {/* <Card onClick={() => item.type === 'dapit' && handleOpenDapitModal(item)}>
-                            <Card.Body>
-                                <Row>
-                                    <Col md={2}>
-                                        {item.title === undefined ? (
-                                            <Button variant="link" onClick={() => handleOpenDapitModal(item)}>View Dapit</Button>)
-                                            : <Button variant="link" onClick={() => handleOpenPostModal(item)}>View Post</Button>}
-                                    </Col>
-                                    <Col md={8}>
-                                        <Card.Title>{item.title !== undefined ? item.title : `Session: ${item.session}`}</Card.Title>
-                                        <Card.Subtitle className="mb-2 text-muted">
-                                            {item.type === 'post' ? `Instructor: ${item.instructorName}` : `Syllabus: ${item.syllabus}`}
-                                        </Card.Subtitle>
-                                        <Card.Text>
-                                            {item.type === 'post' ? item.mainText : `Final Grade: ${item.finalGrade}`}
-                                        </Card.Text>
-                                 
-                                    </Col>
-                                    <Col md={2} className="text-center">
-                                        
-                                        <Button variant="outline-primary" onClick={() => handleLike(item.id)}>Like</Button>
-                                        <Button variant="outline-secondary" onClick={() => handleComment(item.id, 'This is a comment')}>Comment</Button>
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Card> */}
                     </Col>
                 ))}
             </Row>
