@@ -177,12 +177,12 @@ const Piano: React.FC<IpianoProps> = (props) => {
   return (
     <div className ="d-flex">
 <Sidebar_piano
-        categoriesData={categoriesData}
-        visibleColumns={visibleColumns}
-        setVisibleColumns={setVisibleColumns}
-        handleMoveColumn={handleMoveColumn}
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
+       categoriesData={categoriesData}
+       visibleColumns={visibleColumns}
+       setVisibleColumns={setVisibleColumns}
+       handleMoveColumn={handleMoveColumn}
+       isOpen={isSidebarOpen}
+       toggleSidebar={toggleSidebar}
       />
     <Container>
         

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from 'react-bootstrap';
+import { FaBars } from 'react-icons/fa';
 
 interface SidebarProps {
   categoriesData: string[];
@@ -29,16 +31,23 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="d">
-      <nav className="sidebar" style={{ fontSize: '0.8em', borderRight: '1px solid block', color: '#343a40', height: '100vh', overflowY: 'auto' }}>
-        <h5>Filters</h5>
-        {categoriesData.map((category, idx) => (
-          <div key={idx} className="form-check mt-3">
-            <input type="checkbox" className="form-check-input" id={`filter${category}`} name={category} checked={visibleColumns.includes(category)} onChange={() => handleToggleColumn(category)} />
-            <label className="form-check-label" htmlFor={`filter${category}`}>{category}</label>
-          </div>
-        ))}
-      </nav>
+    <div className="side">
+      {isOpen ? (
+        <nav className="sidebar" style={{ fontSize: '0.8em', borderRight: '1px solid block', color: '#343a40', height: '100vh', overflowY: 'auto' }}>
+          <Button  onClick={toggleSidebar} style={{ fontSize: '1.5em', color: 'black',borderColor: '#343a40', backgroundColor: '#f8f9fa' }}>×</Button>
+          <h5>Filters</h5>
+          {categoriesData.map((category, idx) => (
+            <div key={idx} className="form-check mt-3">
+              <input type="checkbox" className="form-check-input" id={`filter${category}`} name={category} checked={visibleColumns.includes(category)} onChange={() => handleToggleColumn(category)} />
+              <label className="form-check-label" htmlFor={`filter${category}`}>{category}</label>
+            </div>
+          ))}
+        </nav>
+      ) : (
+        <Button variant="link" onClick={toggleSidebar} style={{ fontSize: '1.5em' ,color: 'black', }}>
+          <FaBars />
+        </Button>
+      )}
       <style>{`
         .sidebar::-webkit-scrollbar {
           width: 12px;
