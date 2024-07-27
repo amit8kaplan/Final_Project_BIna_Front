@@ -9,6 +9,8 @@ import { getWall, IPostforSubmit, postPost } from '../services/wall-service';
 import AddPostModal from '../components/AddPostModel';
 import PostCard from '../components/PostCard';
 import DapitCard from '../components/DapitCard';
+import { set } from 'react-hook-form';
+import { isEmptyObject } from 'jquery';
 interface IWallProps {
     trainerName: string;
 }
@@ -30,6 +32,8 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [showDapitModal, setShowDapitModal] = useState(false);
 
     useEffect(() => {
+        setWallData([]);
+        setTrainerId(undefined);
         fetchWallData();
     }, [trainerName]);
 
@@ -92,15 +96,15 @@ const Wall: React.FC<IWallProps> = (props) => {
                 </Col>
             </Row>
             <Row>
-                {wallData.map((item, index) => (
+                {wallData.length!=0 ? wallData.map((item, index) => (
                     <Col key={index} md={12} className="mb-3">
-                     <div>
-                        {item.title !== undefined || item.content !== undefined ? (
-                            <PostCard post={item} />
-                        ) : <DapitCard selectedDapit={item} />}
-                    </div>
+                        <div>
+                            {item.title !== undefined || item.content !== undefined ? (
+                                <PostCard post={item} />
+                            ) : <DapitCard selectedDapit={item} />}
+                        </div>
                     </Col>
-                ))}
+                )) : <div>There is no data to display</div>}
             </Row>
 
             <AddPostModal

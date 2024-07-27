@@ -75,25 +75,25 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit }) => {
         // Handle comment here
     };
     return (
-        <div><Card onClick={()=> handleOpenViewDapitModal(selectedDapit)}>
+        <div><Card>
             <Card.Body>
                 <Row>
-                    <Col md={2}>
+                    <Col md={2} onClick={()=> handleOpenViewDapitModal(selectedDapit)}>
                         <Card.Subtitle className="mb-2 text-muted">{selectedDapit.namePersonalInstractor}</Card.Subtitle>
                         <Card.Subtitle className="mb-2 text-muted">{newDate }</Card.Subtitle>
                     </Col>
-                    <Col md={2}>
+                    <Col md={2} onClick={()=> handleOpenViewDapitModal(selectedDapit)}>
                         <Card.Title>{selectedDapit.session}</Card.Title>
                         <Card.Text>silabus: {selectedDapit.silabus}</Card.Text>
                     </Col>
-                    <Col md={2}>
+                    <Col md={2} onClick={()=> handleOpenViewDapitModal(selectedDapit)}>
                         <Card.Text>finalGrade: {selectedDapit.finalGrade}</Card.Text>
                         <Card.Text>chance: {selectedDapit.changeTobeCommender}</Card.Text>
                     </Col>
-                    <Col md={4}>
+                    <Col md={4} onClick={()=> handleOpenViewDapitModal(selectedDapit)}>
                         <Card.Text>{selectedDapit.summerize}</Card.Text>
                     </Col>
-                    <Col md={2}>
+                    <Col md={2} >
                         <Button variant="outline-primary" onClick={() => handleLike(selectedDapit._id)}>Like</Button>
                         <Button variant="outline-secondary" onClick={() => handleComment(selectedDapit._id, 'This is a comment')}>Comment</Button>
                     </Col>
