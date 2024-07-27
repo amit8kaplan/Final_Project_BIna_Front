@@ -38,7 +38,11 @@ const groups = groupsData
             <NavDropdown title="Wall" id="basic-nav-dropdown">
               {trainersData.map((item, index) => (
                 <NavDropdown.Item
-                 key={index} as={Link} to={"/Wall"} state={{trainer: item}}>
+                 key={index}
+                  as={Link}
+                   to={"/Wall"}
+                    state={{trainerName: item}}
+                    >
                   {item}
                 </NavDropdown.Item>
               ))}
