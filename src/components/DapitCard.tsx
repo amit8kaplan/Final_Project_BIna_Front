@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { FaThumbsUp } from 'react-icons/fa';
+import { FaEye, FaComment } from 'react-icons/fa';
 import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDapit component
 import { dateOnly } from '../services/dapit-serivce';
-import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike } from '../services/wall-service';
-
+import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike, handleLike } from '../services/wall-service';
+import LikeAndComment from './LikeAndComment';
 interface IData {
     value: number;
     description: string;
@@ -84,6 +84,8 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
 
     const handleOpenViewDapitModal = (Dapit: any) => {
         console.log("Dapit: ", Dapit);
+        handleLike(Dapit._id, likes);
+        fetchLikes();
         setViewDapit(Dapit);
         setShowViewDapitModal(true);
     }
@@ -93,23 +95,23 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         setShowViewDapitModal(false);
     };
 
-    const handleLike = async (idDapitOrPost: string) => {
-        console.log("handleLike: ", idDapitOrPost);
-        let flag = false;
-        let count = 0;
-        likes?.forEach((like: any) => {
-            if (like.idDapitOrPost === idDapitOrPost) {
-                flag = true;
-                count = like.count;
-            }
-        });
-        if (flag) {
-            await putLike(idDapitOrPost, 'like', count);
-        } else {
-            await postLike(idDapitOrPost);
-        }
-        fetchLikes();
-    };
+    // const handleLike = async (idDapitOrPost: string) => {
+    //     console.log("handleLike: ", idDapitOrPost);
+    //     let flag = false;
+    //     let count = 0;
+    //     likes?.forEach((like: any) => {
+    //         if (like.idDapitOrPost === idDapitOrPost) {
+    //             flag = true;
+    //             count = like.count;
+    //         }
+    //     });
+    //     if (flag) {
+    //         await putLike(idDapitOrPost, 'like', count);
+    //     } else {
+    //         await postLike(idDapitOrPost);
+    //     }
+    //     fetchLikes();
+    // };
 
     const getLikeCount = (idDapitOrPost: string) => {
         console.log("getLikeCount: ", idDapitOrPost);
@@ -120,32 +122,50 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const handleComment = async (DapitId: string, comment: string) => {
         // Handle comment here
     };
-
+    const borderCol = () => {
+        return { borderLeft: "1px dashed gray" }
+    }
+    const borderCard = (value: number) => {
+        if (value === undefined || value === 7) return;
+        if (value === 10) return { border: "2px solid green", backgroundColor: "honeyDew" }
+        if (value === 9) return { border: "2px solid green", backgroundColor: "honeyDew" }
+        if (value === 8) return { border: "2px solid darkseagreen", backgroundColor: "honeyDew" }
+        if (value === 6) return { border: "2px solid yellow", backgroundColor: "lightyellow" }
+        if (value === 5) return { border: "2px solid red", backgroundColor: "lightcoral" }
+        if (value === 4) return { border: "2px solid red", backgroundColor: "lightcoral" }
+    }
     return (
         <div>
-            <Card>
+            <Card style={{...borderCard(selectedDapit?.finalGrade)}}>
                 <Card.Body>
                     <Row>
                         <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Subtitle className="mb-2 text-muted">{selectedDapit.namePersonalInstractor}</Card.Subtitle>
                             <Card.Subtitle className="mb-2 text-muted">{newDate}</Card.Subtitle>
                         </Col>
-                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Title>{selectedDapit.session}</Card.Title>
                             <Card.Text>silabus: {selectedDapit.silabus}</Card.Text>
                         </Col>
-                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>finalGrade: {selectedDapit.finalGrade}</Card.Text>
                             <Card.Text>chance: {selectedDapit.changeTobeCommender}</Card.Text>
                         </Col>
-                        <Col md={4} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={4} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>{selectedDapit.summerize}</Card.Text>
                         </Col>
-                        <Col md={2}>
-                            <Button variant="outline-primary" onClick={() => handleLike(selectedDapit._id)}>
-                                <FaThumbsUp /> {getLikeCount(selectedDapit._id)}
-                            </Button>
-                            <Button variant="outline-secondary" onClick={() => handleComment(selectedDapit._id, 'This is a comment')}>Comment</Button>
+                        <Col md={2} style={{...borderCol()}}>
+                            {/* <Row className='ms-2 pt-2'  >
+                                <Col>
+                                    <FaEye /> {getLikeCount(selectedDapit._id)}
+                                </Col>
+                            </Row>
+                            <Row className='ms-2 pt-3'>
+                                <Col >
+                                        <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
+                                </Col>
+                            </Row> */}
+                            <LikeAndComment id={selectedDapit._id} likes={likes} />
                         </Col>
                     </Row>
                 </Card.Body>

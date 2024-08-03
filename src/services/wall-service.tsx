@@ -9,6 +9,29 @@ export interface IPostforSubmit {
     date: Date;
     _id?: string;
 }
+interface ILikes {
+    _id: string;
+    idDapitOrPost: string;
+    count: number;
+}
+
+export const handleLike = async (idDapitOrPost: string, likes: ILikes[] ) => {
+    console.log("handleLike: ", idDapitOrPost);
+    let flag = false
+    let count = 0
+    likes?.forEach((like: any) => {
+        if (like.idDapitOrPost === idDapitOrPost) {
+            flag = true;
+            count = like.count;
+        }
+    });
+    if (flag) {
+        await putLike(idDapitOrPost, 'like', count);
+    }
+    if (!flag) {
+        await postLike(idDapitOrPost);
+    }
+}
 
 export const getWall = async (trainerId: string) => {
     try{

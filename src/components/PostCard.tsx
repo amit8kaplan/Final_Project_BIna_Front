@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { set } from 'react-hook-form';
+import { FaEye, FaComment } from 'react-icons/fa';
  import ViewPost  from '../components/view_Post'; // Assuming you have a ViewPost component
 import {dateOnly} from '../services/dapit-serivce';
-import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike } from '../services/wall-service';
-
+import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike , handleLike} from '../services/wall-service';
+import LikeAndComment from './LikeAndComment';
 interface ILikes {
     _id: string;
-    idPostOrDapit: string;
+    idDapitOrPost: string;
     count: number;
 }
  interface PostCardProps {
@@ -52,6 +53,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
 
     const handleOpenViewPostModal = (post: any) => {
         console.log("post: ", post);
+        handleLike(post._id, likes);
+        fetchLikes();
         setSelectedPost(post);
         setShowViewPostModal(true);
     }
@@ -60,29 +63,27 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         setShowViewPostModal(false);
     };
 
-    const handleLike = async (idDapitOrPost: string) => {
-        console.log("handleLike: ", idDapitOrPost);
-        let flag = false
-        let count = 0
-        likes?.map((like: any) => {
-            if(like.idDapitOrPost === idDapitOrPost) {
-                flag = true;
-                count = like.count;
-                
-            }
-        })
-        if (flag) {
-            await putLike(idDapitOrPost, 'like', count);
-        }
-        if (!flag) {
-            await postLike(idDapitOrPost);
-        }
-        fetchLikes();
-    };
-
-    const handleComment = async (postId: string, comment: string) => {
-        // Handle comment here
-    };
+    // const handleLike = async (idDapitOrPost: string) => {
+    //     // console.log("handleLike: ", idDapitOrPost);
+    //     // let flag = false
+    //     // let count = 0
+    //     // likes?.forEach((like: any) => {
+    //     //     if (like.idDapitOrPost === idDapitOrPost) {
+    //     //         flag = true;
+    //     //         count = like.count;
+    //     //     }
+    //     // });
+    //     // if (flag) {
+    //     //     await putLike(idDapitOrPost, 'like', count);
+    //     // }
+    //     // if (!flag) {
+    //     //     await postLike(idDapitOrPost);
+    //     // }
+    //     fetchLikes();
+    // };
+    const borderCol = () => {
+        return { borderLeft: "1px dashed gray" }
+    }
     return (
         <div><Card >
             <Card.Body>
@@ -91,13 +92,22 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                         <Card.Subtitle className="mb-2 text-muted">{post.nameInstractor}</Card.Subtitle>
                         <Card.Subtitle className="mb-2 text-muted">{newDate }</Card.Subtitle>
                     </Col>
-                    <Col md={8} onClick={()=> handleOpenViewPostModal(post)}>
+                    <Col md={8} style={{...borderCol()}} onClick={()=> handleOpenViewPostModal(post)}>
                         <Card.Title>{post.title}</Card.Title>
                         <Card.Text>{post.content}</Card.Text>
                     </Col>
-                    <Col md={2}>
-                        <Button variant="outline-primary" onClick={() => handleLike(post._id)}>Like</Button>
-                        <Button variant="outline-secondary" onClick={() => handleComment(post._id, 'This is a comment')}>Comment</Button>
+                    <Col md={2} style={{...borderCol()}}>
+                            {/* <Row className='ms-2 pt-2'  >
+                                <Col>
+                                    <FaEye /> {getLikeCount(selectedDapit._id)}
+                                </Col>
+                            </Row>
+                            <Row className='ms-2 pt-3'>
+                                <Col >
+                                        <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
+                                </Col>
+                            </Row> */}
+                        <LikeAndComment id={post._id} likes={likes} />
                     </Col>
                 </Row>
             </Card.Body>
