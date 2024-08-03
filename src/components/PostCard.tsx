@@ -9,6 +9,7 @@ import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike , handle
 import LikeAndComment from './LikeAndComment';
 interface ILikes {
     _id: string;
+    flag: boolean;
     idDapitOrPost: string;
     count: number;
 }
@@ -62,25 +63,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         setSelectedPost(null);
         setShowViewPostModal(false);
     };
+    const handleFlginPostCard = () => {
+        fetchLikes();
+    }
 
-    // const handleLike = async (idDapitOrPost: string) => {
-    //     // console.log("handleLike: ", idDapitOrPost);
-    //     // let flag = false
-    //     // let count = 0
-    //     // likes?.forEach((like: any) => {
-    //     //     if (like.idDapitOrPost === idDapitOrPost) {
-    //     //         flag = true;
-    //     //         count = like.count;
-    //     //     }
-    //     // });
-    //     // if (flag) {
-    //     //     await putLike(idDapitOrPost, 'like', count);
-    //     // }
-    //     // if (!flag) {
-    //     //     await postLike(idDapitOrPost);
-    //     // }
-    //     fetchLikes();
-    // };
     const borderCol = () => {
         return { borderLeft: "1px dashed gray" }
     }
@@ -107,7 +93,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                                         <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
                                 </Col>
                             </Row> */}
-                        <LikeAndComment id={post._id} likes={likes} />
+                        <LikeAndComment id={post._id} likes={likes} handleFlag={handleFlginPostCard} />
                     </Col>
                 </Row>
             </Card.Body>

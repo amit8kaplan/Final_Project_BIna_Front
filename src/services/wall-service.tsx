@@ -11,6 +11,7 @@ export interface IPostforSubmit {
 }
 interface ILikes {
     _id: string;
+    flag: boolean;
     idDapitOrPost: string;
     count: number;
 }
@@ -32,7 +33,17 @@ export const handleLike = async (idDapitOrPost: string, likes: ILikes[] ) => {
         await postLike(idDapitOrPost);
     }
 }
-
+export const changeFlag = async (idDapitOrPost: string) => {
+    try{
+        console.log("handleChangeFlag: ", idDapitOrPost)
+        const response = (await apiClient.put('/wall/flag/', {idDapitOrPost}))
+        console.log ("handleChangeFlag the new flag: ", response.data)
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error putting flag:', error);
+    }
+}
 export const getWall = async (trainerId: string) => {
     try{
         console.log("trainerId: ", trainerId)

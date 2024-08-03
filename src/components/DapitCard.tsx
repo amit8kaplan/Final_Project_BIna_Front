@@ -12,6 +12,7 @@ interface IData {
 
 interface ILikes {
     _id: string;
+    flag: boolean;
     idDapitOrPost: string;
     count: number;
 }
@@ -95,30 +96,15 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         setShowViewDapitModal(false);
     };
 
-    // const handleLike = async (idDapitOrPost: string) => {
-    //     console.log("handleLike: ", idDapitOrPost);
-    //     let flag = false;
-    //     let count = 0;
-    //     likes?.forEach((like: any) => {
-    //         if (like.idDapitOrPost === idDapitOrPost) {
-    //             flag = true;
-    //             count = like.count;
-    //         }
-    //     });
-    //     if (flag) {
-    //         await putLike(idDapitOrPost, 'like', count);
-    //     } else {
-    //         await postLike(idDapitOrPost);
-    //     }
-    //     fetchLikes();
-    // };
 
     const getLikeCount = (idDapitOrPost: string) => {
         console.log("getLikeCount: ", idDapitOrPost);
         const like = likes.find(like => like.idDapitOrPost === idDapitOrPost);
         return like ? like.count : 0;
     }
-
+    const handleFlginPostCard = () => {
+        fetchLikes();
+    }
     const handleComment = async (DapitId: string, comment: string) => {
         // Handle comment here
     };
@@ -154,7 +140,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                         <Col md={4} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>{selectedDapit.summerize}</Card.Text>
                         </Col>
-                        <Col md={2} style={{...borderCol()}}>
+                        <Col md={2} style={{...borderCol(), margin: '0'}}>
                             {/* <Row className='ms-2 pt-2'  >
                                 <Col>
                                     <FaEye /> {getLikeCount(selectedDapit._id)}
@@ -165,7 +151,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                                         <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
                                 </Col>
                             </Row> */}
-                            <LikeAndComment id={selectedDapit._id} likes={likes} />
+                            <LikeAndComment id={selectedDapit._id} likes={likes} handleFlag={handleFlginPostCard} />
                         </Col>
                     </Row>
                 </Card.Body>
