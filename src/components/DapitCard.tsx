@@ -105,7 +105,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
             }
         })
         if (flag) {
-            await putLike(idDapitOrPost, 'like', count + 1);
+            await putLike(idDapitOrPost, 'like', count);
         }
         if (!flag) {
             await postLike(idDapitOrPost);
