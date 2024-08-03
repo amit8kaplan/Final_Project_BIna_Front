@@ -15,7 +15,12 @@ interface ILikes {
     idDapitOrPost: string;
     count: number;
 }
-
+export interface Icomment {
+    personalName: string
+    content: string;
+    date: Date;
+    _id?: string;
+}
 export const handleLike = async (idDapitOrPost: string, likes: ILikes[] ) => {
     console.log("handleLike: ", idDapitOrPost);
     let flag = false
@@ -93,5 +98,37 @@ export const postLike = async (idDapitOrPost: string) => {
     }
     catch (error) {
         console.error('Error posting like:', error);
+    }
+}
+
+export const getComments = async (trainerId: string) => {
+    try{
+        const response = await apiClient.get(`/wall/comments/${trainerId}`);
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error fetching comments:', error);
+    }
+}
+
+export const  putComment = async (idDapitOrPost: string, personalname: string, content: string) => {
+    try{
+        const response = (await apiClient.put('/wall/comments/', {idDapitOrPost, personalname, content}))
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error putting comment:', error);
+    }
+}
+
+export const postComment = async (idDapitOrPost: string, personalName: string, content: string) => {
+    try{
+        const response = (await apiClient.post('/wall/comments/', {idDapitOrPost, personalName, content}))
+        console.log("try1 res postComment: ", response.data)
+        return response.data;
+    
+    }
+    catch (error) {
+        console.error('try1 Error posting comment:', error);
     }
 }

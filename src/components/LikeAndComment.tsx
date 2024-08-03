@@ -2,21 +2,30 @@ import { FaEye, FaComment, FaFlag } from 'react-icons/fa';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import { changeFlag } from '../services/wall-service';
-
+import AddCommnetModal from './AddCommentsModel';
+import { Icomment, putComment , postComment} from '../services/wall-service';
 interface ILikes {
     _id: string;
     idDapitOrPost: string;
     flag: boolean;
     count: number;
 }
+interface Icomments {
+    comments: Array<{ personalName: string, content: string, date: Date, _id?: string }>;
+    count: number;
+    idDapitOrPost: string;
+    _id?: string;
+}
 interface LikeAndCmProps {
     id: string;
     likes: ILikes[];
+    comments: Icomments[];
     handleFlag: () => void;
 }
 
-const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, handleFlag }) => {
+const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFlag }) => {
     const [flag, setFlag] = useState<boolean>(false);
+    const [showAddComment, setShowAddCommentModal] = useState(false);
 
     const handleChangeFlag = async () => {
         console.log("handleChangeFlag: ", id);
@@ -34,9 +43,35 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, handleFlag }) => 
         const like = likes.find(like => like.idDapitOrPost === id);
         return like ? like.count : 0;
     }
+    const getCommentCount = () => {
+        console.log("getCommentCount: ", id);
+        console.log("comments: ", comments);
+        // const comment = comments.find(comment => comment.idDapitOrPost === id);
+        // // return comment ? comment.count : 0;
+        // console.log("comment: ", comment);
+        return 0;
+    }
 
-    const handleComment = async (DapitId: string, comment: string) => {
+
+    const handleAddComment = async (personalname: string, content: string) => {
         // Handle comment here
+        console.log("handleComment: ", id);
+        try{ 
+
+            const existComment = comments.find(comment => comment.idDapitOrPost === id);
+            console.log("try1 existComment: ", existComment);
+            if (existComment !== undefined) {
+                await putComment(id, personalname, content);
+            }
+            else if(existComment === undefined){ 
+                console.log("try1 postComment: ", id);
+                await postComment(id, personalname, content);
+            }
+        }
+        catch (error) {
+            console.error('Error adding comment:', error);
+        }
+
     };
 
     const styleFlag = () => {
@@ -55,14 +90,16 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, handleFlag }) => 
 
     return (
         <div>
+            <div>
             <Row className='ms-2 pt-1'>
-                <Col>
+                <Col className = 'btn'>
                     <FaEye /> {getLikeCount()}
                 </Col>
             </Row>
             <Row className='ms-2 pt-1'>
-                <Col>
-                    <FaComment className='CommentIconBtn' onClick={() => handleComment(id, 'This is a comment')} />
+                <Col className='btn'>
+                    <FaComment  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
+                    {getCommentCount()}
                 </Col>
             </Row>
             <Row className='ms-2  justify-content-end'>
@@ -73,8 +110,13 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, handleFlag }) => 
                     />
                 </Col>
             </Row>
-        </div>
-    );
+            </div>
+            <AddCommnetModal 
+            show ={showAddComment}
+            handleClose={() => setShowAddCommentModal(false)}
+            handleSave={handleAddComment}/>
+            </div>
+        );
 };
 
 export default LikeAndComment;

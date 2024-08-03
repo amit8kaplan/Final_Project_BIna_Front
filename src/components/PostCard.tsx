@@ -5,13 +5,19 @@ import { set } from 'react-hook-form';
 import { FaEye, FaComment } from 'react-icons/fa';
  import ViewPost  from '../components/view_Post'; // Assuming you have a ViewPost component
 import {dateOnly} from '../services/dapit-serivce';
-import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike , handleLike} from '../services/wall-service';
+import { getWall, IPostforSubmit, postPost, getLikes,getComments, putLike, postLike , handleLike} from '../services/wall-service';
 import LikeAndComment from './LikeAndComment';
 interface ILikes {
     _id: string;
     flag: boolean;
     idDapitOrPost: string;
     count: number;
+}
+interface Icomments{
+    comments: Array<{ personalName: string, content: string, date: Date, _id?: string }>;
+    count: number;
+    idDapitOrPost: string;
+    _id?: string;
 }
  interface PostCardProps {
     post: {
@@ -34,11 +40,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
             setNewDate(dateOnly(post.date));
         }
         fetchLikes();
+        fetchComments();
     }, [post]);
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
     const [showViewPostModal, setShowViewPostModal] = useState(false);
     const [likes, setLikes] = useState<ILikes[]>([]);
-
+    const [comments, setComments] = useState<Icomments[]>([]);
     const fetchLikes = async () => {
         try {
             if (!idTrainer) {
@@ -49,6 +56,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
             setLikes(likes);
         } catch (error) {
             console.error('Error fetching likes:', error);
+        }
+    }
+    const fetchComments  = async () => {
+        try {
+            if (!idTrainer) {
+                return;
+            }
+            const comments = await getComments(idTrainer);
+            console.log('comments: ', comments);
+            setComments(comments);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
         }
     }
 
@@ -93,7 +112,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                                         <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
                                 </Col>
                             </Row> */}
-                        <LikeAndComment id={post._id} likes={likes} handleFlag={handleFlginPostCard} />
+                        <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlag={handleFlginPostCard} />
                     </Col>
                 </Row>
             </Card.Body>
