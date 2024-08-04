@@ -111,6 +111,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const handleCloseViewDapitModal = () => {
         setViewDapit(null);
         setShowViewDapitModal(false);
+        fetchComments();
     };
 
 
@@ -121,6 +122,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     }
     const handleFlginPostCard = () => {
         fetchLikes();
+        fetchComments();
     }
     const handleComment = async (DapitId: string, comment: string) => {
         // Handle comment here

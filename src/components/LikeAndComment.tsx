@@ -1,4 +1,5 @@
-import { FaEye, FaComment, FaFlag } from 'react-icons/fa';
+import { FaEye,FaCommentPlus, FaComment, FaFlag } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import { changeFlag } from '../services/wall-service';
@@ -114,11 +115,14 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
                 </Col>
             </Row>
             <Row className='ms-2  justify-content-end'>
-            <Col xs="auto" style={{borderStyle: 'outset' }}>
-                <FaFlag
-                        style={{ ...styleFlag(), fontSize: '0.8em' }}
-                        onClick={() => handleChangeFlag()}
-                    />
+                <Col xs="auto" style={{borderStyle: 'outset' }}>
+                    <FaFlag
+                            style={{ ...styleFlag(), fontSize: '0.8em' }}
+                            onClick={() => handleChangeFlag()}
+                        />
+                </Col>
+                <Col xs="auto" style={{borderStyle: 'outset' }}>
+                    <FontAwesomeIcon icon={["fas", "comment-plus"]} onClick={() => setShowAddCommentModal(true)} />
                 </Col>
             </Row>
             </div>
