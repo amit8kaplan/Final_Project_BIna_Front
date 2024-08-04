@@ -38,6 +38,28 @@ export const handleLike = async (idDapitOrPost: string, likes: ILikes[] ) => {
         await postLike(idDapitOrPost);
     }
 }
+export const fetchLikes = async (trainerId: string) => {
+    try {
+        if (trainerId === undefined) {
+            return;
+        }
+        const likes = await getLikes(trainerId);
+        return likes;
+    } catch (error) {
+        console.error('Error fetching likes:', error);
+    }
+}
+export const fetchComments = async (trainerId: string) => {
+    try {
+        if (!trainerId) {
+            return;
+        }
+        const comments = await getComments(trainerId);
+        return comments;
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+    }
+}
 export const changeFlag = async (idDapitOrPost: string) => {
     try{
         console.log("handleChangeFlag: ", idDapitOrPost)
@@ -111,9 +133,9 @@ export const getComments = async (trainerId: string) => {
     }
 }
 
-export const  putComment = async (idDapitOrPost: string, personalname: string, content: string) => {
+export const  putComment = async (idDapitOrPost: string, personalName: string, content: string) => {
     try{
-        const response = (await apiClient.put('/wall/comments/', {idDapitOrPost, personalname, content}))
+        const response = (await apiClient.put('/wall/comments/', {idDapitOrPost, personalName, content}))
         return response.data;
     }
     catch (error) {

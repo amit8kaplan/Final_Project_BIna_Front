@@ -26,7 +26,7 @@ interface LikeAndCmProps {
 const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFlag }) => {
     const [flag, setFlag] = useState<boolean>(false);
     const [showAddComment, setShowAddCommentModal] = useState(false);
-
+    console.log("comments ", comments);
     const handleChangeFlag = async () => {
         console.log("handleChangeFlag: ", id);
         try {
@@ -37,7 +37,7 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
             console.error('Error changing flag:', error);
         }
     }
-
+    
     const getLikeCount = () => {
         console.log("getLikeCount: ", id);
         const like = likes.find(like => like.idDapitOrPost === id);
@@ -45,11 +45,19 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
     }
     const getCommentCount = () => {
         console.log("getCommentCount: ", id);
-        console.log("comments: ", comments);
-        // const comment = comments.find(comment => comment.idDapitOrPost === id);
-        // // return comment ? comment.count : 0;
-        // console.log("comment: ", comment);
-        return 0;
+        console.log("getCommentCount: ", comments);
+        let comment:any;
+        comments.forEach(element => {
+            if (element.idDapitOrPost === id) {
+                console.log("getCommentCount: ", element);
+                comment = {...comment, element};
+            }
+        });
+        if (comment === undefined) {
+            return 0;
+        }
+        console.log("getCommentCount: ", comment.element.comments.length);
+        return comment.element.comments.length
     }
 
 
@@ -67,7 +75,10 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
                 console.log("try1 postComment: ", id);
                 await postComment(id, personalname, content);
             }
+            handleFlag();
+
         }
+        
         catch (error) {
             console.error('Error adding comment:', error);
         }
@@ -99,7 +110,7 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
             <Row className='ms-2 pt-1'>
                 <Col className='btn'>
                     <FaComment  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
-                    {getCommentCount()}
+                    {" " +getCommentCount()}
                 </Col>
             </Row>
             <Row className='ms-2  justify-content-end'>

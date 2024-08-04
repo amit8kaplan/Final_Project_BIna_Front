@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { FaEye, FaComment } from 'react-icons/fa';
 import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDapit component
 import { dateOnly } from '../services/dapit-serivce';
-import { getWall, IPostforSubmit, postPost, getLikes, putLike, postLike, handleLike } from '../services/wall-service';
+import { getComments, getWall, IPostforSubmit, postPost, getLikes, putLike, postLike, handleLike } from '../services/wall-service';
 import LikeAndComment from './LikeAndComment';
 interface IData {
     value: number;
@@ -16,7 +16,12 @@ interface ILikes {
     idDapitOrPost: string;
     count: number;
 }
-
+interface Icomments {
+    comments: Array<{ personalName: string, content: string, date: Date, _id?: string }>;
+    count: number;
+    idDapitOrPost: string;
+    _id?: string;
+}
 interface IDapitProps {
     selectedDapit: {
         _id: string;
@@ -58,18 +63,19 @@ interface IDapitProps {
 const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const [newDate, setNewDate] = useState<string | null>(null);
     const [likes, setLikes] = useState<ILikes[]>([]);
-    
+    const [comments, setComments] = useState<Icomments[]>([]);
     useEffect(() => {
         console.log('Dapit: ', selectedDapit);
         if (selectedDapit.date !== null && selectedDapit.date !== undefined) {
             setNewDate(dateOnly(selectedDapit.date));
         }
         fetchLikes();
+        fetchComments();
     }, [selectedDapit]);
 
     const [viewDapit, setViewDapit] = useState<any | null>(null);
     const [showViewDapitModal, setShowViewDapitModal] = useState(false);
-
+    
     const fetchLikes = async () => {
         try {
             if (!idTrainer) {
@@ -82,7 +88,18 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
             console.error('Error fetching likes:', error);
         }
     }
-
+    const fetchComments  = async () => {
+        try {
+            if (!idTrainer) {
+                return;
+            }
+            const comments = await getComments(idTrainer);
+            console.log('fetchComments Dapit: ', comments);
+            setComments(comments);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    }
     const handleOpenViewDapitModal = (Dapit: any) => {
         console.log("Dapit: ", Dapit);
         handleLike(Dapit._id, likes);
@@ -151,7 +168,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                                         <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
                                 </Col>
                             </Row> */}
-                            <LikeAndComment id={selectedDapit._id} likes={likes} handleFlag={handleFlginPostCard} />
+                            <LikeAndComment id={selectedDapit._id} likes={likes} comments ={comments} handleFlag={handleFlginPostCard} />
                         </Col>
                     </Row>
                 </Card.Body>

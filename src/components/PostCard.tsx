@@ -84,6 +84,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     };
     const handleFlginPostCard = () => {
         fetchLikes();
+        fetchComments();
+
     }
 
     const borderCol = () => {
