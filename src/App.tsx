@@ -19,6 +19,7 @@ import Piano from "./pages/Piano";
 import { instructorsData, trainersData, sessionsData, groupsData } from "./public/data";
 import './App.css';
 import './css/Login.css';
+import ChatBot from "./components/ChatBot";
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const isAuthenticated = Boolean(sessionStorage.getItem("accessToken"));
 
