@@ -307,7 +307,11 @@ const getCellStyle = (value: number | undefined) => {
                     max="10"
                     placeholder="Value"
                     value={data.value}
-                    onChange={(e) => handleNestedChange(idx, e, 'value', item.category)}
+                    onChange={(e) =>
+                      {
+                        let value = (Math.max(4, Math.min(10, parseInt(e.target.value, 10))));
+                        handleNestedChange(idx, { target: { value } }, 'value', item.category);
+                      }}
                   />
                   <Form.Control
                   style={getCellDesStyle(data.value || undefined)}
@@ -332,8 +336,12 @@ const getCellStyle = (value: number | undefined) => {
                       max="10"
                       placeholder="Value"
                       value={data.value}
-                      onChange={(e) => handleNestedChange(idx, e, 'value', ratingCategories[index + 1].category)}
-                    />
+                      onChange={(e) =>
+                      {
+                        let value = (Math.max(4, Math.min(10, parseInt(e.target.value, 10))));
+                        handleNestedChange(idx, { target: { value } }, 'value', ratingCategories[index + 1].category);
+                      }}
+                         />
                     <Form.Control
                       style={getCellDesStyle(data.value || undefined)}
                       type="text"
