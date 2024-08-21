@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation } from 'react-router-dom';
 import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import {getIdpersonalInstractor} from '../services/id-service';
+import '../css/add_dapit.css';
 export interface IDapitData {
     nameInstructor: string;
     nameTrainer: string;
@@ -234,6 +235,37 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     }
 };
 
+const getCellDesStyle = (value: number | undefined) => {
+  if (!value) {
+    return {}; // Return default style when no value is present (e.g., on backspace)
+  }
+  if (value == 10) return {  border: ' solid forestgreen' };
+  else if (value == 9) return {  border: ' solid limegreen' };
+  else if (value == 8) return {  border: ' solid lightgreen' };
+  else if (value == 7) return {  border: ' solid silver' };
+  else if (value == 6) return {  border: ' solid khaki' };
+  else if (value == 5) return {  border: ' solid lightpink' };
+  else if (value == 4) return {  border: ' solid lightcoral' };
+
+  return {};
+};
+
+const getCellStyle = (value: number | undefined) => {
+  if (!value) {
+    return {}; // Return default style when no value is present (e.g., on backspace)
+  }
+  // if (value == undefined) return { backgroundColor: 'light-gray', color: 'black' };
+  else if (value == 10) return { backgroundColor: 'forestgreen', color: 'black' };
+  else if (value == 9) return { backgroundColor: 'limegreen', color: 'black' };
+  else if (value == 8) return { backgroundColor: 'lightgreen', color: 'black' };
+  else if (value == 7) return { backgroundColor: 'silver', color: 'black'  };
+  else if (value ==6) return { backgroundColor: 'khaki' };
+  else if (value ==5 ) return { backgroundColor: 'lightpink' };
+  else if (value ==4) return { backgroundColor: 'lightcoral' };
+
+  return {};
+};
+
   const handleSendDraft = () => {
     console.log('Sending draft of dapit details');
   };
@@ -267,8 +299,9 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             <Col md={6}>
               <h5>{item.title}</h5>
               {item.data.map((data, idx) => (
-                <div key={idx} className="mb-2">
+                <div  key={idx} className="mb-2">
                   <Form.Control
+                    style={getCellStyle(data.value || undefined)}
                     type="number"
                     min="4"
                     max="10"
@@ -277,6 +310,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                     onChange={(e) => handleNestedChange(idx, e, 'value', item.category)}
                   />
                   <Form.Control
+                  style={getCellDesStyle(data.value || undefined)}
                     type="text"
                     placeholder="Description"
                     value={data.description}
@@ -320,10 +354,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
 
   return (
     <Modal show={true} onHide={onClose} size="xl" style={{ fontSize: '0.9em', overflowY: 'auto' }}>
-      <Modal.Header closeButton>
-        <Button variant="primary" className="float-start" onClick={handleSendDraft}>
-          Send me draft
-        </Button>
+      <Modal.Header style={{fontSize:"20px"}} closeButton>
+        New Dapit
       </Modal.Header>
       <Modal.Body>
         <div className="container">
@@ -340,10 +372,6 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
               </Form.Control>
             </Col>
             <Col md={3}>
-              <h4>Personal Instructor</h4>
-              <Form.Control type="text" value={dapitData.namePersonalInstructor} onChange={(e) => handleChange(e, 'namePersonalInstructor')} />
-              </Col>
-            <Col md={3}>
               <h4>Trainer</h4>
               <Form.Control as="select" value={dapitData.nameTrainer} onChange={(e) => handleChange(e, 'nameTrainer')}>
               <option value="">Select Trainer</option>
@@ -355,15 +383,23 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
               </Form.Control>
             </Col>
             <Col md={3}>
+              <h4>Personal Instructor</h4>
+              <Form.Control type="text" value={dapitData.namePersonalInstructor} onChange={(e) => handleChange(e, 'namePersonalInstructor')} />
+              </Col>
+            
+            <Col md={3}>
               <h4>Date</h4>
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                />
+              <div style={{fontSize: "21px"}}>
+                <DatePicker
+                  
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  />
+                </div>
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={3}>
+            <Col md={4}>
               <h4>Group</h4>
               <Form.Control as="select" value={dapitData.group} onChange={(e) => handleChange(e, 'group')}>
                 <option value="">Select Group</option>
@@ -374,7 +410,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 ))}
                 </Form.Control>
             </Col>
-            <Col md={3}>
+            <Col md={4}>
               <h4>Session</h4>
               <Form.Control as="select" value={dapitData.session} onChange={(e) => handleChange(e, 'session')}>
                 <option value="">Select Session</option>
@@ -385,7 +421,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 ))}
               </Form.Control>
             </Col>
-            <Col md={3}>
+            <Col md={4}>
               <h4>Syllabus</h4>
               <Form.Control
                 type="number"
@@ -396,7 +432,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 onChange={(e) => handleChange(e, 'syllabus')}
               />
             </Col>
-            <Col md={3}>
+            {/* <Col md={3}>
               <h4>Tags</h4>
               <Form.Control
                 type="text"
@@ -404,39 +440,45 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
                 onChange={(e) => handleArrayChange(e, 'tags', 'tags')}
                 placeholder="Comma separated tags"
               />
-            </Col>
+            </Col> */}
           </Row>
-
-          <h4 className="my-3">Detailed Ratings</h4>
+          <div style={{borderTop: "6px dotted lightgray", borderBottom: "6px dotted lightgray"}}>
+          <h4 className="h4style">Detailed Ratings</h4>
           {renderDetailedRatings()}
-
+          </div>
           <Row className="mb-3">
           <Col md={6}>
-    <h4>Advantages</h4>
-    {dapitData.advantage.map((adv, idx) => (
-      <div key={idx} className="mb-2">
-        <Form.Control
-          type="text"
-          value={adv}
-          onChange={(e) => handleAdandDis(idx, e, 'advantage')}
-          className="mb-1"
-        />
-      </div>
-    ))}
-  </Col>
-  <Col md={6}>
-    <h4>Disadvantages</h4>
-    {dapitData.disavantage.map((dis, idx) => (
-      <div key={idx} className="mb-2">
-        <Form.Control
-          type="text"
-          value={dis}
-          onChange={(e) => handleAdandDis(idx, e, 'disavantage')}
-          className="mb-1"
-        />
-      </div>
-    ))}
-  </Col>
+          <div style={{paddingTop: "10px"}}>
+            <h4 style={{color: 'green'}}>Advantages</h4>
+        
+            {dapitData.advantage.map((adv, idx) => (
+              <div key={idx} className="mb-2">
+                <Form.Control
+                  type="text"
+                  value={adv}
+                  onChange={(e) => handleAdandDis(idx, e, 'advantage')}
+                  className="mb-1"
+                />
+              </div>
+            ))}
+            </div>
+          </Col>
+        <Col md={6}>
+        <div style={{paddingTop: "10px" }}>
+
+          <h4 style={{color: 'red'}}>Disadvantages</h4>
+          {dapitData.disavantage.map((dis, idx) => (
+            <div key={idx} className="mb-2">
+              <Form.Control
+                type="text"
+                value={dis}
+                onChange={(e) => handleAdandDis(idx, e, 'disavantage')}
+                className="mb-1"
+              />
+            </div>
+          ))}
+          </div>
+        </Col>
             </Row>
           <Row className="mb-3">
             <Col>
@@ -453,6 +495,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             <Col md={6}>
               <h4>Final Grade</h4>
               <Form.Control
+              style={getCellStyle(dapitData.finalGrade || undefined)}
                 type="number"
                 min="4"
                 max="10"
@@ -464,6 +507,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             <Col md={6}>
               <h4>Change to be Commander</h4>
               <Form.Control
+              style={getCellStyle(dapitData.changeTobeCommender || undefined)}
                 type="number"
                 min="4"
                 max="10"
