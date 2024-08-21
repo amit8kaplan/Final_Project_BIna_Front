@@ -326,6 +326,7 @@ const getCellStyle = (value: number | undefined) => {
                 {ratingCategories[index + 1].data.map((data, idx) => (
                   <div key={idx} className="mb-2">
                     <Form.Control
+                    style={getCellStyle(data.value || undefined)}
                       type="number"
                       min="4"
                       max="10"
@@ -334,6 +335,7 @@ const getCellStyle = (value: number | undefined) => {
                       onChange={(e) => handleNestedChange(idx, e, 'value', ratingCategories[index + 1].category)}
                     />
                     <Form.Control
+                      style={getCellDesStyle(data.value || undefined)}
                       type="text"
                       placeholder="Description"
                       value={data.description}
