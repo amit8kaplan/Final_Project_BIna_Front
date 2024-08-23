@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Sidebar_com } from '../components/sideBar_views';
 import ViewDapit from '../components/view_Dapit';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
+import { borderLeftStyle } from 'html2canvas/dist/types/css/property-descriptors/border-style';
 interface Dapit {
   _id: string;
   nameInstractor: string;
@@ -69,10 +70,11 @@ const View: React.FC = () => {
 
   const handleFilterSubmitinFront = async (filters: any) => {
     console.log("handleFilterSubmitinFront: ", filters)
-    console.log("filters: ", filters)
+    console.log("handleFilterSubmitinFront filters: ", filters)
 
     try {
       const filteredDapits = await handleFiltersSubmit(filters);
+      console.log("handleFilterSubmitinFront filteredDapits: ", filteredDapits)
       setDapits(filteredDapits);
     } catch (error) {
       console.error('Error fetching filtered dapits:', error);

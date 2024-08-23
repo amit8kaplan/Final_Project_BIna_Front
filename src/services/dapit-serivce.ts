@@ -64,13 +64,13 @@ export const getDapits = async (filters: any) => {
 
 
 export const handleFiltersSubmit = async (filterData: any) => {
-    console.log("handleFiltersSubmit: ", filterData)
+    console.log("handleFilterSubmitinFront  dapit-serice: ", filterData)
     try {
       const dapits = await getDapits(filterData);
-      console.log("dapits: ", dapits)
+      console.log("handleFilterSubmitinFront  dapits: ", dapits)
       return dapits;
     } catch (error) {
-      console.error('Error handling filter submission:', error);
+      console.error('handleFilterSubmitinFront  Error handling filter submission:', error);
     }
   }
 
