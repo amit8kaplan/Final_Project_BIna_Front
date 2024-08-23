@@ -4,3 +4,14 @@
     align-items: center;
     padding: 10px;
   }
+
+.unauthorized-cell {
+  background: repeating-linear-gradient(
+    45deg,
+    hwb(232 38% 26% / 0.37),
+    #838cc5 10px,
+    #949ccc7e 10px,
+    #54566469 20px
+  );
+  color: white;
+}
