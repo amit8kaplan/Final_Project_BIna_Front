@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {groupsData, instructorsData, sessionsData, trainersData} from '../public/data';
-import { megama, piano } from "../public/dropDown_NavBar";
-import { right } from '@popperjs/core';
+import { groupsData, instructorsData, sessionsData, trainersData } from '../public/data';
+import { Button } from 'react-bootstrap';
 
 interface SidebarComProps {
     onSubmit: (filters: any) => void;
 }
 
 export function Sidebar_com({ onSubmit }: SidebarComProps) {
-    const [filters, setFilters] = useState({
+    const initialFiltersState = {
         nameInstractor: '',
         nameTrainer: '',
         namePersonalInstractor: '',
@@ -20,9 +19,9 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         changeTobeCommender: '',
         startDate: '',
         endDate: ''
-    });
+    };
 
-    const [enabledFilters, setEnabledFilters] = useState({
+    const initialEnabledFiltersState = {
         nameInstractor: false,
         nameTrainer: false,
         namePersonalInstractor: false,
@@ -33,7 +32,10 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         changeTobeCommender: false,
         startDate: false,
         endDate: false
-    });
+    };
+
+    const [filters, setFilters] = useState(initialFiltersState);
+    const [enabledFilters, setEnabledFilters] = useState(initialEnabledFiltersState);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -51,6 +53,14 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         });
     };
 
+    const handleSubmitforNone = () => {
+        // Reset filters and enabledFilters to their initial state
+        setFilters(initialFiltersState);
+        setEnabledFilters(initialEnabledFiltersState);
+        console.log("All filters cleared.");
+        onSubmit({});
+    }
+
     const handleSubmit = () => {
         const activeFilters = Object.keys(filters).reduce((acc, key) => {
             if (enabledFilters[key as keyof typeof enabledFilters]) {
@@ -58,15 +68,25 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
             }
             return acc;
         }, {} as any);
-        console.log("handleFilterSubmitinFront in sideBar" +JSON.stringify( activeFilters));
+        console.log("handleFilterSubmitinFront in sideBar" + JSON.stringify(activeFilters));
         onSubmit(activeFilters);
     }
+
     return (
         <div className="d-flex">
-            <nav className="sidebar p-2" style={{ fontSize: '0.8em', borderRight: '1px solid block' ,  color: '#343a40', height: '100vh', overflowY: 'auto' }}>
-                <h5>Filters</h5>
+            <nav className="sidebar p-2" style={{ fontSize: '0.8em', borderRight: '1px solid block', color: '#343a40', height: '100vh', overflowY: 'auto' }}>
+                <div className="row">
+                    <div className="col-md-4">
+                        <h5>Filters</h5>
+                    </div>
+                    <div className="col-md-8">
+                        <Button variant="primary" size="sm" className="float-end" onClick={handleSubmitforNone}>
+                            Clear
+                        </Button>
+                    </div>
+                </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filternameInstractor" name="nameInstractor" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filternameInstractor" name="nameInstractor" onChange={handleCheckboxChange} checked={enabledFilters.nameInstractor} />
                     <label className="form-check-label" htmlFor="filternameInstractor">Instructor Name</label>
                     <select className="form-control mt-2" name="nameInstractor" value={filters.nameInstractor} onChange={handleFilterChange} disabled={!enabledFilters.nameInstractor}>
                         <option value="">Select Instructor</option>
@@ -78,9 +98,9 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     </select>
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterNameTrainer" name="nameTrainer" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterNameTrainer" name="nameTrainer" onChange={handleCheckboxChange} checked={enabledFilters.nameTrainer} />
                     <label className="form-check-label" htmlFor="filterNameTrainer">Trainer Name</label>
-                    <select className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={handleFilterChange} disabled={!enabledFilters.nameTrainer} >
+                    <select className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={handleFilterChange} disabled={!enabledFilters.nameTrainer}>
                         <option value="">Select Trainer</option>
                         {trainersData.map((trainer, idx) => (
                             <option key={idx} value={trainer}>
@@ -90,25 +110,24 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     </select>
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filternamePersonalInstractor" name="namePersonalInstractor" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filternamePersonalInstractor" name="namePersonalInstractor" onChange={handleCheckboxChange} checked={enabledFilters.namePersonalInstractor} />
                     <label className="form-check-label" htmlFor="filternamePersonalInstractor">Personal Instructor Name</label>
                     <input type="text" className="form-control mt-2" name="namePersonalInstractor" value={filters.namePersonalInstractor} onChange={handleFilterChange} disabled={!enabledFilters.namePersonalInstractor} />
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterGroup" name="group" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterGroup" name="group" onChange={handleCheckboxChange} checked={enabledFilters.group} />
                     <label className="form-check-label" htmlFor="filterGroup">Group</label>
                     <select className="form-control mt-2" name="group" value={filters.group} onChange={handleFilterChange} disabled={!enabledFilters.group}>
                         <option value="">Select Group</option>
                         {groupsData.map((group, idx) => (
-                        <option key={idx} value={group}>
-                        {group}
-                        </option>
-                ))}
-                      
+                            <option key={idx} value={group}>
+                                {group}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterSession" name="session" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterSession" name="session" onChange={handleCheckboxChange} checked={enabledFilters.session} />
                     <label className="form-check-label" htmlFor="filterSession">Session</label>
                     <select className="form-control mt-2" name="session" value={filters.session} onChange={handleFilterChange} disabled={!enabledFilters.session}>
                         <option value="">Select Session</option>
@@ -118,27 +137,27 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                     </select>
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filtersilabus" name="silabus" onChange={handleCheckboxChange} />
-                    <label className="form-check-label" htmlFor="filtersilabus">silabus No.</label>
+                    <input type="checkbox" className="form-check-input" id="filtersilabus" name="silabus" onChange={handleCheckboxChange} checked={enabledFilters.silabus} />
+                    <label className="form-check-label" htmlFor="filtersilabus">Silabus No.</label>
                     <input type="text" className="form-control mt-2" name="silabus" value={filters.silabus} onChange={handleFilterChange} disabled={!enabledFilters.silabus} />
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterFinalGrade" name="finalGrade" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterFinalGrade" name="finalGrade" onChange={handleCheckboxChange} checked={enabledFilters.finalGrade} />
                     <label className="form-check-label" htmlFor="filterFinalGrade">Final Grade</label>
                     <input type="text" className="form-control mt-2" name="finalGrade" value={filters.finalGrade} onChange={handleFilterChange} disabled={!enabledFilters.finalGrade} />
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterchangeTobeCommender" name="changeTobeCommender" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterchangeTobeCommender" name="changeTobeCommender" onChange={handleCheckboxChange} checked={enabledFilters.changeTobeCommender} />
                     <label className="form-check-label" htmlFor="filterchangeTobeCommender">Change to be Commander</label>
                     <input type="text" className="form-control mt-2" name="changeTobeCommender" value={filters.changeTobeCommender} onChange={handleFilterChange} disabled={!enabledFilters.changeTobeCommender} />
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterStartDate" name="startDate" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterStartDate" name="startDate" onChange={handleCheckboxChange} checked={enabledFilters.startDate} />
                     <label className="form-check-label" htmlFor="filterStartDate">Start Date</label>
                     <input type="date" className="form-control mt-2" name="startDate" value={filters.startDate} onChange={handleFilterChange} disabled={!enabledFilters.startDate} />
                 </div>
                 <div className="form-check mt-3">
-                    <input type="checkbox" className="form-check-input" id="filterEndDate" name="endDate" onChange={handleCheckboxChange} />
+                    <input type="checkbox" className="form-check-input" id="filterEndDate" name="endDate" onChange={handleCheckboxChange} checked={enabledFilters.endDate} />
                     <label className="form-check-label" htmlFor="filterEndDate">End Date</label>
                     <input type="date" className="form-control mt-2" name="endDate" value={filters.endDate} onChange={handleFilterChange} disabled={!enabledFilters.endDate} />
                 </div>
