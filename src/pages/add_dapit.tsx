@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -8,6 +8,8 @@ import { useLocation } from 'react-router-dom';
 import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import {getIdpersonalInstractor} from '../services/id-service';
 import '../css/add_dapit.css';
+import { downloadPdf } from '../services/pdf-service';
+
 export interface IDapitData {
     nameInstructor: string;
     nameTrainer: string;
@@ -53,6 +55,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     // const route = useRoute();
     const location = useLocation();
     const state = location.state as IAddDapitProps || {};
+    const contentRef = useRef<HTMLDivElement | null>(null);
 
     const instructors = state.instructors || props.instructors || [];
     const trainers = state.trainers || props.trainers || [];
@@ -108,7 +111,11 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     };
     updatePersonalInstructor();
 }, [dapitData.nameInstructor, dapitData.nameTrainer]);
-
+const toPDF = () => {
+  const content = contentRef.current;
+  const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.syllabus+"_"+dapitData.nameInstructor;
+  downloadPdf(content, fileName);
+};
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
     setDapitData({ ...dapitData, [field]: e.target.value });
   };
@@ -365,10 +372,12 @@ const getCellStyle = (value: number | undefined) => {
   return (
     <Modal show={true} onHide={onClose} size="xl" style={{ fontSize: '0.9em', overflowY: 'auto' }}>
       <Modal.Header style={{fontSize:"20px"}} closeButton>
-        New Dapit
+        <Button variant="secondary" className="float-start" onClick={toPDF}>
+            Download PDF
+        </Button>
       </Modal.Header>
       <Modal.Body>
-        <div className="container">
+        <div className="container" ref={contentRef}>
           <Row className="mb-3">
             <Col md={3}>
               <h4>Instructor</h4>

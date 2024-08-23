@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/add_dapit.css';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-
+import { downloadPdf } from '../services/pdf-service';
 interface IData {
   value: number;
   description: string;
@@ -49,7 +49,7 @@ interface IDapitProps {
 
 const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
   const contentRef = useRef<HTMLDivElement | null>(null);
-
+  const dateGoodFormat = new Date(selectedDapit.date).toISOString().split('T')[0];
   const onEmail = () => {
     console.log('Emailing dapit details');
   };
@@ -134,29 +134,31 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
     return {};
   };
 
-  const downloadPDF = () => {
+  const toPDF = () => {
     const content = contentRef.current;
-    if (content) {
-      html2canvas(content, { scale: 2 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-        });
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save('dapit_details.pdf');
-      });
-    }
+    const fileName = "Dapit_Of_"+selectedDapit.nameTrainer+"_"+selectedDapit.session+"_"+selectedDapit.silabus+"_"+dateGoodFormat;
+    downloadPdf(content, fileName);
+    // if (content) {
+    //   html2canvas(content, { scale: 2 }).then(canvas => {
+    //     const imgData = canvas.toDataURL('image/png');
+    //     const pdf = new jsPDF({
+    //       orientation: 'portrait',
+    //       unit: 'mm',
+    //       format: 'a4',
+    //     });
+    //     const imgWidth = 210;
+    //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    //     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    //     pdf.save('dapit_details.pdf');
+    //   });
+    // }
   };
 
   return (
     <Modal show={true} onHide={onClose} size="xl" style={{ fontSize: '0.9em', overflowY: 'auto' }}>
       <Modal.Header closeButton>
         <div className="container">
-          <Button variant="secondary" className="float-start" onClick={downloadPDF}>
+          <Button variant="secondary" className="float-start" onClick={toPDF}>
             Download PDF
           </Button>
         </div>
@@ -178,7 +180,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
             </div>
             <div className="col-md-3">
               <h4>Date</h4>
-              <p>{new Date(selectedDapit.date).toISOString().split('T')[0]}</p>
+              <p>{dateGoodFormat}</p>
             </div>
           </div>
           <div className="row">
