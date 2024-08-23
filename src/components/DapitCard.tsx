@@ -131,17 +131,22 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         return { borderLeft: "1px dashed gray" }
     }
     const borderCard = (value: number) => {
-        if (value === undefined || value === 7) return;
-        if (value === 10) return { border: "2px solid green", backgroundColor: "honeyDew" }
-        if (value === 9) return { border: "2px solid green", backgroundColor: "honeyDew" }
-        if (value === 8) return { border: "2px solid darkseagreen", backgroundColor: "honeyDew" }
-        if (value === 6) return { border: "2px solid yellow", backgroundColor: "lightyellow" }
-        if (value === 5) return { border: "2px solid red", backgroundColor: "lightcoral" }
-        if (value === 4) return { border: "2px solid red", backgroundColor: "lightcoral" }
-    }
+    if (!value) {
+        return {}; // Return default style when no value is present (e.g., on backspace)
+      }
+      else if (value === 10) return { backgroundColor: 'forestgreen', color: 'black' };
+      else if (value === 9) return { backgroundColor: 'limegreen', color: 'black' };
+      else if (value === 8) return { backgroundColor: 'lightgreen', color: 'black' };
+      else if (value === 7) return { backgroundColor: 'silver', color: 'black' };
+      else if (value === 6) return { backgroundColor: 'khaki' };
+      else if (value === 5) return { backgroundColor: 'lightpink' };
+      else if (value === 4) return { backgroundColor: 'lightcoral' };
+    
+      return {};
+    };
     return (
         <div>
-            <Card style={{...borderCard(selectedDapit?.finalGrade)}}>
+            <Card style={{...borderCard(selectedDapit?.finalGrade), border: "double"}}>
                 <Card.Body>
                     <Row>
                         <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)}>

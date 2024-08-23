@@ -92,7 +92,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         return { borderLeft: "1px dashed gray" }
     }
     return (
-        <div><Card >
+        <div><Card style={{border: "double"}} >
             <Card.Body>
                 <Row>
                     <Col md={2} onClick={()=> handleOpenViewPostModal(post)}>

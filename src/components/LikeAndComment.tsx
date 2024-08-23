@@ -1,4 +1,4 @@
-import { FaEye,FaCommentPlus, FaComment, FaFlag } from 'react-icons/fa';
+import { FaEye, FaComments , FaCommentMedical , FaFlag } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
@@ -103,28 +103,35 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
     return (
         <div>
             <div>
-            <Row className='ms-2 pt-1'>
+            <Row className=''>
                 <Col className = 'btn'>
                     <FaEye /> {getLikeCount()}
                 </Col>
-            </Row>
-            <Row className='ms-2 pt-1'>
+            {/* </Row>
+            <Row className=''> */}
                 <Col className='btn'>
-                    <FaComment  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
+                    <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
+                    
+                </Col>
+                <Col className='btn'>
+                    <FaComments
+                        onClick={() => handleChangeFlag()}
+                    />
                     {" " +getCommentCount()}
                 </Col>
             </Row>
-            <Row className='ms-2  justify-content-end'>
-                <Col xs="auto" style={{borderStyle: 'outset' }}>
+            
+            {/* <Row className='ms-2  justify-content-end'> */}
+                {/* <Col xs="auto" style={{borderStyle: 'outset' }}>
                     <FaFlag
                             style={{ ...styleFlag(), fontSize: '0.8em' }}
                             onClick={() => handleChangeFlag()}
                         />
-                </Col>
-                <Col xs="auto" style={{borderStyle: 'outset' }}>
+                </Col> */}
+                {/* <Col xs="auto" style={{borderStyle: 'outset' }}>
                     <FontAwesomeIcon icon={["fas", "comment-plus"]} onClick={() => setShowAddCommentModal(true)} />
-                </Col>
-            </Row>
+                </Col> */}
+            {/* </Row> */}
             </div>
             <AddCommnetModal 
             show ={showAddComment}

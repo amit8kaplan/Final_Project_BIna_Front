@@ -106,9 +106,9 @@ const Wall: React.FC<IWallProps> = (props) => {
             <Row>
                 {wallData.length!=0 ? wallData.map((item, index) => (
                     <Col key={index} md={12} className="mb-3">
-                        <div>
+                        <div >
                             {item.title !== undefined || item.content !== undefined ? (
-                                <PostCard post={item} idTrainer={TrainerId}  />
+                                <PostCard   post={item} idTrainer={TrainerId}  />
                             ) : <DapitCard selectedDapit={item} idTrainer={TrainerId} />}
                         </div>
                     </Col>
