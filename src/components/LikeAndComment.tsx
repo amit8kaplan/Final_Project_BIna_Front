@@ -61,7 +61,10 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
         return comment.element.comments.length
     }
 
-
+    const handleOpenComments = () => {
+        console.log("handleOpenComments: ", id);
+        setShowAddCommentModal(true);
+    }
     const handleAddComment = async (personalname: string, content: string) => {
         // Handle comment here
         console.log("handleComment: ", id);
@@ -103,35 +106,24 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
     return (
         <div>
             <div>
-            <Row className=''>
-                <Col className = 'btn'>
-                    <FaEye /> {getLikeCount()}
-                </Col>
-            {/* </Row>
-            <Row className=''> */}
-                <Col className='btn'>
-                    <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
-                    
-                </Col>
-                <Col className='btn'>
-                    <FaComments
-                        onClick={() => handleChangeFlag()}
-                    />
-                    {" " +getCommentCount()}
-                </Col>
-            </Row>
-            
-            {/* <Row className='ms-2  justify-content-end'> */}
-                {/* <Col xs="auto" style={{borderStyle: 'outset' }}>
-                    <FaFlag
-                            style={{ ...styleFlag(), fontSize: '0.8em' }}
-                            onClick={() => handleChangeFlag()}
+                <Row><h3></h3></Row>
+                <Row className=''>
+                    <Col className = 'btn' style={{borderRight: "2px dashed gray"}}>
+                        <FaEye /> {getLikeCount()}
+                    </Col>
+                {/* </Row>
+                <Row className=''> */}
+                    <Col className='btn' style={{borderRight: "2px dashed gray"}}>
+                        <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
+                        
+                    </Col>
+                    <Col className='btn' >
+                        <FaComments
+                            onClick={() => handleOpenComments()}
                         />
-                </Col> */}
-                {/* <Col xs="auto" style={{borderStyle: 'outset' }}>
-                    <FontAwesomeIcon icon={["fas", "comment-plus"]} onClick={() => setShowAddCommentModal(true)} />
-                </Col> */}
-            {/* </Row> */}
+                        {" " +getCommentCount()}
+                    </Col>
+                </Row>
             </div>
             <AddCommnetModal 
             show ={showAddComment}
