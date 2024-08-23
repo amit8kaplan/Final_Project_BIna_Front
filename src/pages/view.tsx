@@ -78,7 +78,19 @@ const View: React.FC = () => {
       console.error('Error fetching filtered dapits:', error);
     }
   };
-
+  const getCellStyle = (value: number | undefined) => {
+    if (!value) {
+      return {}; // Return default style when no value is present (e.g., on backspace)
+    } else if (value === 10) return { backgroundColor: 'forestgreen', color: 'black' };
+    else if (value === 9) return { backgroundColor: 'limegreen', color: 'black' };
+    else if (value === 8) return { backgroundColor: 'lightgreen', color: 'black' };
+    else if (value === 7) return { backgroundColor: 'silver', color: 'black' };
+    else if (value === 6) return { backgroundColor: 'khaki' };
+    else if (value === 5) return { backgroundColor: 'lightpink' };
+    else if (value === 4) return { backgroundColor: 'lightcoral' };
+  
+    return {};
+  };
 
   const handleRowClick = (id: string) => {
     // Fetch detailed data for the selected dapit
@@ -120,14 +132,14 @@ const View: React.FC = () => {
               </thead>
               <tbody>
                 {dapits.map(dapit => (
-                  <tr key={dapit._id} onClick={() => handleRowClick(dapit._id)}>
-                    <td>{dapit.nameTrainer}</td>
-                    <td>{dapit.nameInstractor}</td>
-                    <td>{dapit.group}</td>
-                    <td>{dapit.session}</td>
-                    <td>{dapit.silabus}</td>
-                    <td>{dapit.finalGrade}</td>
-                    <td>{dapit.changeTobeCommender}</td>
+                  <tr key={dapit._id}  onClick={() => handleRowClick(dapit._id)}>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.nameTrainer}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.nameInstractor}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.group}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.session}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)} >{dapit.silabus}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.finalGrade}</td>
+                    <td style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.changeTobeCommender}</td>
                   </tr>
                 ))}
               </tbody>
