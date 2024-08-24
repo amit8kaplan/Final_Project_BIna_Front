@@ -37,7 +37,7 @@ export function Nav_componnets() {
                   key={index}
                   as={Link}
                   to={"/Wall"}
-                  state={{ trainerName: item }}
+                  state={{ trainerName: item, instructors: instructors, trainers: trainers, sessions: sessions, groups: groups }}
                 >
                   {item}
                 </NavDropdown.Item>

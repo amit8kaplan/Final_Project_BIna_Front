@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
-import AddDapit  from "./pages/add_dapit";
+import AddDapitPage  from "./pages/add_dapit";
 import View from "./pages/view";
 import Wall from "./pages/wall";
 import { YourComponent } from "./pages/reg_try";
@@ -56,7 +56,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route
             path="/AddDapit"
-            element={<AddDapit instructors={instructorsData} trainers={trainersData} sessions={sessionsData} groups ={groupsData}  />}
+            element={<AddDapitPage instructors={instructorsData} trainers={trainersData} sessions={sessionsData} groups ={groupsData}  />}
           />
           <Route path="/newDapit" element={<NewDapit/>} />
           <Route

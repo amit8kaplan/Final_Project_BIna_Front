@@ -148,7 +148,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                                 <Card.Text>{post.content}</Card.Text>
                             </Col>
                             <Col md={2} style={{...borderCol()}} >
-                                <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlagComments={handleFlagComments} handleLikes = {handleLieksInLikeAndComment} />
+                                <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlagComments={handleFlagComments} />
                             </Col>
                         </Row>
                     

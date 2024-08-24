@@ -10,8 +10,15 @@ import AddPostModal from '../components/AddPostModel';
 import PostCard from '../components/PostCard';
 import DapitCard from '../components/DapitCard';
 import { set } from 'react-hook-form';
+import AddDapit from '../components/AddDapit';
+import { FaFilePdf, FaComments  } from "react-icons/fa6";
+
 interface IWallProps {
     trainerName: string;
+    instructors?: string[];
+    trainers?: string[];
+    sessions?: string[];
+    groups?: string[];
 }
 
 export interface ITrainer {
@@ -23,6 +30,7 @@ const Wall: React.FC<IWallProps> = (props) => {
     const location = useLocation();
     const state = location.state as IWallProps || {};
     const trainerName = state.trainerName || props.trainerName;
+    const [showAddDapit, setShowAddDapit] = useState(false);
 
     const [TrainerId, setTrainerId] = useState<string | undefined>();
     const [wallData, setWallData] = useState<any[]>([]);
@@ -30,11 +38,14 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [selectedDapit, setSelectedDapit] = useState<any | null>(null);
     const [showDapitModal, setShowDapitModal] = useState(false);
     const [likesData, setLikesData] = useState<any[]>([]);
+    const [openComments, setOpenComments] = useState<string[]>([]);
+    const [flagShowComments, setFlagShowComments] = useState<boolean>(false);
+    const [flagShowAllComments, setFlagShowAllComments] = useState<boolean>(false);
     useEffect(() => {
         setWallData([]);
         setTrainerId(undefined);
         fetchWallData();
-    }, [trainerName]);
+    }, [trainerName, flagShowAllComments]);
 
     const fetchWallData = async () => {
         try {
@@ -69,7 +80,10 @@ const Wall: React.FC<IWallProps> = (props) => {
             console.error('Error adding post:', error);
         }
     };
-
+    const handleCloseAddDapit =() =>
+    {
+        setShowAddDapit(false);
+    }
     const handleLike = async (id: string) => {
       // console.log("handleLike: ", id);
       // likesData.find((like) => like.idDapitOrPost === id) ? 
@@ -82,9 +96,8 @@ const Wall: React.FC<IWallProps> = (props) => {
         // Handle comment here
     };
 
-    const handleOpenDapitModal = (dapit: any) => {
-        setSelectedDapit(dapit);
-        setShowDapitModal(true);
+    const handleOpenAllComments = (dapit: any) => {
+
     };
 
     const handleOpenPostModal = (post: any) => {
@@ -95,12 +108,36 @@ const Wall: React.FC<IWallProps> = (props) => {
         setSelectedDapit(null);
         setShowDapitModal(false);
     };
+    const handleButtonClick = () => {
+        setShowAddDapit(true);
+    };
 
+    
     return (
         <Container>
-            <Row className="mb-3">
-                <Col>
-                    <Button onClick={() => setShowAddPostModal(true)}>Add Post</Button>
+            <Row className="p-1">
+                        <h3>{trainerName} Wall</h3>
+            </Row>
+            <Row className="mb-2">
+                <Col md={4} >
+                    <Button className=' m-1' onClick={() => setShowAddPostModal(true)}>Add Post</Button>
+                    <Button className=' m-1' onClick={()=> setShowAddDapit(true)}>Add Dapit</Button>
+                        {showAddDapit && (
+                            <AddDapit 
+                                groups={props.groups} 
+                                instructors={props.instructors} 
+                                sessions={props.sessions} 
+                                trainers={props.trainers} 
+                                onclose={handleCloseAddDapit}
+                                theTrainer={trainerName}
+                                theGroup='Group1' /> 
+                        )}        
+                    {/* Todo: choose the group!! */}
+                    <Button className=' m-1 ' >
+                        <FaFilePdf
+                            onClick={() => console.log('Convert Wall to Pdf')}
+                        /> 
+                    </Button>
                 </Col>
             </Row>
             <Row>
@@ -109,7 +146,7 @@ const Wall: React.FC<IWallProps> = (props) => {
                         <div >
                             {item.title !== undefined || item.content !== undefined ? (
                                 <PostCard   post={item} idTrainer={TrainerId}  />
-                            ) : <DapitCard selectedDapit={item} idTrainer={TrainerId} />}
+                            ) : <DapitCard selectedDapit={item} idTrainer={TrainerId}  />}
                         </div>
                     </Col>
                 )) : <div>There is no data to display</div>}
