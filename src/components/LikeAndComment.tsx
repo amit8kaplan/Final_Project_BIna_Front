@@ -4,7 +4,9 @@ import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import { changeFlag } from '../services/wall-service';
 import AddCommnetModal from './AddCommentsModel';
+import ViewComments from './ViewComments';
 import { Icomment, putComment , postComment} from '../services/wall-service';
+import { set } from 'react-hook-form';
 interface ILikes {
     _id: string;
     idDapitOrPost: string;
@@ -21,19 +23,19 @@ interface LikeAndCmProps {
     id: string;
     likes: ILikes[];
     comments: Icomments[];
-    handleFlag: () => void;
+    handleFlagComments: (flag:boolean) => void;
 }
 
-const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFlag }) => {
+const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {} }) => {
     const [flag, setFlag] = useState<boolean>(false);
     const [showAddComment, setShowAddCommentModal] = useState(false);
+    const [showComments, setShowComments] = useState(false);
     console.log("comments ", comments);
     const handleChangeFlag = async () => {
         console.log("handleChangeFlag: ", id);
         try {
             const res = await changeFlag(id);
             console.log("handleChangeFlag 3", res);
-            handleFlag();
         } catch (error) {
             console.error('Error changing flag:', error);
         }
@@ -62,9 +64,14 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
     }
 
     const handleOpenComments = () => {
-        console.log("handleOpenComments: ", id);
-        setShowAddCommentModal(true);
-    }
+        setShowComments((prevShowComments) => {
+            const newShowComments = !prevShowComments;
+            console.log("handleOpenComments before: ", prevShowComments);
+            console.log("handleOpenComments after: ", newShowComments);
+            handleFlagComments(newShowComments);
+            return newShowComments;
+        });
+    };
     const handleAddComment = async (personalname: string, content: string) => {
         // Handle comment here
         console.log("handleComment: ", id);
@@ -79,7 +86,6 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
                 console.log("try1 postComment: ", id);
                 await postComment(id, personalname, content);
             }
-            handleFlag();
 
         }
         
@@ -124,7 +130,9 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes,comments, handleFl
                         {" " +getCommentCount()}
                     </Col>
                 </Row>
+               
             </div>
+         
             <AddCommnetModal 
             show ={showAddComment}
             handleClose={() => setShowAddCommentModal(false)}

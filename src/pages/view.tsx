@@ -83,7 +83,8 @@ const View: React.FC = () => {
   const getCellStyle = (value: number | undefined) => {
     if (!value) {
       return {}; // Return default style when no value is present (e.g., on backspace)
-    } else if (value === 10) return { backgroundColor: 'forestgreen', color: 'black' };
+    }
+    else if (value === 10) return { backgroundColor: 'forestgreen', color: 'black' };
     else if (value === 9) return { backgroundColor: 'limegreen', color: 'black' };
     else if (value === 8) return { backgroundColor: 'lightgreen', color: 'black' };
     else if (value === 7) return { backgroundColor: 'silver', color: 'black' };

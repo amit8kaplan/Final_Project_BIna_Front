@@ -7,6 +7,7 @@ import { FaEye, FaComment } from 'react-icons/fa';
 import {dateOnly} from '../services/dapit-serivce';
 import { getWall, IPostforSubmit, postPost, getLikes,getComments, putLike, postLike , handleLike} from '../services/wall-service';
 import LikeAndComment from './LikeAndComment';
+import ViewComments from './ViewComments';
 interface ILikes {
     _id: string;
     flag: boolean;
@@ -34,6 +35,8 @@ interface Icomments{
 
 const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const [newDate, setNewDate] = useState<string | null>(null);
+    const [showComments, setShowComments] = useState(false);
+
     useEffect(()=>{
         console.log('post: ', post);
         if (post.date !==null && post.date !== undefined) {
@@ -41,7 +44,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         }
         fetchLikes();
         fetchComments();
-    }, [post]);
+    }, [post, showComments]);
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
     const [showViewPostModal, setShowViewPostModal] = useState(false);
     const [likes, setLikes] = useState<ILikes[]>([]);
@@ -87,7 +90,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         fetchComments();
 
     }
-
+    const handleFlagComments = (flag: boolean) => {
+        console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
+        setShowComments(flag);
+    };
     const borderCol = () => {
         return { borderLeft: "1px dashed gray" }
     }
@@ -114,9 +120,28 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                                         <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
                                 </Col>
                             </Row> */}
-                        <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlag={handleFlginPostCard} />
+                        <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlagComments={handleFlagComments} />
                     </Col>
                 </Row>
+                {showComments && (
+                <ViewComments idDapitOrPost={post._id} comments={comments} />
+                    // <Row className='mt-2'>
+                    //     <Col>
+                    //     {comments.map((comment, index) => (
+                    //        <Card key={index} className='mt-2'>
+                    //             <Card.Body>
+                    //                 <Card.Text>
+                    //                     <strong>{comment.personalName}:</strong> {comment.content}
+                    //                 </Card.Text>
+                    //                 <Card.Subtitle className="text-muted">
+                    //                     {new Date(comment.date).toLocaleDateString()}
+                    //                 </Card.Subtitle>
+                    //             </Card.Body>
+                    //         </Card>
+                    //     ))}
+                    //     </Col>
+                    // </Row>
+                )}
             </Card.Body>
         </Card>
         {selectedPost && (

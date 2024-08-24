@@ -138,20 +138,6 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
     const content = contentRef.current;
     const fileName = "Dapit_Of_"+selectedDapit.nameTrainer+"_"+selectedDapit.session+"_"+selectedDapit.silabus+"_"+dateGoodFormat;
     downloadPdf(content, fileName);
-    // if (content) {
-    //   html2canvas(content, { scale: 2 }).then(canvas => {
-    //     const imgData = canvas.toDataURL('image/png');
-    //     const pdf = new jsPDF({
-    //       orientation: 'portrait',
-    //       unit: 'mm',
-    //       format: 'a4',
-    //     });
-    //     const imgWidth = 210;
-    //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    //     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    //     pdf.save('dapit_details.pdf');
-    //   });
-    // }
   };
 
   return (
