@@ -24,10 +24,9 @@ interface LikeAndCmProps {
     likes: ILikes[];
     comments: Icomments[];
     handleFlagComments: (flag:boolean) => void;
-    handleLikes:() => void;
 }
 
-const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {}, handleLikes = () =>{} }) => {
+const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {} }) => {
     const [flag, setFlag] = useState<boolean>(false);
     const [showAddComment, setShowAddCommentModal] = useState(false);
     const [showComments, setShowComments] = useState(false);
@@ -120,11 +119,11 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
                     </Col>
                 {/* </Row>
                 <Row className=''> */}
-                    <Col className='btn' style={{borderRight: "2px dashed gray"}} onClick={()=> handleLikes()}>
+                    <Col className='btn' style={{borderRight: "2px dashed gray"}}>
                         <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
                         
                     </Col>
-                    <Col className='btn' onClick={()=> handleLikes()} >
+                    <Col className='btn' >
                         <FaComments
                             onClick={() => handleOpenComments()}
                         />

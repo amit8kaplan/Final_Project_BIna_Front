@@ -154,27 +154,33 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     
       return {};
     };
+    const cursorpointer =() => {
+        return { cursor: "pointer" }
+    }
+    const opacity = () => {
+        return { opacity: "0.3" }
+    }
     return (
         <div>
             <Card style={{border: "double",  ...borderCard(selectedDapit?.finalGrade)}}>
                 <Card.Body>
                     <Row>
-                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)} style={ showComments ? { opacity: "0.3"} : {}}>
+                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)} style={{ ...showComments ? opacity() : {}, ...cursorpointer()}}>
                             <Card.Subtitle className="mb-2 text-muted">{selectedDapit.namePersonalInstractor}</Card.Subtitle>
                             <Card.Subtitle className="mb-2 text-muted">{newDate}</Card.Subtitle>
                         </Col>
-                        <Col md={2} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Title>{selectedDapit.session}</Card.Title>
                             <Card.Text>silabus: {selectedDapit.silabus}</Card.Text>
                         </Col>
-                        <Col md={2} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>finalGrade: {selectedDapit.finalGrade}</Card.Text>
                             <Card.Text>chance: {selectedDapit.changeTobeCommender}</Card.Text>
                         </Col>
-                        <Col md={4} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={4} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>{selectedDapit.summerize}</Card.Text>
                         </Col>
-                        <Col md={2} style={{...borderCol(), margin: '0'}} onClick={()=> handleAddLike(selectedDapit)}>
+                        <Col md={2} style={{...borderCol(), margin: '0'}}>
 
                             <LikeAndComment id={selectedDapit._id} likes={likes} comments ={comments} handleFlagComments={handleFlagComments} />
                         </Col>
