@@ -29,7 +29,10 @@ const ViewComments: React.FC<ViewCommentsProps> = ({ idDapitOrPost, comments }) 
     const borderCol = () => {
         return { borderLeft: "1px dashed gray" }
     }
-
+    const MainCardBodyStyle = () => {
+        return { 
+            opacity: '0.9'
+        };    }
     return (
         <div>
             <Row>
@@ -37,7 +40,7 @@ const ViewComments: React.FC<ViewCommentsProps> = ({ idDapitOrPost, comments }) 
                     {specificComments.length > 0 ? specificComments.map((commentGroup: Icomments, index) => (
                         <React.Fragment key={index}>
                             {commentGroup.comments.map((comment, commentIndex) => (
-                                <Card key={comment._id || commentIndex}>
+                                <Card key={comment._id || commentIndex} style={{...MainCardBodyStyle()}}>
                                     <Card.Body>
                                         <Row>
                                             <Col md={2}>

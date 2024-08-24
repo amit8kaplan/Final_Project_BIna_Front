@@ -24,9 +24,10 @@ interface LikeAndCmProps {
     likes: ILikes[];
     comments: Icomments[];
     handleFlagComments: (flag:boolean) => void;
+    handleLikes:() => void;
 }
 
-const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {} }) => {
+const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {}, handleLikes = () =>{} }) => {
     const [flag, setFlag] = useState<boolean>(false);
     const [showAddComment, setShowAddCommentModal] = useState(false);
     const [showComments, setShowComments] = useState(false);
@@ -114,16 +115,16 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
             <div>
                 <Row><h3></h3></Row>
                 <Row className=''>
-                    <Col className = 'btn' style={{borderRight: "2px dashed gray"}}>
+                    <Col className = 'btn' style={{borderRight: "2px dashed gray", cursor: "default"}}>
                         <FaEye /> {getLikeCount()}
                     </Col>
                 {/* </Row>
                 <Row className=''> */}
-                    <Col className='btn' style={{borderRight: "2px dashed gray"}}>
+                    <Col className='btn' style={{borderRight: "2px dashed gray"}} onClick={()=> handleLikes()}>
                         <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
                         
                     </Col>
-                    <Col className='btn' >
+                    <Col className='btn' onClick={()=> handleLikes()} >
                         <FaComments
                             onClick={() => handleOpenComments()}
                         />

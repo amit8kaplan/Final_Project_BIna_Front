@@ -81,6 +81,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         setSelectedPost(post);
         setShowViewPostModal(true);
     }
+    const handleAddLike = (post: any) => {
+        console.log("handleAddLike: ", post._id);
+        if (!showComments) {
+            handleLike(post._id, likes);
+            fetchLikes();
+        }
+    }
     const handleCloseViewPostModal = () => {
         setSelectedPost(null);
         setShowViewPostModal(false);
@@ -90,6 +97,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         fetchComments();
 
     }
+    const handleLieksInLikeAndComment = () => {
+        if (!showComments) {
+            handleLike(post._id, likes);
+            fetchLikes();
+        }
+    }
     const handleFlagComments = (flag: boolean) => {
         console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
         setShowComments(flag);
@@ -97,52 +110,57 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const borderCol = () => {
         return { borderLeft: "1px dashed gray" }
     }
+    const borderComments = () => {
+        return { borderBottom: "1px dashed gray" }
+    }
+    const MainCardBodyStyle = () => {
+        return { 
+            backgroundColor: "white",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"
+        };    }
+    const cursorpointer =() => {
+        return { cursor: "pointer" }
+    }
     return (
-        <div><Card style={{border: "double"}} >
-            <Card.Body>
-                <Row>
-                    <Col md={2} onClick={()=> handleOpenViewPostModal(post)}>
-                        <Card.Subtitle className="mb-2 text-muted">{post.nameInstractor}</Card.Subtitle>
-                        <Card.Subtitle className="mb-2 text-muted">{newDate }</Card.Subtitle>
-                    </Col>
-                    <Col md={8} style={{...borderCol()}} onClick={()=> handleOpenViewPostModal(post)}>
-                        <Card.Title>{post.title}</Card.Title>
-                        <Card.Text>{post.content}</Card.Text>
-                    </Col>
-                    <Col md={2} style={{...borderCol()}}>
-                            {/* <Row className='ms-2 pt-2'  >
-                                <Col>
-                                    <FaEye /> {getLikeCount(selectedDapit._id)}
-                                </Col>
-                            </Row>
-                            <Row className='ms-2 pt-3'>
-                                <Col >
-                                        <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
-                                </Col>
-                            </Row> */}
-                        <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlagComments={handleFlagComments} />
-                    </Col>
-                </Row>
+        <div>
+                <Card style={ {border: "double"}}>
+                    <Card.Body  >
+                        <Row>
+                            <Col 
+                                md={2} 
+                                onClick={()=> handleOpenViewPostModal(post)} 
+                                style={{
+                                    ...(showComments ? { opacity: "0.3"} : {}),
+                                    ...cursorpointer()
+                                }}
+                                    >
+                                <Card.Subtitle className="mb-2 text-muted">{post.nameInstractor}</Card.Subtitle>
+                                <Card.Subtitle className="mb-2 text-muted">{newDate }</Card.Subtitle>
+                            </Col>
+                            <Col md={8} 
+                                style={{ 
+                                    ...borderCol(), 
+                                    ...(showComments ? { opacity: "0.3"} : {}),
+                                    ...cursorpointer() 
+                                }}   
+                                onClick={()=> handleOpenViewPostModal(post)}>
+                                <Card.Title>{post.title}</Card.Title>
+                                <Card.Text>{post.content}</Card.Text>
+                            </Col>
+                            <Col md={2} style={{...borderCol()}} >
+                                <LikeAndComment id={post._id} likes={likes} comments = {comments} handleFlagComments={handleFlagComments} handleLikes = {handleLieksInLikeAndComment} />
+                            </Col>
+                        </Row>
+                    
+                     </Card.Body>
+            <div >
                 {showComments && (
-                <ViewComments idDapitOrPost={post._id} comments={comments} />
-                    // <Row className='mt-2'>
-                    //     <Col>
-                    //     {comments.map((comment, index) => (
-                    //        <Card key={index} className='mt-2'>
-                    //             <Card.Body>
-                    //                 <Card.Text>
-                    //                     <strong>{comment.personalName}:</strong> {comment.content}
-                    //                 </Card.Text>
-                    //                 <Card.Subtitle className="text-muted">
-                    //                     {new Date(comment.date).toLocaleDateString()}
-                    //                 </Card.Subtitle>
-                    //             </Card.Body>
-                    //         </Card>
-                    //     ))}
-                    //     </Col>
-                    // </Row>
+                    <div>
+                        <h5>Comments</h5>
+                        <ViewComments idDapitOrPost={post._id} comments={comments} />
+                        </div>
                 )}
-            </Card.Body>
+            </div>
         </Card>
         {selectedPost && (
             <ViewPost selectedPost = {selectedPost} handleClose={handleCloseViewPostModal} />

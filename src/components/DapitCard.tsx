@@ -5,6 +5,8 @@ import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDap
 import { dateOnly } from '../services/dapit-serivce';
 import { getComments, getWall, IPostforSubmit, postPost, getLikes, putLike, postLike, handleLike } from '../services/wall-service';
 import LikeAndComment from './LikeAndComment';
+import ViewComments from './ViewComments';
+
 interface IData {
     value: number;
     description: string;
@@ -64,6 +66,8 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const [newDate, setNewDate] = useState<string | null>(null);
     const [likes, setLikes] = useState<ILikes[]>([]);
     const [comments, setComments] = useState<Icomments[]>([]);
+    const [showComments, setShowComments] = useState(false);
+
     useEffect(() => {
         console.log('Dapit: ', selectedDapit);
         if (selectedDapit.date !== null && selectedDapit.date !== undefined) {
@@ -71,7 +75,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         }
         fetchLikes();
         fetchComments();
-    }, [selectedDapit]);
+    }, [selectedDapit, showComments]);
 
     const [viewDapit, setViewDapit] = useState<any | null>(null);
     const [showViewDapitModal, setShowViewDapitModal] = useState(false);
@@ -87,6 +91,11 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         } catch (error) {
             console.error('Error fetching likes:', error);
         }
+    }
+    const handleAddLike = (dapit: any) => {
+        console.log("handleAddLike: ", dapit._id);
+        handleLike(dapit._id, likes);
+        fetchLikes();
     }
     const fetchComments  = async () => {
         try {
@@ -124,8 +133,9 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         fetchLikes();
         fetchComments();
     }
-    const handleComment = async (DapitId: string, comment: string) => {
-        // Handle comment here
+    const handleFlagComments = (flag: boolean) => {
+        console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
+        setShowComments(flag);
     };
     const borderCol = () => {
         return { borderLeft: "1px dashed gray" }
@@ -146,39 +156,38 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     };
     return (
         <div>
-            <Card style={{...borderCard(selectedDapit?.finalGrade), border: "double"}}>
+            <Card style={{border: "double",  ...borderCard(selectedDapit?.finalGrade)}}>
                 <Card.Body>
                     <Row>
-                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} onClick={() => handleOpenViewDapitModal(selectedDapit)} style={ showComments ? { opacity: "0.3"} : {}}>
                             <Card.Subtitle className="mb-2 text-muted">{selectedDapit.namePersonalInstractor}</Card.Subtitle>
                             <Card.Subtitle className="mb-2 text-muted">{newDate}</Card.Subtitle>
                         </Col>
-                        <Col md={2} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Title>{selectedDapit.session}</Card.Title>
                             <Card.Text>silabus: {selectedDapit.silabus}</Card.Text>
                         </Col>
-                        <Col md={2} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={2} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>finalGrade: {selectedDapit.finalGrade}</Card.Text>
                             <Card.Text>chance: {selectedDapit.changeTobeCommender}</Card.Text>
                         </Col>
-                        <Col md={4} style={{...borderCol()}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
+                        <Col md={4} style={{...borderCol(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>{selectedDapit.summerize}</Card.Text>
                         </Col>
-                        <Col md={2} style={{...borderCol(), margin: '0'}}>
-                            {/* <Row className='ms-2 pt-2'  >
-                                <Col>
-                                    <FaEye /> {getLikeCount(selectedDapit._id)}
-                                </Col>
-                            </Row>
-                            <Row className='ms-2 pt-3'>
-                                <Col >
-                                        <FaComment className='CommentIconBtn' onClick={() => handleComment(selectedDapit._id, 'This is a comment')}/> 
-                                </Col>
-                            </Row> */}
-                            <LikeAndComment id={selectedDapit._id} likes={likes} comments ={comments} handleFlag={handleFlginPostCard} />
+                        <Col md={2} style={{...borderCol(), margin: '0'}} onClick={()=> handleAddLike(selectedDapit)}>
+
+                            <LikeAndComment id={selectedDapit._id} likes={likes} comments ={comments} handleFlagComments={handleFlagComments} />
                         </Col>
                     </Row>
                 </Card.Body>
+            <div >
+                {showComments && (
+                    <div>
+                        <h5>Comments</h5>
+                        <ViewComments idDapitOrPost={selectedDapit._id} comments={comments} />
+                        </div>
+                )}
+            </div>
             </Card>
             {viewDapit && (
                 <ViewDapit selectedDapit={viewDapit} onClose={handleCloseViewDapitModal} />
