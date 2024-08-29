@@ -133,7 +133,7 @@ const Wall: React.FC<IWallProps> = (props) => {
                     </Button>
                 </Col>
             </Row>
-            <Row ref={contentRef}>
+            <Row>
                 {wallData.length!=0 ? wallData.map((item, index) => (
                     <Col key={index} md={12} className="mb-3">
                         <div >

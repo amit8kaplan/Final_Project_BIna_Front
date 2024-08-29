@@ -1,5 +1,5 @@
 // PostCard.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { set } from 'react-hook-form';
 import { FaEye, FaComment } from 'react-icons/fa';
@@ -34,6 +34,8 @@ interface Icomments{
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
+    const contentRef = useRef<HTMLDivElement | null>(null);
+
     const [newDate, setNewDate] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
@@ -125,7 +127,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         return { cursor: "pointer" }
     }
     return (
-        <div>
+        <div >
                 <Card style={ {border: "double"}}>
                     <Card.Body  >
                         <Row>
