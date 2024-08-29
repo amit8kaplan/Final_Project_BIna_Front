@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDapit component
@@ -12,6 +12,8 @@ import DapitCard from '../components/DapitCard';
 import { set } from 'react-hook-form';
 import AddDapit from '../components/AddDapit';
 import { FaFilePdf, FaComments  } from "react-icons/fa6";
+import { downloadPdf } from '../services/pdf-service';
+import { getStartOfToday } from 'react-datepicker/dist/date_utils';
 
 interface IWallProps {
     trainerName: string;
@@ -27,6 +29,8 @@ export interface ITrainer {
 }
 
 const Wall: React.FC<IWallProps> = (props) => {
+    const contentRef = useRef<HTMLDivElement | null>(null);
+
     const location = useLocation();
     const state = location.state as IWallProps || {};
     const trainerName = state.trainerName || props.trainerName;
@@ -84,38 +88,27 @@ const Wall: React.FC<IWallProps> = (props) => {
     {
         setShowAddDapit(false);
     }
-    const handleLike = async (id: string) => {
-      // ////console.log("handleLike: ", id);
-      // likesData.find((like) => like.idDapitOrPost === id) ? 
-      // await putLike(id, 'like', likesData.find((like) => like.idDapitOrPost === id).count + 1)
-      //  : await postLike(id);
-      //   fetchWallData();
-    }
-
-    const handleComment = async (postId: string, comment: string) => {
-        // Handle comment here
-    };
-
-    const handleOpenAllComments = (dapit: any) => {
-
-    };
-
-    const handleOpenPostModal = (post: any) => {
-        // Handle opening post modal here
-    }
-
+   
     const handleCloseDapitModal = () => {
         setSelectedDapit(null);
         setShowDapitModal(false);
     };
-    const handleButtonClick = () => {
-        setShowAddDapit(true);
+
+    const toPDF = () => {
+        console.log('toPDF');
+        const content = contentRef.current;
+        const currentDate = new Date();
+        
+        const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}.${String(currentDate.getMonth() + 1).padStart(2, '0')}.${currentDate.getFullYear()}`;
+        const fileName = `${trainerName}_Wall_${formattedDate}`;
+        
+        downloadPdf(content, fileName);
     };
 
     
     return (
-        <Container>
-            <Row className="p-1">
+        <Container ref={contentRef} >
+            <Row className="p-1" >
                         <h3>{trainerName} Wall</h3>
             </Row>
             <Row className="mb-2">
@@ -135,12 +128,12 @@ const Wall: React.FC<IWallProps> = (props) => {
                     {/* Todo: choose the group!! */}
                     <Button className=' m-1 ' >
                         <FaFilePdf
-                            onClick={() => console.log('Convert Wall to Pdf')}
+                            onClick={toPDF}
                         /> 
                     </Button>
                 </Col>
             </Row>
-            <Row>
+            <Row ref={contentRef}>
                 {wallData.length!=0 ? wallData.map((item, index) => (
                     <Col key={index} md={12} className="mb-3">
                         <div >

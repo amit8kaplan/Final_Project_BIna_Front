@@ -32,8 +32,8 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
     const [commentsCount, setCommentsCount] = useState<number>(0);
     const [showAddComment, setShowAddCommentModal] = useState(false);
     const [showComments, setShowComments] = useState(false);
-    console.log("id ", id );
-    console.log("ttt comments ", comments);
+    //console.log("id ", id );
+    // //console.log("ttt comments ", comments);
     useEffect(() => {
 
         const getLikeCount = () => {
@@ -41,36 +41,36 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
             return like ? like.count : 0;
         }
         // const getCommentCount = () => {
-        //     console.log("getCommentCount: ", id);
-        //     //console.log("getCommentCount: ", comments);
+        //     //console.log("getCommentCount: ", id);
+        //     ////console.log("getCommentCount: ", comments);
         //     let comment:any;
         //     comments.forEach(element => {
         //         if (element.idDapitOrPost == id) {
-        //             console.log("ttt the id is: ", id);
-        //             console.log("ttt the elemnt: ", element);
+        //             //console.log("ttt the id is: ", id);
+        //             //console.log("ttt the elemnt: ", element);
         //             comment = {...comment, element};
         //         }
         //     });
         //     if (comment === undefined) {
         //         return 0;
         //     }
-        //     console.log("ttt comment: ", comment);
-        //     //console.log("getCommentCount: ", comment.element.comments.length);
+        //     //console.log("ttt comment: ", comment);
+        //     ////console.log("getCommentCount: ", comment.element.comments.length);
         //     return comment.element.comments.length
         // }
         const getCommentCount = () => {
-            console.log("getCommentCount: ", id);
+            //console.log("getCommentCount: ", id);
             
             let totalComments = 0;
         
             comments.forEach(element => {
                 if (element.idDapitOrPost === id) {
-                    console.log("Matching element found for id: ", id);
+                    //console.log("Matching element found for id: ", id);
                     totalComments += element.comments.length;
                 }
             });
         
-            console.log("Total comments for id:", id, "is", totalComments);
+            //console.log("Total comments for id:", id, "is", totalComments);
             return totalComments;
         };
         
@@ -81,8 +81,8 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
     const handleOpenComments = () => {
         setShowComments((prevShowComments) => {
             const newShowComments = !prevShowComments;
-            //console.log("handleOpenComments before: ", prevShowComments);
-            //console.log("handleOpenComments after: ", newShowComments);
+            ////console.log("handleOpenComments before: ", prevShowComments);
+            ////console.log("handleOpenComments after: ", newShowComments);
             handleFlagComments(newShowComments);
             return newShowComments;
         });
@@ -100,7 +100,7 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
             setCommentsCount(prevCount => prevCount + 1);
             setShowAddCommentModal(false); // Close the modal after adding a comment
         } catch (error) {
-            //console.error('Error adding comment:', error);
+            ////console.error('Error adding comment:', error);
         }
     };
     return (
