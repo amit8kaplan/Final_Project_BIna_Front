@@ -36,29 +36,29 @@ interface Icomments{
 const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const [newDate, setNewDate] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
-
+    const [selectedPost, setSelectedPost] = useState<any | null>(null);
+    const [showViewPostModal, setShowViewPostModal] = useState(false);
+    const [likes, setLikes] = useState<ILikes[]>([]);
+    const [comments, setComments] = useState<Icomments[]>([]);
     useEffect(()=>{
-        console.log('post: ', post);
+        //console.log('post: ', post);
         if (post.date !==null && post.date !== undefined) {
             setNewDate(dateOnly(post.date));
         }
         fetchLikes();
         fetchComments();
     }, [post, showComments]);
-    const [selectedPost, setSelectedPost] = useState<any | null>(null);
-    const [showViewPostModal, setShowViewPostModal] = useState(false);
-    const [likes, setLikes] = useState<ILikes[]>([]);
-    const [comments, setComments] = useState<Icomments[]>([]);
+
     const fetchLikes = async () => {
         try {
             if (!idTrainer) {
                 return;
             }
             const likes = await getLikes(idTrainer);
-            console.log('likes: ', likes);
+            //console.log('likes: ', likes);
             setLikes(likes);
         } catch (error) {
-            console.error('Error fetching likes:', error);
+            //console.error('Error fetching likes:', error);
         }
     }
     const fetchComments  = async () => {
@@ -67,22 +67,23 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
                 return;
             }
             const comments = await getComments(idTrainer);
-            console.log('comments: ', comments);
+            console.log('post id: ', post._id);
+            console.log('comments of Post: ', comments);
             setComments(comments);
         } catch (error) {
-            console.error('Error fetching comments:', error);
+            //console.error('Error fetching comments:', error);
         }
     }
 
     const handleOpenViewPostModal = (post: any) => {
-        console.log("post: ", post);
+        //console.log("post: ", post);
         handleLike(post._id, likes);
         fetchLikes();
         setSelectedPost(post);
         setShowViewPostModal(true);
     }
     const handleAddLike = (post: any) => {
-        console.log("handleAddLike: ", post._id);
+        //console.log("handleAddLike: ", post._id);
         if (!showComments) {
             handleLike(post._id, likes);
             fetchLikes();
@@ -91,6 +92,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const handleCloseViewPostModal = () => {
         setSelectedPost(null);
         setShowViewPostModal(false);
+        fetchComments();
+
     };
     const handleFlginPostCard = () => {
         fetchLikes();
@@ -104,7 +107,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
         }
     }
     const handleFlagComments = (flag: boolean) => {
-        console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
+        //console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
         setShowComments(flag);
     };
     const borderCol = () => {

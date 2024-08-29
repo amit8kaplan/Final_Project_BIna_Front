@@ -71,7 +71,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const [viewDapit, setViewDapit] = useState<any | null>(null);
 
     useEffect(() => {
-        console.log('Dapit: ', selectedDapit);
+        //console.log('Dapit: ', selectedDapit);
         if (selectedDapit.date !== null && selectedDapit.date !== undefined) {
             setNewDate(dateOnly(selectedDapit.date));
         }
@@ -86,14 +86,14 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                 return;
             }
             const likes = await getLikes(idTrainer);
-            console.log('likes: ', likes);
+            //console.log('likes: ', likes);
             setLikes(likes);
         } catch (error) {
-            console.error('Error fetching likes:', error);
+            //console.error('Error fetching likes:', error);
         }
     }
     const handleAddLike = (dapit: any) => {
-        console.log("handleAddLike: ", dapit._id);
+        //console.log("handleAddLike: ", dapit._id);
         handleLike(dapit._id, likes);
         fetchLikes();
     }
@@ -103,14 +103,15 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                 return;
             }
             const comments = await getComments(idTrainer);
+            console.log('Dapit id: ', selectedDapit._id);
             console.log('fetchComments Dapit: ', comments);
             setComments(comments);
         } catch (error) {
-            console.error('Error fetching comments:', error);
+            //console.error('Error fetching comments:', error);
         }
     }
     const handleOpenViewDapitModal = (Dapit: any) => {
-        console.log("Dapit: ", Dapit);
+        //console.log("Dapit: ", Dapit);
         handleLike(Dapit._id, likes);
         fetchLikes();
         setViewDapit(Dapit);
@@ -125,7 +126,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
 
 
     const getLikeCount = (idDapitOrPost: string) => {
-        console.log("getLikeCount: ", idDapitOrPost);
+        //console.log("getLikeCount: ", idDapitOrPost);
         const like = likes.find(like => like.idDapitOrPost === idDapitOrPost);
         return like ? like.count : 0;
     }
@@ -134,7 +135,7 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         fetchComments();
     }
     const handleFlagComments = (flag: boolean) => {
-        console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
+        //console.log("handleOpenComments in handleFlagComments at PostCard: ", flag);
         setShowComments(flag);
     };
     const borderCol = () => {

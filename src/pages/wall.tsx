@@ -53,14 +53,14 @@ const Wall: React.FC<IWallProps> = (props) => {
             setTrainerId(TrainerData[0]._id);
 
             const wallData = await getWall(TrainerData[0]._id);
-            console.log('wallData: ', wallData);
+            ////console.log('wallData: ', wallData);
             setWallData(wallData);
 
             // const likes = await getLikes(TrainerData[0]._id);
-            // console.log('likes: ', likes);
+            // ////console.log('likes: ', likes);
             // setLikesData(likes);
         } catch (error) {
-            console.error('Error fetching TrainerData:', error);
+            ////console.error('Error fetching TrainerData:', error);
         }
     };
 
@@ -77,7 +77,7 @@ const Wall: React.FC<IWallProps> = (props) => {
             await postPost(submitPost);
             fetchWallData();
         } catch (error) {
-            console.error('Error adding post:', error);
+            ////console.error('Error adding post:', error);
         }
     };
     const handleCloseAddDapit =() =>
@@ -85,7 +85,7 @@ const Wall: React.FC<IWallProps> = (props) => {
         setShowAddDapit(false);
     }
     const handleLike = async (id: string) => {
-      // console.log("handleLike: ", id);
+      // ////console.log("handleLike: ", id);
       // likesData.find((like) => like.idDapitOrPost === id) ? 
       // await putLike(id, 'like', likesData.find((like) => like.idDapitOrPost === id).count + 1)
       //  : await postLike(id);

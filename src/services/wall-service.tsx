@@ -126,6 +126,7 @@ export const postLike = async (idDapitOrPost: string) => {
 export const getComments = async (trainerId: string) => {
     try{
         const response = await apiClient.get(`/wall/comments/${trainerId}`);
+        console.log("getComments: ", response.data)
         return response.data;
     }
     catch (error) {

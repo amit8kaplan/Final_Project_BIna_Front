@@ -18,21 +18,25 @@ const ViewComments: React.FC<ViewCommentsProps> = ({ idDapitOrPost, comments }) 
     const [specificComments, setSpecificComments] = useState<Icomments[]>([]);
 
     useEffect(() => {
-        console.log('ViewComments: ', comments);
-        console.log('ViewComments: ', idDapitOrPost);
+        const filteredComments = comments
+            .filter(comment => comment.idDapitOrPost === idDapitOrPost)
+            .map(commentGroup => ({
+                ...commentGroup,
+                comments: commentGroup.comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            }))
+            .sort((a, b) => new Date(b.comments[0]?.date).getTime() - new Date(a.comments[0]?.date).getTime());
 
-        const filteredComments = comments.filter(comment => comment.idDapitOrPost === idDapitOrPost);
         setSpecificComments(filteredComments);
-        console.log('ViewComments: ', filteredComments);
     }, [comments, idDapitOrPost]);
 
     const borderCol = () => {
-        return { borderLeft: "1px dashed gray" }
-    }
+        return { borderLeft: "1px dashed gray" };
+    };
+
     const MainCardBodyStyle = () => {
-        return { 
-            opacity: '0.9'
-        };    }
+        return { opacity: '0.9' };
+    };
+
     return (
         <div>
             <Row>
