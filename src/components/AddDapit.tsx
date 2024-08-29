@@ -245,7 +245,7 @@ const toPDF = () => {
             finalGrade:  undefined,
             changeTobeCommender:  undefined,
         });
-        // onClose(); // Close the modal after submission
+        handleOnClose();
     }catch(error){
         console.error('Error submitting dapit:', error);    
     }

@@ -28,41 +28,36 @@ interface LikeAndCmProps {
 
 const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleFlagComments = () => {} }) => {
     const [flag, setFlag] = useState<boolean>(false);
+    const [likeCount, setLikeCount] = useState<number>(0);
+    const [commentsCount, setCommentsCount] = useState<number>(0);
     const [showAddComment, setShowAddCommentModal] = useState(false);
     const [showComments, setShowComments] = useState(false);
     console.log("comments ", comments);
-    const handleChangeFlag = async () => {
-        console.log("handleChangeFlag: ", id);
-        try {
-            const res = await changeFlag(id);
-            console.log("handleChangeFlag 3", res);
-        } catch (error) {
-            console.error('Error changing flag:', error);
+    useEffect(() => {
+        const getLikeCount = () => {
+            const like = likes.find(like => like.idDapitOrPost === id);
+            return like ? like.count : 0;
         }
-    }
-    
-    const getLikeCount = () => {
-        console.log("getLikeCount: ", id);
-        const like = likes.find(like => like.idDapitOrPost === id);
-        return like ? like.count : 0;
-    }
-    const getCommentCount = () => {
-        console.log("getCommentCount: ", id);
-        console.log("getCommentCount: ", comments);
-        let comment:any;
-        comments.forEach(element => {
-            if (element.idDapitOrPost === id) {
-                console.log("getCommentCount: ", element);
-                comment = {...comment, element};
+        const getCommentCount = () => {
+            console.log("getCommentCount: ", id);
+            console.log("getCommentCount: ", comments);
+            let comment:any;
+            comments.forEach(element => {
+                if (element.idDapitOrPost === id) {
+                    console.log("getCommentCount: ", element);
+                    comment = {...comment, element};
+                }
+            });
+            if (comment === undefined) {
+                return 0;
             }
-        });
-        if (comment === undefined) {
-            return 0;
+            console.log("getCommentCount: ", comment.element.comments.length);
+            return comment.element.comments.length
         }
-        console.log("getCommentCount: ", comment.element.comments.length);
-        return comment.element.comments.length
-    }
-
+        setCommentsCount(getCommentCount());
+        setLikeCount(getLikeCount());
+    }, [likes, comments, id]);
+  
     const handleOpenComments = () => {
         setShowComments((prevShowComments) => {
             const newShowComments = !prevShowComments;
@@ -72,73 +67,45 @@ const LikeAndComment: React.FC<LikeAndCmProps> = ({ id, likes, comments, handleF
             return newShowComments;
         });
     };
+    
     const handleAddComment = async (personalname: string, content: string) => {
-        // Handle comment here
-        console.log("handleComment: ", id);
-        try{ 
-
+        try {
             const existComment = comments.find(comment => comment.idDapitOrPost === id);
-            console.log("try1 existComment: ", existComment);
             if (existComment !== undefined) {
                 await putComment(id, personalname, content);
-            }
-            else if(existComment === undefined){ 
-                console.log("try1 postComment: ", id);
+            } else {
                 await postComment(id, personalname, content);
             }
-
-        }
-        
-        catch (error) {
+            // Update comments count after adding a comment
+            setCommentsCount(prevCount => prevCount + 1);
+            setShowAddCommentModal(false); // Close the modal after adding a comment
+        } catch (error) {
             console.error('Error adding comment:', error);
         }
-
     };
-
-    const styleFlag = () => {
-        console.log("flag: ", flag);
-        const like = likes.find(like => like.idDapitOrPost === id);
-        if (like === undefined) {
-            return { color: 'gray', cursor: 'none',visibility: 'hidden' };
-        }
-        console.log("likestyleFlag: ", like);
-        if (like?.flag === true) {
-            console.log("flag if: ", like.flag);
-            return { color: 'red', cursor: 'pointer',visibility: 'visible' };
-        }
-        return { color: 'black', cursor: 'pointer',visibility: 'visible'  };
-    }
-
     return (
         <div>
             <div>
                 <Row><h3></h3></Row>
                 <Row className=''>
-                    <Col className = 'btn' style={{borderRight: "2px dashed gray", cursor: "default"}}>
-                        <FaEye /> {getLikeCount()}
+                    <Col className='btn' style={{ borderRight: "2px dashed gray", cursor: "default" }}>
+                        <FaEye /> {likeCount}
                     </Col>
-                {/* </Row>
-                <Row className=''> */}
-                    <Col className='btn' style={{borderRight: "2px dashed gray"}}>
-                        <FaCommentMedical  className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
-                        
+                    <Col className='btn' style={{ borderRight: "2px dashed gray" }}>
+                        <FaCommentMedical className='CommentIconBtn' onClick={() => setShowAddCommentModal(true)} />
                     </Col>
-                    <Col className='btn' >
-                        <FaComments
-                            onClick={() => handleOpenComments()}
-                        />
-                        {" " +getCommentCount()}
+                    <Col className='btn'>
+                        <FaComments onClick={() => handleOpenComments()} />
+                        {" " + commentsCount}
                     </Col>
                 </Row>
-               
             </div>
-         
-            <AddCommnetModal 
-            show ={showAddComment}
-            handleClose={() => setShowAddCommentModal(false)}
-            handleSave={handleAddComment}/>
-            </div>
-        );
+            <AddCommnetModal
+                show={showAddComment}
+                handleClose={() => setShowAddCommentModal(false)}
+                handleSave={handleAddComment} />
+        </div>
+    );
 };
 
 export default LikeAndComment;

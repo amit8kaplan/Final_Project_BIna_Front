@@ -67,6 +67,8 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
     const [likes, setLikes] = useState<ILikes[]>([]);
     const [comments, setComments] = useState<Icomments[]>([]);
     const [showComments, setShowComments] = useState(false);
+    const [showViewDapitModal, setShowViewDapitModal] = useState(false);
+    const [viewDapit, setViewDapit] = useState<any | null>(null);
 
     useEffect(() => {
         console.log('Dapit: ', selectedDapit);
@@ -77,8 +79,6 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
         fetchComments();
     }, [selectedDapit, showComments]);
 
-    const [viewDapit, setViewDapit] = useState<any | null>(null);
-    const [showViewDapitModal, setShowViewDapitModal] = useState(false);
     
     const fetchLikes = async () => {
         try {
