@@ -6,6 +6,7 @@ import { trainersData, sessionsData, categoriesData, silabusPerSessionData } fro
 import { getMegamGradesAvg, getAveragePerformance } from '../services/matrics-serivce';
 import ViewDapit from '../components/view_Dapit';
 import Sidebar_piano from '../components/sidebar_piano';
+import { css } from 'jquery';
 
 interface IpianoProps {
   group: string;
@@ -29,7 +30,9 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    
     fetchDapits();
+
   }, [group]);
 
   const handleShowModal = (dapit:any) => {
@@ -97,7 +100,6 @@ const Piano: React.FC<IpianoProps> = (props) => {
       console.log('avgHanichPerPreformance:', avgHanichPerPreformance);
 
       setAveragePerformance(AveragePerformance);
-
     } catch (error) {
       console.error('Error fetching dapits:', error);
     }
