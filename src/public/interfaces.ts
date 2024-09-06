@@ -5,6 +5,7 @@ export interface IInstractor {
     _id?: string;
     permissions?: string;
 }
+
 export interface ITrainer{
     name: string;
     _id?: string;
@@ -13,6 +14,7 @@ export interface ITrainer{
 export interface ISession{
     name: string;
     silabus: number[]; 
+    _id?: string;
 }
 
 export interface IGroup{
