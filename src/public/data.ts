@@ -1,4 +1,3 @@
-import exp from "constants";
 
 export const instructorsData =  ["Kaplan1", "Kaplan2", "Kaplan2"];
 export const trainersData = ["Amit1", "Amit2", "Amit3"];
@@ -18,3 +17,20 @@ export const categoriesData = ["identification", "payload", "decryption",
          "dealingWithFailures", "dealingWithStress", "makingDecisions", "pilotNature",
           "crewMember", "finalGrade", "changeTobeCommender"];
 
+export function getAuthHeaders() {
+    const clientId = localStorage.getItem('client-id');  // Assuming clientId and OTP are stored in local storage
+    const otp = localStorage.getItem('otp');
+    
+    if (!clientId || !otp) {
+        throw new Error('Client ID and OTP are required');
+    }
+
+    return {
+        'client-id': clientId,
+        'otp': otp,
+    };
+}
+
+export function verifyRegular(clientID:string, InstractorId: string){
+    return (clientID === InstractorId);
+}
