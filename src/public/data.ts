@@ -30,6 +30,17 @@ export function getAuthHeaders() {
         'otp': otp,
     };
 }
+export function setAuthHeaders(clientId: string, otp: string) {
+    if (!clientId || !otp) {
+        throw new Error('Client ID and OTP are required');
+    }
+    localStorage.setItem('client-id', clientId);
+    localStorage.setItem('otp', otp);
+    if (!localStorage.getItem('client-id') || !localStorage.getItem('otp')) {
+        return false;
+    }
+    return true;
+}
 
 export function verifyRegular(clientID:string, InstractorId: string){
     return (clientID === InstractorId);
