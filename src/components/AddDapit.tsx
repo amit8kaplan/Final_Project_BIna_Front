@@ -9,11 +9,15 @@ import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import {getIdpersonalInstractor} from '../services/id-service';
 import '../css/add_dapit.css';
 import { downloadPdf } from '../services/pdf-service';
-
+import { useDataContext } from '../DataContext';
+import {ITrainer } from '../public/interfaces';
 export interface IDapitData {
+    idInstractor: string,
+    idTrainer:string,
     nameInstructor: string;
     nameTrainer: string;
-    namePersonalInstructor: string;
+    namePersonalInstractor: string;
+    idPersonalInstractor: string;
     group: string;
     session: string;
     syllabus: string;
@@ -44,38 +48,51 @@ export interface IDapitData {
 }
 
 interface IAddDapitProps {
-  instructors?: string[];
-  trainers?: string[];
-  sessions?: string[];
-  groups?: string[];
   onclose: () => void;
   theTrainer: string;
   theGroup: string;
 }
-
+// namePersonalInstractor: personalName[0],
+// nameTrainer: dapitData.nameTrainer,
+// idPersonalInstractor: PersonalInstractorID[0],
+// idInstractor: InstractorID[0],
+// idTrainer: trainerID[0],
 const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const navigate = useNavigate();
     // const route = useRoute();
     const location = useLocation();
+    const { groups, instructors, trainers, sessions , personalInstractors} =  useDataContext();
+    const [group, setGroup] = useState<string>('');
     const state = location.state as IAddDapitProps || {};
     const contentRef = useRef<HTMLDivElement | null>(null);
     const theTrainer = state.theTrainer || props.theTrainer || '';
     const theGroup = state.theGroup || props.theGroup || '';
-    const instructors = state.instructors || props.instructors || [];
-    const trainers = state.trainers || props.trainers || [];
-    const sessions = state.sessions || props.sessions || [];
-    const groups = state.groups || props.groups || [];
-    console.log("Instructors: ", instructors)
-    console.log("Trainers: ", trainers)
-    console.log("Sessions: ", sessions)
-    console.log("groups: ", groups)
 
+
+
+    // const instructors = state.instructors || props.instructors || [];
+    // const trainers = state.trainers || props.trainers || [];
+    // const sessions = state.sessions || props.sessions || [];
+    // const groups = state.groups || props.groups || [];
+    const instructorsComp = instructors || [];
+    const trainersComp = trainers || [];
+    const sessionsComp = sessions || [];
+    const groupsComp = groups || [];
+    const personalInstractorsComp = personalInstractors || [];
+    console.log("Instructors: ", instructorsComp)
+    console.log("Trainers: ", trainersComp)
+    console.log("Sessions: ", sessionsComp)
+    console.log("groups: ", groupsComp)
+    console.log("personalInstractors: ", personalInstractorsComp)
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [dapitData, setDapitData] = useState<IDapitData>({
+    idInstractor: '',
+    idTrainer: '',
     nameInstructor: '',
     nameTrainer: theTrainer,
-    namePersonalInstructor: '', // Will be automatically set later
+    namePersonalInstractor: '', // Will be automatically set later
+    idPersonalInstractor: '',
     group: theGroup,
     session: '',
     syllabus: '',
@@ -107,32 +124,77 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
   });
   useEffect(() => {
     console.log("AddDapit useEffect");
-    const updatePersonalInstructor = async () => {
-        if (dapitData.nameInstructor && dapitData.nameTrainer) {
-            const { trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
-            console.log("the ids are:", trainerID, PersonalInstractorID, InstractorID, personalName);
-            setDapitData((prevData) => ({ ...prevData, namePersonalInstructor: personalName }));
-        }
-    };
-    updatePersonalInstructor();
+    // const updatePersonalInstructor = async () => {
+    //     // if (dapitData.nameInstructor && dapitData.nameTrainer) {
+    //     //     const { trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
+    //     //     console.log("the ids are:", trainerID, PersonalInstractorID, InstractorID, personalName);
+    //     //     setDapitData((prevData) => ({ ...prevData, namePersonalInstractor: personalName }));
+
+    //     // }
+    // };
+    // updatePersonalInstructor();
 }, [dapitData.nameInstructor, dapitData.nameTrainer]);
 const toPDF = () => {
   const content = contentRef.current;
   const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.syllabus+"_"+dapitData.nameInstructor;
   downloadPdf(content, fileName);
 };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
-    setDapitData({ ...dapitData, [field]: e.target.value });
-  };
-  const handleNamesChange = async(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-    setDapitData({ ...dapitData, [field]: e.target.value });
-    console.log("the name is:",dapitData.nameInstructor, dapitData.nameTrainer)
-    if (dapitData.nameInstructor !== '' && dapitData.nameTrainer !== '') {
-        const {trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
-        console.log("the ids are:",trainerID, PersonalInstractorID, InstractorID, personalName)
-        setDapitData({ ...dapitData, namePersonalInstructor: personalName });
+const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
+  const val = e.target.value;
+  const value = e.target.value;
+  let key: string | null = null;
+
+  if (e.target instanceof HTMLSelectElement) {
+    const selectedOption = e.target.selectedOptions[0];
+    key = selectedOption.getAttribute('data-id');
+  }
+
+  console.log(`try11111 Key: ${key}, Value: ${value}`);
+  console.log("e", e);
+  console.log("handleChange val:", val);
+
+  setDapitData({ ...dapitData, [field]: val });
+  
+  if (field === 'nameTrainer') {
+    // setDapitData(prevData => ({ ...prevData, idTrainer: key || ''}));
+    console.log ("group after nameTrainer val:",val);
+    const selectedTrainer = trainersComp.find(trainer => trainer.name === val);
+    if (selectedTrainer) {
+      console.log("groupsComp group after nameTrainer:",groupsComp);
+      console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
+      
+      //add the trainer id to the dapitData
+      setDapitData(prevData => ({ ...prevData, idTrainer: selectedTrainer._id! }));
+      const group = groupsComp.find(group => group.idsTrainers?.includes(selectedTrainer._id!));
+      console.log("group after nameTrainer:",group);
+      if (group) {
+        //add the group name
+        setDapitData(prevData => ({ ...prevData, group: group.name }));
+      }
+      const idPersonalInstractor = personalInstractorsComp.find(personalInstractor => personalInstractor.idTrainer === selectedTrainer._id!);
+      
+      //add the personalInstractor id to the dapitData
+      setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
+      console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
+      console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
+      const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
+      console.log("personal after nameTrainer personalName:",personalName);
+      
+      //add personal name to the dapitData
+      setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
+      console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
     }
+  }
+  if (field === 'nameInstructor') {
+    const selectedInstructor = instructorsComp.find(instructor => instructor._id === val);
+    if (selectedInstructor) {
+      //add the instructor id to the dapitData
+      setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));
+    }
+  }
 };
+
+ 
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
     if (dapitData[category]!=undefined){
       if (Array.isArray(dapitData[category])) {
@@ -160,27 +222,24 @@ const toPDF = () => {
     // navigate("/");
     props.onclose();
   }
-  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: string) => {
-    setDapitData({ ...dapitData, [category]: e.target.value.split(',').map((item: string) => item.trim()) });
-  };
 
   const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Submitting dapit details');
     try{
         //trainerID: trainerID, PersonalInstractorID: PersonalInstractorID, InstractorID: InstractorID, personalName: personalName
-        const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
-        console.log("trainerID:",trainerID)
-        console.log("PersonalInstractorID:",PersonalInstractorID)
-        console.log("InstractorID:",InstractorID)
+        // const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        // console.log("trainerID:",trainerID)
+        // console.log("PersonalInstractorID:",PersonalInstractorID)
+        // console.log("InstractorID:",InstractorID)
         console.log("dapitData.changetobecoma:",dapitData.changeTobeCommender)
         const submitDapit: IDapitforSubmit = {
             nameInstractor: dapitData.nameInstructor,
-            namePersonalInstractor: personalName[0],
+            namePersonalInstractor: dapitData.namePersonalInstractor,
             nameTrainer: dapitData.nameTrainer,
-            idPersonalInstractor: PersonalInstractorID[0],
-            idInstractor: InstractorID[0],
-            idTrainer: trainerID[0],
+            idPersonalInstractor: dapitData.idPersonalInstractor,
+            idInstractor: dapitData.idInstractor,
+            idTrainer: dapitData.idTrainer,
             group: dapitData.group,
             session: dapitData.session,
             silabus: parseInt(dapitData.syllabus),
@@ -214,9 +273,12 @@ const toPDF = () => {
         await postDapit(submitDapit);
         // Reset the form to its initial state here
         setDapitData({
+            idInstractor: '',
+            idTrainer: '',
+            idPersonalInstractor: '',          
             nameInstructor: '',
             nameTrainer: '',
-            namePersonalInstructor: '',
+            namePersonalInstractor: '',
             group: '',
             session: '',
             syllabus: '',
@@ -393,28 +455,28 @@ const getCellStyle = (value: number | undefined) => {
             <Col md={3}>
               <h4>Instructor</h4>
               <Form.Control as="select" value={dapitData.nameInstructor} onChange={(e) => handleChange(e, 'nameInstructor')}>
-              <option value="">Select Instructor</option>
-                {instructors.map((instructor, idx) => (
-                  <option key={idx} value={instructor}>
-                    {instructor}
+                <option value="">Select Instructor</option>
+                {instructorsComp.map((instructor, idx) => (
+                  <option key={instructor._id!} value={instructor.name} data-id={instructor._id!}>
+                    {instructor.name}
                   </option>
                 ))}
               </Form.Control>
             </Col>
             <Col md={3}>
               <h4>Trainer</h4>
-              <Form.Control as="select" value={dapitData.nameTrainer } onChange={(e) => handleChange(e, 'nameTrainer')}>
-              <option value="">Select Trainer</option>
+              <Form.Control as="select" value={dapitData.nameTrainer} onChange={(e) => handleChange(e, 'nameTrainer')}>
+                <option value="">Select Trainer</option>
                 {trainers.map((trainer) => (
-                  <option key={trainer} value={trainer}>
-                    {trainer}
+                  <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
+                    {trainer.name}
                   </option>
                 ))}
-              </Form.Control>
+            </Form.Control>
             </Col>
             <Col md={3}>
               <h4>Personal Instructor</h4>
-              <Form.Control type="text" value={dapitData.namePersonalInstructor} onChange={(e) => handleChange(e, 'namePersonalInstructor')} />
+              <Form.Control type="text" value={dapitData.namePersonalInstractor} onChange={(e) => handleChange(e, 'namePersonalInstractor')} />
               </Col>
             
             <Col md={3}>
@@ -433,9 +495,9 @@ const getCellStyle = (value: number | undefined) => {
               <h4>Group</h4>
               <Form.Control as="select" value={dapitData.group} onChange={(e) => handleChange(e, 'group')}>
                 <option value="">Select Group</option>
-                {groups.map((group, idx) => (
-                        <option key={idx} value={group}>
-                        {group}
+                {groupsComp.map((group, idx) => (
+                        <option key={group._id!} value={group.name} data-id={group._id!}>
+                        {group.name}
                         </option>
                 ))}
                 </Form.Control>
@@ -444,9 +506,9 @@ const getCellStyle = (value: number | undefined) => {
               <h4>Session</h4>
               <Form.Control as="select" value={dapitData.session} onChange={(e) => handleChange(e, 'session')}>
                 <option value="">Select Session</option>
-                {sessions.map((session, idx) => (
-                  <option key={idx} value={session}>
-                    {session}
+                {sessionsComp.map((session, idx) => (
+                  <option key={session._id} value={session.name} data-id={session._id!}>
+                    {session.name}
                   </option>
                 ))}
               </Form.Control>

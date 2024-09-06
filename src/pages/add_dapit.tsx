@@ -10,30 +10,26 @@ import {getIdpersonalInstractor} from '../services/id-service';
 import '../css/add_dapit.css';
 import { downloadPdf } from '../services/pdf-service';
 import AddDapit from '../components/AddDapit';
+import { useDataContext } from '../DataContext';
 
 interface IAddDapitProps {
-  instructors?: string[];
-  trainers?: string[];
-  sessions?: string[];
-  groups?: string[];
+  // instructors?: string[];
+  // trainers?: string[];
+  // sessions?: string[];
+  // groups?: string[];
   onclose: () => void;
 }
 
 const AddDapitPage: React.FC<IAddDapitProps> = (props) => {
   const [showAddDapit, setShowAddDapit] = useState(true);
   const navigate = useNavigate();
-
   const handleCloseAddDapit = () => {
     setShowAddDapit(false);
     navigate("/");
 };
   return (
     <div>{showAddDapit && (
-      <AddDapit 
-          groups={props.groups} 
-          instructors={props.instructors} 
-          sessions={props.sessions} 
-          trainers={props.trainers} 
+      <AddDapit  
           onclose={handleCloseAddDapit}
           theGroup=''
           theTrainer='' /> 
