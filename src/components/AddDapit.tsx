@@ -207,7 +207,7 @@ const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextArea
     }
   }
   if (field === 'nameInstructor') {
-    const selectedInstructor = instructorsComp.find(instructor => instructor._id === val);
+    const selectedInstructor = instructorsComp.find(instructor => instructor.name === val);
     if (selectedInstructor) {
       //add the instructor id to the dapitData
       setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));

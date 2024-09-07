@@ -1,5 +1,5 @@
 import apiClient from "./api-client";
-import { getAuthHeaders,setAuthHeaders } from "../public/data";
+import { getAuthHeaders,setAuthHeaders, setPermissions } from "../public/data";
 import { IInstractor } from "../public/interfaces";
 export const sentOtp = async (clientId: string) => {
     try {
@@ -26,7 +26,7 @@ export const verifyOtp = async (clientId: string, otp: string) => {
          console.log("response.status:", response.status);
          console.log("response.data:", response.data);
          if (response.status === 200) {
-
+            setPermissions(response.data.permissions);
             setAuthHeaders(clientId, otp);
          }
          return response.data;

@@ -78,13 +78,18 @@ const SessionModal: React.FC = () => {
       setOtp(value);
     }
   };
-
   const handleVerifyOtp = async () => {
     if (otp.length === 6) {
       console.log('OTP Verified:', otp);
       try {
         const resVerify = await verifyOtp(clientId, otp);
         console.log('resVerify:', resVerify);
+        if (resVerify.message === "OTP verified and session opened") {
+          localStorage.setItem('permissions', resVerify.permissions);
+          handleClose();
+        } else {
+          setOtpError(resVerify.message);
+        }
       } catch (error) {
         console.error('Error verifying OTP:', error);
         setOtpError('Invalid OTP. Please try again.');
@@ -158,6 +163,8 @@ const SessionModal: React.FC = () => {
 
                 <div>
                   <p>Time to expire the OTP: {timer} seconds</p>
+                  {/* {otpError && <p className="text-danger">{otpError}</p>} */}
+
                 </div>
               </>
             )}

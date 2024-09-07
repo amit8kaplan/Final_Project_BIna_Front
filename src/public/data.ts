@@ -49,3 +49,18 @@ export function setAuthHeaders(clientId: string, otp: string) {
 export function verifyRegular(clientID:string, InstractorId: string){
     return (clientID === InstractorId);
 }
+
+export function deleteAllHeaders (){
+    localStorage.removeItem('client-id');
+    localStorage.removeItem('otp');
+    localStorage.removeItem('permissions');
+}
+
+export function setPermissions(permissions: string) {
+    localStorage.setItem('permissions', permissions);
+}
+
+export function getPermissions() {
+    return localStorage.getItem('permissions');
+}
+

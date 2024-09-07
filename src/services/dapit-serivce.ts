@@ -48,6 +48,10 @@ export const postDapit = async (dapit: IDapitforSubmit) => {
         if (!headers || !headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
+        console.log ("postDapit headers['client-id']: ", headers['client-id']);
+        console.log ("postDapit dapit.idInstractor: ", dapit.idInstractor);
+        console.log("postDapit verifyRegular:", verifyRegular(headers['client-id'], dapit.idInstractor));
+
         if (verifyRegular(headers['client-id'], dapit.idInstractor) === true ) {
              response = await apiClient.post("/dapit/postRegular", dapit, {headers} );
         }
