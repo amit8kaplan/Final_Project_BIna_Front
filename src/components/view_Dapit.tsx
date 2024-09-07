@@ -55,7 +55,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
   };
 
   useEffect(() => {
-    console.log('selectedDapit: ', selectedDapit);
+    console.log('selectedDapit on view_dapit: ', selectedDapit);
   }, [selectedDapit]);
 
   const renderDetailedRatings = () => {
@@ -92,7 +92,8 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
                     {data.value !== undefined ? (
                       <strong>{data.value}</strong>
                     ) : null}
-                    <span style={{ color: data.value !== undefined ? 'inherit' : 'white' }}>:</span>
+                    <span style={{ color: data.value !== undefined && data.value!== null ? 'inherit' : 'white' }}>:</span>
+                    <span> {data.description}</span>
                   </li>
                 ))}
               </ul>
@@ -107,6 +108,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
                         <strong>{data.value}</strong>
                       ) : null}
                       <span style={{ color: data.value !== undefined ? 'inherit' : 'white' }}>:</span>
+                      <span> {data.description}</span>
                     </li>
                   ))}
                 </ul>

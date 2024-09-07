@@ -242,11 +242,17 @@ const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextArea
 };
  
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
+    console.log("handleNestedChange ");
+    console.log("handleNestedChange index:",index);
+    console.log("handleNestedChange e:",e);
+    console.log("handleNestedChange field:",field);
+    console.log("handleNestedChange category:",category);
     if (dapitData[category]!=undefined){
       if (Array.isArray(dapitData[category])) {
           const updatedCategory = (dapitData[category] as Array<{ value: number | undefined, description: string }>).map((item, i) =>
             i === index ? { ...item, [field]: e.target.value } : item
           );
+          console.log("handleNestedChange updatedCategory:",updatedCategory);
           setDapitData({ ...dapitData, [category]: updatedCategory });
       }
     }
