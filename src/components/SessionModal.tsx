@@ -10,6 +10,7 @@ const SessionModal: React.FC = () => {
   const [selectedInstructor, setSelectedInstructor] = useState<string>('');
   const [clientId, setClientId] = useState<string>('');
   const [otpSent, setOtpSent] = useState(false);  // Track if OTP is sent
+  const [chooseInstructor, setChooseInstructor] = useState(false);  // Track if instructor is selected
   const [email, setEmail] = useState('');         // Store the email (masked)
   const [otp, setOtp] = useState<string>('');     // Store the OTP input
   const [otpError, setOtpError] = useState('');   // Error message for invalid OTP
@@ -63,6 +64,12 @@ const SessionModal: React.FC = () => {
   const handleInstructorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedInstructor(e.target.value);
     setClientId(e.target.selectedOptions[0].getAttribute('data-id') || '');
+    if (e.target.value !== '') {
+      setChooseInstructor(false);
+    }
+    else {
+      setChooseInstructor(true);
+    }
   };
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +109,7 @@ const SessionModal: React.FC = () => {
             <Form.Group controlId="formInstructor">
               <Form.Label>Choose Instructor</Form.Label>
               <Form.Control 
+                className='mb-2'
                 as="select" 
                 value={selectedInstructor} 
                 onChange={handleInstructorChange}
@@ -116,8 +124,8 @@ const SessionModal: React.FC = () => {
               </Form.Control>
             </Form.Group>
 
-            {!otpSent && (
-              <Button variant="primary" onClick={handleSendOtp}>
+            {selectedInstructor && !otpSent && (
+              <Button className='' variant="primary" onClick={handleSendOtp}>
                 Send OTP
               </Button>
             )}
