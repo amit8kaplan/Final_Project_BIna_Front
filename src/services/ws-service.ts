@@ -1,5 +1,4 @@
 import mitt from 'mitt';
-
 type Events = {
   message: string;
 };
@@ -9,7 +8,7 @@ class WebSocketService {
   private ws: WebSocket | null = null;
   private url: string = 'ws://localhost:3000';
   private emitter = mitt<Events>();
-  private reconnectInterval: number = 5000; // 5 seconds
+  private reconnectInterval: number = 5000;
   private maxRetries: number = 10;
   private retryCount: number = 0;
 
@@ -32,14 +31,14 @@ class WebSocketService {
 
     this.ws.onopen = () => {
       console.log('Connected to the server');
-      this.retryCount = 0; // Reset retry count on successful connection
+      this.retryCount = 0;
     };
 
     this.ws.onmessage = (event) => {
-      console.log('Message from server:', event.data);
-      console.log('sessionConsole Message from server:', event.data);
-      this.processMessage(event.data);
-      this.emitter.emit('message', event.data); // Emit the message event
+      const data = JSON.parse(event.data);
+      console.log('Message from server:', data);
+      this.processMessage(data);
+      this.emitter.emit('message', event.data);
     };
 
     this.ws.onclose = () => {
@@ -53,33 +52,24 @@ class WebSocketService {
       this.retryConnection();
     };
   }
-  private processMessage(message: string) {
-    try {
-      const data = JSON.parse(message);
-      if (data.allSessions && data.allSessions.length > 0) {
-        const sessions = data.allSessions.map((session: any) => ({
-          storedClientId: session.storedClientId,
-          permissions: session.permissions,
-          ttl: session.ttl,
-        }));
-        if (sessionStorage.getItem('sessions')) {
-          sessionStorage.removeItem('sessions');
-        }
-        sessionStorage.setItem('sessions', JSON.stringify(sessions));
-        const sessionConsole = sessionStorage.getItem('sessions');
-        console.log('sessionConsole', sessionConsole);
+
+  private processMessage(message: any) {
+    if (message.closedSessions && message.closedSessions.length > 0) {
+      const clientId = sessionStorage.getItem('client-id');
+      if (clientId && message.closedSessions.includes(clientId)) {
+        sessionStorage.removeItem('client-id');
+        sessionStorage.removeItem('otp');
+        sessionStorage.removeItem('ttl');
+        sessionStorage.removeItem('permissions');
+        console.log('Removed session storage due to closed session:', clientId);
       }
-    } catch (error) {
-      console.error('Failed to process message:', error);
     }
   }
+
   private retryConnection() {
     if (this.retryCount < this.maxRetries) {
       this.retryCount++;
-      console.log(`Retrying connection in ${this.reconnectInterval / 1000} seconds... (Attempt ${this.retryCount}/${this.maxRetries})`);
       setTimeout(() => this.connect(), this.reconnectInterval);
-    } else {
-      console.error('Max retries reached. Unable to connect to WebSocket server.');
     }
   }
 

@@ -64,3 +64,6 @@ export function getPermissions() {
     return sessionStorage.getItem('permissions');
 }
 
+export function setTtl(ttl: string) {
+    sessionStorage.setItem('ttl', ttl);
+}

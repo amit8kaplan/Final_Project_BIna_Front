@@ -1,5 +1,5 @@
 import apiClient from "./api-client";
-import { getAuthHeaders,setAuthHeaders, setPermissions } from "../public/data";
+import { getAuthHeaders,setAuthHeaders, setPermissions, setTtl } from "../public/data";
 import { IInstractor } from "../public/interfaces";
 export const sentOtp = async (clientId: string) => {
     try {
@@ -28,6 +28,7 @@ export const verifyOtp = async (clientId: string, otp: string) => {
          if (response.status === 200) {
             setPermissions(response.data.permissions);
             setAuthHeaders(clientId, otp);
+            setTtl(response.data.ttl);
          }
          return response.data;
          
@@ -72,3 +73,17 @@ export const getAllsession = async () => {
         console.error('Error fetching all session:', error);
     }
 }
+
+export const getMyTtlSession = async () => {
+    try {
+        const headers = getAuthHeaders();
+        if (!headers || !headers['client-id'] || !headers['otp']) {
+            throw new Error('Client ID and OTP are required');
+        }
+        const response = await apiClient.get('/auth/getMyTtlSession', {headers});
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching my session:', error);
+    }
+}
+

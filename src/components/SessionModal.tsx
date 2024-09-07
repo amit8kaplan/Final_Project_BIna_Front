@@ -86,6 +86,7 @@ const SessionModal: React.FC = () => {
         console.log('resVerify:', resVerify);
         if (resVerify.message === "OTP verified and session opened") {
           sessionStorage.setItem('permissions', resVerify.permissions);
+          // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
         } else {
           setOtpError(resVerify.message);
@@ -101,7 +102,7 @@ const SessionModal: React.FC = () => {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      <Button className="m-1"variant="primary" size="sm" onClick={handleShow}>
         Open Session
       </Button>
 

@@ -7,6 +7,7 @@ interface DataContextProps {
     trainers: ITrainer[];
     sessions: ISession[];
     personalInstractors: IPersonalInstractor[];
+    
 }
 
 const DataContext = createContext<DataContextProps|undefined>(undefined);
