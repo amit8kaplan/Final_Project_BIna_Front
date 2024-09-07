@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation, NavLink } from "react-router-dom";
 import { instructorsData, trainersData, sessionsData, groupsData, matricsData } from "../public/data";
 import ChatBotModal from './ChatBot';  // Import the ChatBotModal component
 import SessionModal from './SessionModal';  // Import the SessionModal component
+// import CurrentSession from './CurrentSession';  // Import the CurrentSession component
 export function Nav_componnets() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ export function Nav_componnets() {
           </Nav>
           <ChatBotModal />  {/* Add the ChatBotModal component here */}
           <SessionModal />  {/* Add the SessionModal component here */}
+          {/* <CurrentSession /> */}
         </Navbar.Collapse>
       </Container>
     </Navbar>
