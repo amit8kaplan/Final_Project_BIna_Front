@@ -85,7 +85,7 @@ const SessionModal: React.FC = () => {
         const resVerify = await verifyOtp(clientId, otp);
         console.log('resVerify:', resVerify);
         if (resVerify.message === "OTP verified and session opened") {
-          localStorage.setItem('permissions', resVerify.permissions);
+          sessionStorage.setItem('permissions', resVerify.permissions);
           handleClose();
         } else {
           setOtpError(resVerify.message);

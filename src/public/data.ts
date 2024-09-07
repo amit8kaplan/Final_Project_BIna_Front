@@ -19,8 +19,8 @@ export const categoriesData = ["identification", "payload", "decryption",
 
 export function getAuthHeaders() {
     console.log('getAuthHeaders');
-    const clientId = localStorage.getItem('client-id');  // Assuming clientId and OTP are stored in local storage
-    const otp = localStorage.getItem('otp');
+    const clientId = sessionStorage.getItem('client-id');  // Assuming clientId and OTP are stored in local storage
+    const otp = sessionStorage.getItem('otp');
     
     if (!clientId || !otp) {
         return {
@@ -38,9 +38,9 @@ export function setAuthHeaders(clientId: string, otp: string) {
     if (!clientId || !otp) {
         throw new Error('Client ID and OTP are required');
     }
-    localStorage.setItem('client-id', clientId);
-    localStorage.setItem('otp', otp);
-    if (!localStorage.getItem('client-id') || !localStorage.getItem('otp')) {
+    sessionStorage.setItem('client-id', clientId);
+    sessionStorage.setItem('otp', otp);
+    if (!sessionStorage.getItem('client-id') || !sessionStorage.getItem('otp')) {
         return false;
     }
     return true;
@@ -51,16 +51,16 @@ export function verifyRegular(clientID:string, InstractorId: string){
 }
 
 export function deleteAllHeaders (){
-    localStorage.removeItem('client-id');
-    localStorage.removeItem('otp');
-    localStorage.removeItem('permissions');
+    sessionStorage.removeItem('client-id');
+    sessionStorage.removeItem('otp');
+    sessionStorage.removeItem('permissions');
 }
 
 export function setPermissions(permissions: string) {
-    localStorage.setItem('permissions', permissions);
+    sessionStorage.setItem('permissions', permissions);
 }
 
 export function getPermissions() {
-    return localStorage.getItem('permissions');
+    return sessionStorage.getItem('permissions');
 }
 

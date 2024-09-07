@@ -19,7 +19,7 @@ interface Dapit {
 interface DetailedDapit extends Dapit {
   tags: string[];
   nameInstructor: string;
-  namePersonalInstructor: string;
+  namePersonalInstractor: string;
   nameTrainer: string;
   silabus: number;
 
