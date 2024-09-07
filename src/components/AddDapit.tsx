@@ -11,6 +11,7 @@ import '../css/add_dapit.css';
 import { downloadPdf } from '../services/pdf-service';
 import { useDataContext } from '../DataContext';
 import {ITrainer } from '../public/interfaces';
+import { set } from 'react-hook-form';
 export interface IDapitData {
     idInstractor: string,
     idTrainer:string,
@@ -67,8 +68,10 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const theTrainer = state.theTrainer || props.theTrainer || '';
     const theGroup = state.theGroup || props.theGroup || '';
-
-
+    const [trainerListByGroupBoolean, setTrainerListByGroupBoolean] = useState<boolean>(false);
+    const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
+    const [groupListByTrainerBoolean, setGroupListByTrainerBoolean] = useState<boolean>(false);
+    const [syllabusOptions, setSyllabusOptions] = useState<number[]>([]);
 
     // const instructors = state.instructors || props.instructors || [];
     // const trainers = state.trainers || props.trainers || [];
@@ -162,27 +165,45 @@ const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextArea
     if (selectedTrainer) {
       console.log("groupsComp group after nameTrainer:",groupsComp);
       console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
-      
       //add the trainer id to the dapitData
       setDapitData(prevData => ({ ...prevData, idTrainer: selectedTrainer._id! }));
       const group = groupsComp.find(group => group.idsTrainers?.includes(selectedTrainer._id!));
       console.log("group after nameTrainer:",group);
       if (group) {
         //add the group name
+        setGroupListByTrainerBoolean(true);
         setDapitData(prevData => ({ ...prevData, group: group.name }));
       }
+      else {
+        setGroupListByTrainerBoolean(false);
+        setDapitData(prevData => ({ ...prevData, group: '' }));
+      }
       const idPersonalInstractor = personalInstractorsComp.find(personalInstractor => personalInstractor.idTrainer === selectedTrainer._id!);
-      
+      if (idPersonalInstractor) {
+
       //add the personalInstractor id to the dapitData
-      setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
-      console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
-      console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
-      const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
-      console.log("personal after nameTrainer personalName:",personalName);
-      
-      //add personal name to the dapitData
-      setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
-      console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
+        setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
+        console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
+        console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
+        const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
+        console.log("personal after nameTrainer personalName:",personalName);
+        
+        //add personal name to the dapitData
+        setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
+        console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
+      }
+      else {
+        setDapitData(prevData => ({ ...prevData, idPersonalInstractor: '', namePersonalInstractor: '' }));
+      }
+    }
+    else {
+      setGroupListByTrainerBoolean(false);
+      setDapitData(prevData => ({
+        ...prevData,
+        idPersonalInstractor: '',
+        namePersonalInstractor: '', 
+        group: ''
+      }));
     }
   }
   if (field === 'nameInstructor') {
@@ -192,8 +213,33 @@ const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextArea
       setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));
     }
   }
+  if (field === 'group') {
+    console.log ("group after group val:",val);
+    const theGroup = groupsComp.find(group => group.name === val);
+    
+    if (theGroup) {
+      //add the group id to the dapitData
+      const trainers = trainersComp.filter(trainer => theGroup.idsTrainers?.includes(trainer._id!));
+      console.log("Trainers in the selected group:", trainers);
+      setTrainerListByGroup(trainers);
+      setTrainerListByGroupBoolean(true);
+    }
+    else {
+      setTrainerListByGroupBoolean(false);
+    }
+    
+  };
+  if (field === 'session') {
+    const selectedSession = sessionsComp.find(session => session.name === val);
+    if (selectedSession) {
+      setSyllabusOptions(selectedSession.silabus);
+      setDapitData(prevData => ({ ...prevData, session: selectedSession.name }));
+    } else {
+      setSyllabusOptions([]);
+      setDapitData(prevData => ({ ...prevData, session: '' }));
+    }
+  }
 };
-
  
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
     if (dapitData[category]!=undefined){
@@ -467,16 +513,24 @@ const getCellStyle = (value: number | undefined) => {
               <h4>Trainer</h4>
               <Form.Control as="select" value={dapitData.nameTrainer} onChange={(e) => handleChange(e, 'nameTrainer')}>
                 <option value="">Select Trainer</option>
-                {trainers.map((trainer) => (
-                  <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
-                    {trainer.name}
-                  </option>
-                ))}
-            </Form.Control>
+                {trainerListByGroupBoolean ? (
+                  trainerListByGroup.map((trainer) => (
+                    <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
+                      {trainer.name}
+                    </option>
+                  ))
+                ) : (
+                  trainers.map((trainer) => (
+                    <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
+                      {trainer.name}
+                    </option>
+                  ))
+                )}
+              </Form.Control>
             </Col>
             <Col md={3}>
               <h4>Personal Instructor</h4>
-              <Form.Control type="text" value={dapitData.namePersonalInstractor} onChange={(e) => handleChange(e, 'namePersonalInstractor')} />
+              <Form.Control type="text" value={dapitData.namePersonalInstractor} disabled={true} onChange={(e) => handleChange(e, 'namePersonalInstractor')} />
               </Col>
             
             <Col md={3}>
@@ -491,17 +545,22 @@ const getCellStyle = (value: number | undefined) => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={4}>
-              <h4>Group</h4>
-              <Form.Control as="select" value={dapitData.group} onChange={(e) => handleChange(e, 'group')}>
-                <option value="">Select Group</option>
-                {groupsComp.map((group, idx) => (
-                        <option key={group._id!} value={group.name} data-id={group._id!}>
-                        {group.name}
-                        </option>
-                ))}
-                </Form.Control>
-            </Col>
+          <Col md={4}>
+            <h4>Group</h4>
+            <Form.Control 
+              as="select" 
+              value={dapitData.group} 
+              onChange={(e) => handleChange(e, 'group')}
+              disabled={groupListByTrainerBoolean} // Disable if groupListByTrainerBoolean is true
+            >
+              <option value="">Select Group</option>
+              {groupsComp.map((group) => (
+                <option key={group._id!} value={group.name} data-id={group._id!}>
+                  {group.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Col>
             <Col md={4}>
               <h4>Session</h4>
               <Form.Control as="select" value={dapitData.session} onChange={(e) => handleChange(e, 'session')}>
@@ -516,13 +575,17 @@ const getCellStyle = (value: number | undefined) => {
             <Col md={4}>
               <h4>Syllabus</h4>
               <Form.Control
-                type="number"
-                min="1"
-                max="10"
-                required
+                as="select"
                 value={dapitData.syllabus}
                 onChange={(e) => handleChange(e, 'syllabus')}
-              />
+              >
+                <option value="">Select Syllabus</option>
+                {syllabusOptions.map((syllabus, idx) => (
+                  <option key={idx} value={syllabus}>
+                    {syllabus}
+                  </option>
+                ))}
+              </Form.Control>
             </Col>
             {/* <Col md={3}>
               <h4>Tags</h4>
