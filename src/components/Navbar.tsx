@@ -71,6 +71,7 @@ export function Nav_componnets() {
             </NavDropdown>
           </Nav>
           <ChatBotModal />  {/* Add the ChatBotModal component here */}
+          <SessionModal />  {/* Add the SessionModal component here */}
         </Navbar.Collapse>
       </Container>
     </Navbar>

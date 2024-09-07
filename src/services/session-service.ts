@@ -1,6 +1,6 @@
 import apiClient from "./api-client";
 import { getAuthHeaders,setAuthHeaders } from "../public/data";
-
+import { IInstractor } from "../public/interfaces";
 export const sentOtp = async (clientId: string) => {
     try {
        
@@ -12,16 +12,21 @@ export const sentOtp = async (clientId: string) => {
 }
 
 export const verifyOtp = async (clientId: string, otp: string) => {
+    console.log('verifyOtp:', clientId, otp);
+    //find the session is open in the client side
+    const headers = getAuthHeaders();
+    //sent clientID and headers to verify the clientID
+    if (! headers['client-id'] || !headers['otp']) {
+       headers['client-id'] = "";
+       headers['otp'] = "";
+    }
+    console.log('headers:', headers);
     try{
-         //find the session is open in the client side
-         const headers = getAuthHeaders();
-         //sent clientID and headers to verify the clientID
-         if (! headers['client-id'] || !headers['otp']) {
-            headers['client-id'] = "";
-            headers['otp'] = "";
-         }
-         const response = await apiClient.post('/auth/verify-otp', { clientId, otp}, {headers: headers });
+         const response = await apiClient.post('/auth/verify-otp', { clientId:clientId, otpUser: otp}, {headers: headers });
+         console.log("response.status:", response.status);
+         console.log("response.data:", response.data);
          if (response.status === 200) {
+
             setAuthHeaders(clientId, otp);
          }
          return response.data;

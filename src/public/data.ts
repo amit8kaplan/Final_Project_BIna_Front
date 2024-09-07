@@ -18,11 +18,15 @@ export const categoriesData = ["identification", "payload", "decryption",
           "crewMember", "finalGrade", "changeTobeCommender"];
 
 export function getAuthHeaders() {
+    console.log('getAuthHeaders');
     const clientId = localStorage.getItem('client-id');  // Assuming clientId and OTP are stored in local storage
     const otp = localStorage.getItem('otp');
     
     if (!clientId || !otp) {
-        throw new Error('Client ID and OTP are required');
+        return {
+            'client-id': "",
+            'otp': "",
+        };
     }
 
     return {

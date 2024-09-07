@@ -3,6 +3,7 @@
 export interface IInstractor {
     name: string;
     _id?: string;
+    email: string;
     permissions?: string;
 }
 

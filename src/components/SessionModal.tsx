@@ -1,40 +1,167 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { sentOtp, verifyOtp } from "../services/session-service";
+import { useDataContext } from '../DataContext';
+import { IInstractor } from "../public/interfaces";
 
-interface SessionModalProps {
-    show: boolean;
-    onHide: () => void;
-}
+const SessionModal: React.FC = () => {
+  const { instructors } = useDataContext();
+  const [show, setShow] = useState(false);
+  const [selectedInstructor, setSelectedInstructor] = useState<string>('');
+  const [clientId, setClientId] = useState<string>('');
+  const [otpSent, setOtpSent] = useState(false);  // Track if OTP is sent
+  const [email, setEmail] = useState('');         // Store the email (masked)
+  const [otp, setOtp] = useState<string>('');     // Store the OTP input
+  const [otpError, setOtpError] = useState('');   // Error message for invalid OTP
+  const [ttl, setTtl] = useState<number>(0);      // Time to live for OTP
+  const [timer, setTimer] = useState<number>(0);  // Countdown timer
 
-const SessionModal: React.FC<SessionModalProps> = ({ show, onHide }) => {
-    
-    
-    // useEffect(() => {
-    //     if (searchQuery && searchQuery.trim() !== '') {
-    //       console.log("the search query is:" + searchQuery)
-    //       fetchCoursesBySearch(searchQuery, selectedOption).then((res) => setCourses(res));
-    //     } else {
-    //       fetchData().then((res) => setCourses(res));
-    //     }
-    //     buyCourse ? setBuyCourse(false) : null;
-    // }, [searchQuery, courseAdded, buyCourse]);
+  useEffect(() => {
+    let countdown: NodeJS.Timeout;
+    if (otpSent && ttl > 0) {
+      setTimer(ttl);
+      countdown = setInterval(() => {
+        setTimer(prevTimer => {
+          if (prevTimer <= 1) {
+            clearInterval(countdown);
+            setOtpSent(false);
+            setOtp('');
+            setOtpError('');
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(countdown);
+  }, [otpSent, ttl]);
 
+  const handleClose = () => {
+    setShow(false);
+    setOtpSent(false);  // Reset the modal state when closed
+    setOtp('');
+    setOtpError('');
+  };
+  
+  const handleShow = () => setShow(true);
 
+  const handleSendOtp = async () => {
+    console.log("OTP sent");
+    try {
+      const response = await sentOtp(clientId);
+      console.log('OTP Response:', response);
+      if (response.message === 'OTP sent via email') {
+        setEmail(response.email);  // Set the email from the response
+        setOtpSent(true);          // Set the OTP sent state to true
+        setTtl(response.ttl);      // Set the TTL from the response
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+    }
+  };
+
+  const handleInstructorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedInstructor(e.target.value);
+    setClientId(e.target.selectedOptions[0].getAttribute('data-id') || '');
+  };
+
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d{0,6}$/.test(value)) { // Only allow up to 6 digits
+      setOtp(value);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.length === 6) {
+      console.log('OTP Verified:', otp);
+      try {
+        const resVerify = await verifyOtp(clientId, otp);
+        console.log('resVerify:', resVerify);
+      } catch (error) {
+        console.error('Error verifying OTP:', error);
+        setOtpError('Invalid OTP. Please try again.');
+      }
+    } else {
+      setOtpError('Please enter a valid 6-digit OTP.');
+    }
+  };
 
   return (
-    <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <Modal.Title>Custom Modal</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {/* Modal content goes here */}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <>
+      <Button variant="primary" onClick={handleShow}>
+        Open Session
+      </Button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Open Session</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formInstructor">
+              <Form.Label>Choose Instructor</Form.Label>
+              <Form.Control 
+                as="select" 
+                value={selectedInstructor} 
+                onChange={handleInstructorChange}
+                disabled={otpSent} // Disable if OTP is sent
+              >
+                <option value="">Select Instructor</option>
+                {instructors.map((instructor) => (
+                  <option key={instructor._id!} value={instructor.name} data-id={instructor._id!}>
+                    {instructor.name}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+
+            {!otpSent && (
+              <Button variant="primary" onClick={handleSendOtp}>
+                Send OTP
+              </Button>
+            )}
+
+            {otpSent && (
+              <>
+                <Alert variant="success">
+                  OTP has been successfully sent to email: {email}
+                </Alert>
+
+                <Form.Group controlId="formOtp">
+                  <Form.Label>Enter OTP</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={otp}
+                    onChange={handleOtpChange}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    pattern="\d*"
+                    isInvalid={otpError !== ''}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {otpError}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Button variant="success" onClick={handleVerifyOtp}>
+                  Verify OTP
+                </Button>
+
+                <div>
+                  <p>Time to expire the OTP: {timer} seconds</p>
+                </div>
+              </>
+            )}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
