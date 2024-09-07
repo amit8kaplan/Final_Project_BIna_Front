@@ -66,33 +66,69 @@ export interface IDapit {
     group: string;
     idPersonalInstractor: string;
     _id?: string;
-    idInstractor: string;
-    idTrainer: string;
+    idInstractor: string,
+    idTrainer:string,
     session?: string; // assuming it's optional
-    silabus: number;
+    silabus:  number | undefined;
     date: Date;
     tags?: string[];
-    identification: Array<{ value: number, description: string }>;
-    payload: Array<{ value: number, description: string }>;
-    decryption: Array<{ value: number, description: string }>;
-    workingMethod: Array<{ value: number, description: string }>;
-    understandingTheAir: Array<{ value: number, description: string }>;
-    flight: Array<{ value: number, description: string }>;
-    theoretical: Array<{ value: number, description: string }>;
-    thinkingInAir: Array<{ value: number, description: string }>;
-    safety: Array<{ value: number, description: string }>;
-    briefing: Array<{ value: number, description: string }>;
-    debriefing: Array<{ value: number, description: string }>;
-    debriefingInAir: Array<{ value: number, description: string }>;
-    implementationExecise: Array<{ value: number, description: string }>;
-    dealingWithFailures: Array<{ value: number, description: string }>;
-    dealingWithStress: Array<{ value: number, description: string }>;
-    makingDecisions: Array<{ value: number, description: string }>;
-    pilotNature: Array<{ value: number, description: string }>;
-    crewMember: Array<{ value: number, description: string }>;
+    identification: Array<{ value: number | undefined | undefined, description: string }>;
+    payload: Array<{ value: number | undefined, description: string }>;
+    decryption: Array<{ value: number | undefined, description: string }>;
+    workingMethod: Array<{ value: number | undefined, description: string }>;
+    understandingTheAir: Array<{ value: number | undefined, description: string }>;
+    flight: Array<{ value: number | undefined, description: string }>;
+    theoretical: Array<{ value: number | undefined, description: string }>;
+    thinkingInAir: Array<{ value: number | undefined, description: string }>;
+    safety: Array<{ value: number | undefined, description: string }>;
+    briefing: Array<{ value: number | undefined, description: string }>;
+    debriefing: Array<{ value: number | undefined, description: string }>;
+    debriefingInAir: Array<{ value: number | undefined, description: string }>;
+    implementationExecise: Array<{ value: number | undefined, description: string }>;
+    dealingWithFailures: Array<{ value: number | undefined, description: string }>;
+    dealingWithStress: Array<{ value: number | undefined, description: string }>;
+    makingDecisions: Array<{ value: number | undefined, description: string }>;
+    pilotNature: Array<{ value: number | undefined, description: string }>;
+    crewMember: Array<{ value: number | undefined, description: string }>;
     advantage: string[];
     disavantage: string[];
-    changeTobeCommender: number;
-    finalGrade: number;
+    changeTobeCommender: number | undefined;
+    finalGrade: number |  undefined;
     summerize: string;
 }
+
+// export interface IDapitData {
+//     idInstractor: string,
+//     idTrainer:string,
+//     nameInstructor: string;
+//     nameTrainer: string;
+//     namePersonalInstractor: string;
+//     idPersonalInstractor: string;
+//     group: string;
+//     session: string;
+//     syllabus: string;
+//     tags?: string[];
+//     identification: Array<{ value: number | undefined | undefined, description: string }>;
+//     payload: Array<{ value: number | undefined, description: string }>;
+//     decryption: Array<{ value: number | undefined, description: string }>;
+//     workingMethod: Array<{ value: number | undefined, description: string }>;
+//     understandingTheAir: Array<{ value: number | undefined, description: string }>;
+//     flight: Array<{ value: number | undefined, description: string }>;
+//     theoretical: Array<{ value: number | undefined, description: string }>;
+//     thinkingInAir: Array<{ value: number | undefined, description: string }>;
+//     safety: Array<{ value: number | undefined, description: string }>;
+//     briefing: Array<{ value: number | undefined, description: string }>;
+//     debriefing: Array<{ value: number | undefined, description: string }>;
+//     debriefingInAir: Array<{ value: number | undefined, description: string }>;
+//     implementationExecise: Array<{ value: number | undefined, description: string }>;
+//     dealingWithFailures: Array<{ value: number | undefined, description: string }>;
+//     dealingWithStress: Array<{ value: number | undefined, description: string }>;
+//     makingDecisions: Array<{ value: number | undefined, description: string }>;
+//     pilotNature: Array<{ value: number | undefined, description: string }>;
+//     crewMember: Array<{ value: number | undefined, description: string }>;
+//     advantage: string[];
+//     disavantage: string[];
+//     changeTobeCommender: number | undefined;
+//     finalGrade: number |  undefined;
+//     summerize: string;
+// }

@@ -12,6 +12,7 @@ import { downloadPdf } from '../services/pdf-service';
 import AddDapit from '../components/AddDapit';
 import { useDataContext } from '../DataContext';
 
+
 interface IAddDapitProps {
   // instructors?: string[];
   // trainers?: string[];
@@ -26,13 +27,20 @@ const AddDapitPage: React.FC<IAddDapitProps> = (props) => {
   const handleCloseAddDapit = () => {
     setShowAddDapit(false);
     navigate("/");
-};
+  };
+  const handleSubmitInAdd_dapit = async (submitDapit: IDapitforSubmit) =>{
+    console.log("the submit dapit is",submitDapit);
+    await postDapit(submitDapit);
+    handleCloseAddDapit();
+  };
   return (
     <div>{showAddDapit && (
       <AddDapit  
           onclose={handleCloseAddDapit}
           theGroup=''
-          theTrainer='' /> 
+          theTrainer=''
+          theDapit={undefined}
+          handleSubmit={handleSubmitInAdd_dapit} /> 
     )} 
     </div>   
   );

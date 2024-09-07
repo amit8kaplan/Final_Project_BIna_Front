@@ -5,6 +5,7 @@ import '../css/add_dapit.css';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { downloadPdf } from '../services/pdf-service';
+
 interface IData {
   value: number;
   description: string;
@@ -17,8 +18,8 @@ interface IDapitProps {
     nameTrainer: string;
     group: string;
     session?: string;
-    silabus: number;
-    date: string;
+    silabus: number | undefined;
+    date: Date;
     tags: string[];
     identification: IData[];
     payload: IData[];
@@ -41,8 +42,8 @@ interface IDapitProps {
     advantage: string[];
     disavantage: string[];
     summerize: string;
-    finalGrade: number;
-    changeTobeCommender: number;
+    finalGrade: number | undefined;
+    changeToBeCommender: number | undefined;
   };
   onClose: () => void;
 }
@@ -50,6 +51,8 @@ interface IDapitProps {
 const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const dateGoodFormat = new Date(selectedDapit.date).toISOString().split('T')[0];
+  // const dateGoodFormat = ""
+  console.log(selectedDapit.date, "selectedDapit.date");
   const onEmail = () => {
     console.log('Emailing dapit details');
   };
@@ -235,8 +238,8 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
             <div className="col-md-6">
             <h4>Change to be Commander</h4>
               <ul className="list-group">
-                <li className="list-group-item" style={getCellStyle(selectedDapit.changeTobeCommender || undefined)}>
-                  <strong>{selectedDapit.changeTobeCommender}</strong>
+                <li className="list-group-item" style={getCellStyle(selectedDapit.changeToBeCommender || undefined)}>
+                  <strong>{selectedDapit.changeToBeCommender}</strong>
                 </li>
               </ul>
             </div>

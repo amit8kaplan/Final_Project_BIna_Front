@@ -10,20 +10,20 @@ import {getIdpersonalInstractor} from '../services/id-service';
 import '../css/add_dapit.css';
 import { downloadPdf } from '../services/pdf-service';
 import { useDataContext } from '../DataContext';
-import {ITrainer } from '../public/interfaces';
+import {ITrainer, IDapit } from '../public/interfaces';
 import { set } from 'react-hook-form';
 import useSessionStorage from '../hooks/useSessionStorage';
 
 export interface IDapitData {
     idInstractor: string,
     idTrainer:string,
-    nameInstructor: string;
+    nameInstractor: string;
     nameTrainer: string;
     namePersonalInstractor: string;
     idPersonalInstractor: string;
     group: string;
     session: string;
-    syllabus: string;
+    silabus: string | undefined ;
     tags?: string[];
     identification: Array<{ value: number | undefined | undefined, description: string }>;
     payload: Array<{ value: number | undefined, description: string }>;
@@ -54,6 +54,8 @@ interface IAddDapitProps {
   onclose: () => void;
   theTrainer: string;
   theGroup: string;
+  handleSubmit: (submitDapit: IDapitforSubmit) => void;
+  theDapit: IDapit | undefined;
 }
 
 const AddDapit: React.FC<IAddDapitProps> = (props) => {
@@ -66,6 +68,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const theTrainer = state.theTrainer || props.theTrainer || '';
     const theGroup = state.theGroup || props.theGroup || '';
+    const theDapit = state.theDapit || props.theDapit || '';
     const [trainerListByGroupBoolean, setTrainerListByGroupBoolean] = useState<boolean>(false);
     const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
     const [groupListByTrainerBoolean, setGroupListByTrainerBoolean] = useState<boolean>(false);
@@ -73,68 +76,125 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const [validationMessage, setValidationMessage] = useState<string>('');
     const [validationMessage2, setValidationMessage2] = useState<string>('');
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-    const instructorsComp = instructors || [];
+    const InstractorsComp = instructors || [];
     const trainersComp = trainers || [];
     const sessionsComp = sessions || [];
     const groupsComp = groups || [];
     const personalInstractorsComp = personalInstractors || [];
-    console.log("Instructors: ", instructorsComp)
+    console.log("Instractors: ", InstractorsComp)
     console.log("Trainers: ", trainersComp)
     console.log("Sessions: ", sessionsComp)
     console.log("groups: ", groupsComp)
     console.log("personalInstractors: ", personalInstractorsComp)
+    console.log(theDapit, "theDapit in AddDapit");
+    console.log("theDapit in AddDapit date", theDapit && theDapit.silabus ? theDapit.silabus : undefined);
     const clientID = useSessionStorage('client-id');
     const otp = useSessionStorage('otp');
     const permissions = useSessionStorage('permissions');
 
-    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [dapitData, setDapitData] = useState<IDapitData>({
-    idInstractor: '',
-    idTrainer: '',
-    nameInstructor: '',
-    nameTrainer: theTrainer,
-    namePersonalInstractor: '', // Will be automatically set later
-    idPersonalInstractor: '',
-    group: theGroup,
-    session: '',
-    syllabus: '',
+    const [selectedDate, setSelectedDate] = useState<Date | null>(theDapit && theDapit.date ? new Date(theDapit.date) : new Date());
+    const [dapitData, setDapitData] = useState<IDapit>({
+    date: theDapit && theDapit.date ? theDapit.date : new Date(),
+    idInstractor: theDapit && theDapit.idInstractor ? theDapit.idInstractor : '',
+    idTrainer: theDapit && theDapit.idTrainer ? theDapit.idTrainer : '',
+    nameInstractor: theDapit && theDapit.nameInstractor ? theDapit.nameInstractor : '',
+    nameTrainer: theDapit && theDapit.nameTrainer ? theDapit.nameTrainer : theTrainer,
+    namePersonalInstractor: theDapit && theDapit.namePersonalInstractor ? theDapit.namePersonalInstractor : '',
+    idPersonalInstractor: theDapit && theDapit.idPersonalInstractor ? theDapit.idPersonalInstractor : '',
+    group: theDapit && theDapit.group ? theDapit.group : theGroup,
+    session: theDapit && theDapit.session ? theDapit.session : '',
+    silabus: theDapit && theDapit.silabus ? theDapit.silabus : undefined,
     tags: [''],
-    identification: [{ value:  undefined, description: '' }],
-    payload: [{ value:  undefined, description: '' }],
-    decryption: [{ value:  undefined, description: '' }],
-    workingMethod: [{ value:  undefined, description: '' }],
-    understandingTheAir: [{ value:  undefined, description: '' }],
-    flight: [{ value:  undefined, description: '' }],
-    theoretical: [{ value:  undefined, description: '' }],
-    thinkingInAir: [{ value:  undefined, description: '' }],
-    safety: [{ value:  undefined, description: '' }],
-    briefing: [{ value:  undefined, description: '' }],
-    debriefing: [{ value:  undefined, description: '' }],
-    debriefingInAir: [{ value:  undefined, description: '' }],
-    implementationExecise: [{ value:  undefined, description: '' }],
-    dealingWithFailures: [{ value:  undefined, description: '' }],
-    dealingWithStress: [{ value:  undefined, description: '' }],
-    makingDecisions: [{ value:  undefined, description: '' }],
-    pilotNature: [{ value:  undefined, description: '' }],
-    crewMember: [{ value:  undefined, description: '' }],
-    advantage: ['','',''],
-    disavantage: ['','', '' ],
-    
-    summerize: '',
-    finalGrade: undefined,
-    changeTobeCommender: undefined,
+    identification: theDapit && theDapit.identification ? theDapit.identification.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    payload: theDapit && theDapit.payload ? theDapit.payload.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    decryption: theDapit && theDapit.decryption ? theDapit.decryption.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    workingMethod: theDapit && theDapit.workingMethod ? theDapit.workingMethod.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    understandingTheAir: theDapit && theDapit.understandingTheAir ? theDapit.understandingTheAir.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    flight: theDapit && theDapit.flight ? theDapit.flight.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    theoretical: theDapit && theDapit.theoretical ? theDapit.theoretical.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    thinkingInAir: theDapit && theDapit.thinkingInAir ? theDapit.thinkingInAir.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    safety: theDapit && theDapit.safety ? theDapit.safety.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    briefing: theDapit && theDapit.briefing ? theDapit.briefing.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    debriefing: theDapit && theDapit.debriefing ? theDapit.debriefing.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    debriefingInAir: theDapit && theDapit.debriefingInAir ? theDapit.debriefingInAir.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    implementationExecise: theDapit && theDapit.implementationExecise ? theDapit.implementationExecise.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    dealingWithFailures: theDapit && theDapit.dealingWithFailures ? theDapit.dealingWithFailures.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    dealingWithStress: theDapit && theDapit.dealingWithStress ? theDapit.dealingWithStress.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    makingDecisions: theDapit && theDapit.makingDecisions ? theDapit.makingDecisions.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    pilotNature: theDapit && theDapit.pilotNature ? theDapit.pilotNature.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    crewMember: theDapit && theDapit.crewMember ? theDapit.crewMember.map(item=>({
+      value: Number(item.value) || undefined,
+      description: item.description || ''
+    })) : [{ value:  undefined, description: '' }],
+    advantage: theDapit && theDapit.advantage ? theDapit.advantage : ['','',''],
+    disavantage: theDapit && theDapit.disavantage ? theDapit.disavantage : ['','', '' ],
+    summerize: theDapit && theDapit.summerize ? theDapit.summerize : '',
+    finalGrade: theDapit && theDapit.finalGrade ? theDapit.finalGrade : undefined,
+    changeTobeCommender: theDapit && theDapit.changeTobeCommender ? theDapit.changeTobeCommender : undefined,
+
   });
   useEffect(() => {
     console.log("AddDapit useEffect");
     if (isSubmitted) {
     const missingFields = [];
-      if (!dapitData.nameInstructor) missingFields.push('Instructor');
+      if (!dapitData.nameInstractor) missingFields.push('Instractor');
       if (!dapitData.nameTrainer) missingFields.push('Trainer');
-      if (!dapitData.idInstractor) missingFields.push('Instructor ID');
+      if (!dapitData.idInstractor) missingFields.push('Instractor ID');
       if (!dapitData.idTrainer) missingFields.push('Trainer ID');
       if (!dapitData.group) missingFields.push('Group');
       if (!dapitData.session) missingFields.push('Session');
-      if (!dapitData.syllabus) missingFields.push('Syllabus');
+      if (!dapitData.silabus) missingFields.push('silabus');
       if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
       if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     
@@ -146,15 +206,21 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       if (!clientID || !otp || !permissions) {
         setValidationMessage2('You must be logged in to submit a DAPIT');
       } else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
-        setValidationMessage2('you dont allow to submit a dapit of other instructor');
+        setValidationMessage2('you dont allow to submit a dapit of other Instractor');
       } else {
         setValidationMessage2('');
       }
     }
-  }, [dapitData,dapitData.nameInstructor, dapitData.nameTrainer,isSubmitted]);
+    if (theDapit && theDapit.silabus) {
+      const selectedSession = sessionsComp.find(session => session.name === theDapit.session);
+      if (selectedSession) {
+        setSyllabusOptions(selectedSession.silabus);
+      }
+    }
+  }, [dapitData,dapitData.nameInstractor, dapitData.nameTrainer,isSubmitted]);
   const toPDF = () => {
     const content = contentRef.current;
-    const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.syllabus+"_"+dapitData.nameInstructor;
+    const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.silabus+"_"+dapitData.nameInstractor;
     downloadPdf(content, fileName);
   };
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
@@ -200,7 +266,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
           setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
           console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
           console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
-          const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
+          const personalName = InstractorsComp.find(Instractor => Instractor._id === idPersonalInstractor?.idInstractor);
           console.log("personal after nameTrainer personalName:",personalName);
           
           //add personal name to the dapitData
@@ -221,11 +287,11 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
         }));
       }
     }
-    if (field === 'nameInstructor') {
-      const selectedInstructor = instructorsComp.find(instructor => instructor.name === val);
-      if (selectedInstructor) {
-        //add the instructor id to the dapitData
-        setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));
+    if (field === 'nameInstractor') {
+      const selectedInstractor = InstractorsComp.find(Instractor => Instractor.name === val);
+      if (selectedInstractor) {
+        //add the Instractor id to the dapitData
+        setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstractor._id! }));
       }
     }
     if (field === 'group') {
@@ -256,7 +322,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     }
   };
  
-  const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
+  const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapit) => {
     console.log("handleNestedChange ");
     console.log("handleNestedChange index:",index);
     console.log("handleNestedChange e:",e);
@@ -273,7 +339,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     }
   };
   
-  const handleAdandDis =  (index: number, e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof IDapitData) => {
+  const handleAdandDis =  (index: number, e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof IDapit) => {
     const updatedArray = [...dapitData[field]];
     updatedArray[index] = e.target.value;
     setDapitData({ ...dapitData, [field]: updatedArray });
@@ -298,17 +364,17 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       return;
     }
     else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
-      setValidationMessage2('you dont allow to submit a dapit of other instructor');
+      setValidationMessage2('you dont allow to submit a dapit of other Instractor');
       return;
     }
     const missingFields = [];
-    if (!dapitData.nameInstructor) missingFields.push('Instructor');
+    if (!dapitData.nameInstractor) missingFields.push('Instractor');
     if (!dapitData.nameTrainer) missingFields.push('Trainer');
-    if (!dapitData.idInstractor) missingFields.push('Instructor ID');
+    if (!dapitData.idInstractor) missingFields.push('Instractor ID');
     if (!dapitData.idTrainer) missingFields.push('Trainer ID');
     if (!dapitData.group) missingFields.push('Group');
     if (!dapitData.session) missingFields.push('Session');
-    if (!dapitData.syllabus) missingFields.push('Syllabus');
+    if (!dapitData.silabus) missingFields.push('silabus');
     if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
     if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     if (sessionStorage.getItem('client-id'))
@@ -318,13 +384,13 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     }
     try{
         //trainerID: trainerID, PersonalInstractorID: PersonalInstractorID, InstractorID: InstractorID, personalName: personalName
-        // const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
+        // const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstractor); 
         // console.log("trainerID:",trainerID)
         // console.log("PersonalInstractorID:",PersonalInstractorID)
         // console.log("InstractorID:",InstractorID)
         console.log("dapitData.changetobecoma:",dapitData.changeTobeCommender)
         const submitDapit: IDapitforSubmit = {
-            nameInstractor: dapitData.nameInstructor,
+            nameInstractor: dapitData.nameInstractor,
             namePersonalInstractor: dapitData.namePersonalInstractor,
             nameTrainer: dapitData.nameTrainer,
             idPersonalInstractor: dapitData.idPersonalInstractor,
@@ -332,7 +398,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             idTrainer: dapitData.idTrainer,
             group: dapitData.group,
             session: dapitData.session,
-            silabus: parseInt(dapitData.syllabus),
+            silabus: dapitData.silabus,
             date: selectedDate as Date,
             identification: dapitData.identification,
             payload: dapitData.payload,
@@ -357,21 +423,21 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             changeTobeCommender: dapitData.changeTobeCommender,
             finalGrade: dapitData.finalGrade,
             summerize: dapitData.summerize
-        
         };
         console.log("the submit dapit is",submitDapit);
-        await postDapit(submitDapit);
+        // await postDapit(submitDapit);
         // Reset the form to its initial state here
         setDapitData({
+            date: new Date(),
             idInstractor: '',
             idTrainer: '',
             idPersonalInstractor: '',          
-            nameInstructor: '',
+            nameInstractor: '',
             nameTrainer: '',
             namePersonalInstractor: '',
             group: '',
             session: '',
-            syllabus: '',
+            silabus:undefined,
             tags: [],
             identification: [{ value:  undefined, description: '' }],
             payload: [{ value:  undefined, description: '' }],
@@ -397,7 +463,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             finalGrade:  undefined,
             changeTobeCommender:  undefined,
         });
-        handleOnClose();
+        props.handleSubmit(submitDapit);
+        // handleOnClose();
     }catch(error){
         console.error('Error submitting dapit:', error);    
     }
@@ -558,12 +625,12 @@ const getCellStyle = (value: number | undefined) => {
         <div className="container" ref={contentRef}>
           <Row className="mb-3">
             <Col md={3}>
-              <h4>Instructor</h4>
-              <Form.Control as="select" value={dapitData.nameInstructor} onChange={(e) => handleChange(e, 'nameInstructor')}>
-                <option value="">Select Instructor</option>
-                {instructorsComp.map((instructor, idx) => (
-                  <option key={instructor._id!} value={instructor.name} data-id={instructor._id!}>
-                    {instructor.name}
+              <h4>Instractor</h4>
+              <Form.Control as="select" value={dapitData.nameInstractor} onChange={(e) => handleChange(e, 'nameInstractor')}>
+                <option value="">Select Instractor</option>
+                {InstractorsComp.map((Instractor, idx) => (
+                  <option key={Instractor._id!} value={Instractor.name} data-id={Instractor._id!}>
+                    {Instractor.name}
                   </option>
                 ))}
               </Form.Control>
@@ -588,7 +655,7 @@ const getCellStyle = (value: number | undefined) => {
               </Form.Control>
             </Col>
             <Col md={3}>
-              <h4>Personal Instructor</h4>
+              <h4>Personal Instractor</h4>
               <Form.Control type="text" value={dapitData.namePersonalInstractor} disabled={true} onChange={(e) => handleChange(e, 'namePersonalInstractor')} />
               </Col>
             
@@ -635,13 +702,13 @@ const getCellStyle = (value: number | undefined) => {
               <h4>Syllabus</h4>
               <Form.Control
                 as="select"
-                value={dapitData.syllabus}
+                value={dapitData.silabus}
                 onChange={(e) => handleChange(e, 'syllabus')}
               >
                 <option value="">Select Syllabus</option>
-                {syllabusOptions.map((syllabus, idx) => (
-                  <option key={idx} value={syllabus}>
-                    {syllabus}
+                {syllabusOptions.map((silabus, idx) => (
+                  <option key={idx} value={silabus}>
+                    {silabus}
                   </option>
                 ))}
               </Form.Control>

@@ -11,7 +11,7 @@ export interface IDapitforSubmit {
     idInstractor: string;
     idTrainer: string;
     session?: string; // assuming it's optional
-    silabus: number;
+    silabus: number | undefined;
     date: Date;
     tags?: string[];
     identification: Array<{ value: number| undefined| undefined, description: string }>;
