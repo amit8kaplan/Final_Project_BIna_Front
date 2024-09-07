@@ -12,6 +12,8 @@ import { downloadPdf } from '../services/pdf-service';
 import { useDataContext } from '../DataContext';
 import {ITrainer } from '../public/interfaces';
 import { set } from 'react-hook-form';
+import useSessionStorage from '../hooks/useSessionStorage';
+
 export interface IDapitData {
     idInstractor: string,
     idTrainer:string,
@@ -53,11 +55,7 @@ interface IAddDapitProps {
   theTrainer: string;
   theGroup: string;
 }
-// namePersonalInstractor: personalName[0],
-// nameTrainer: dapitData.nameTrainer,
-// idPersonalInstractor: PersonalInstractorID[0],
-// idInstractor: InstractorID[0],
-// idTrainer: trainerID[0],
+
 const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const navigate = useNavigate();
     // const route = useRoute();
@@ -72,11 +70,9 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
     const [groupListByTrainerBoolean, setGroupListByTrainerBoolean] = useState<boolean>(false);
     const [syllabusOptions, setSyllabusOptions] = useState<number[]>([]);
-
-    // const instructors = state.instructors || props.instructors || [];
-    // const trainers = state.trainers || props.trainers || [];
-    // const sessions = state.sessions || props.sessions || [];
-    // const groups = state.groups || props.groups || [];
+    const [validationMessage, setValidationMessage] = useState<string>('');
+    const [validationMessage2, setValidationMessage2] = useState<string>('');
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const instructorsComp = instructors || [];
     const trainersComp = trainers || [];
     const sessionsComp = sessions || [];
@@ -87,9 +83,12 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     console.log("Sessions: ", sessionsComp)
     console.log("groups: ", groupsComp)
     console.log("personalInstractors: ", personalInstractorsComp)
+    const clientID = useSessionStorage('client-id');
+    const otp = useSessionStorage('otp');
+    const permissions = useSessionStorage('permissions');
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [dapitData, setDapitData] = useState<IDapitData>({
+    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+    const [dapitData, setDapitData] = useState<IDapitData>({
     idInstractor: '',
     idTrainer: '',
     nameInstructor: '',
@@ -127,119 +126,135 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
   });
   useEffect(() => {
     console.log("AddDapit useEffect");
-    // const updatePersonalInstructor = async () => {
-    //     // if (dapitData.nameInstructor && dapitData.nameTrainer) {
-    //     //     const { trainerID, PersonalInstractorID, InstractorID, personalName } = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor);
-    //     //     console.log("the ids are:", trainerID, PersonalInstractorID, InstractorID, personalName);
-    //     //     setDapitData((prevData) => ({ ...prevData, namePersonalInstractor: personalName }));
+    if (isSubmitted) {
+    const missingFields = [];
+      if (!dapitData.nameInstructor) missingFields.push('Instructor');
+      if (!dapitData.nameTrainer) missingFields.push('Trainer');
+      if (!dapitData.idInstractor) missingFields.push('Instructor ID');
+      if (!dapitData.idTrainer) missingFields.push('Trainer ID');
+      if (!dapitData.group) missingFields.push('Group');
+      if (!dapitData.session) missingFields.push('Session');
+      if (!dapitData.syllabus) missingFields.push('Syllabus');
+      if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
+      if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
+    
+      if (missingFields.length > 0) {
+        setValidationMessage(`Please fill in the following required fields:\n ${missingFields.join(', ')}`);
+      } else {
+        setValidationMessage('');
+      }
+      if (!clientID || !otp || !permissions) {
+        setValidationMessage2('You must be logged in to submit a DAPIT');
+      } else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
+        setValidationMessage2('you dont allow to submit a dapit of other instructor');
+      } else {
+        setValidationMessage2('');
+      }
+    }
+  }, [dapitData,dapitData.nameInstructor, dapitData.nameTrainer,isSubmitted]);
+  const toPDF = () => {
+    const content = contentRef.current;
+    const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.syllabus+"_"+dapitData.nameInstructor;
+    downloadPdf(content, fileName);
+  };
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
+    const val = e.target.value;
+    const value = e.target.value;
+    let key: string | null = null;
 
-    //     // }
-    // };
-    // updatePersonalInstructor();
-}, [dapitData.nameInstructor, dapitData.nameTrainer]);
-const toPDF = () => {
-  const content = contentRef.current;
-  const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.syllabus+"_"+dapitData.nameInstructor;
-  downloadPdf(content, fileName);
-};
-const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
-  const val = e.target.value;
-  const value = e.target.value;
-  let key: string | null = null;
+    if (e.target instanceof HTMLSelectElement) {
+      const selectedOption = e.target.selectedOptions[0];
+      key = selectedOption.getAttribute('data-id');
+    }
 
-  if (e.target instanceof HTMLSelectElement) {
-    const selectedOption = e.target.selectedOptions[0];
-    key = selectedOption.getAttribute('data-id');
-  }
+    console.log(`try11111 Key: ${key}, Value: ${value}`);
+    console.log("e", e);
+    console.log("handleChange val:", val);
 
-  console.log(`try11111 Key: ${key}, Value: ${value}`);
-  console.log("e", e);
-  console.log("handleChange val:", val);
+    setDapitData({ ...dapitData, [field]: val });
+    
+    if (field === 'nameTrainer') {
+      // setDapitData(prevData => ({ ...prevData, idTrainer: key || ''}));
+      console.log ("group after nameTrainer val:",val);
+      const selectedTrainer = trainersComp.find(trainer => trainer.name === val);
+      if (selectedTrainer) {
+        console.log("groupsComp group after nameTrainer:",groupsComp);
+        console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
+        //add the trainer id to the dapitData
+        setDapitData(prevData => ({ ...prevData, idTrainer: selectedTrainer._id! }));
+        const group = groupsComp.find(group => group.idsTrainers?.includes(selectedTrainer._id!));
+        console.log("group after nameTrainer:",group);
+        if (group) {
+          //add the group name
+          setGroupListByTrainerBoolean(true);
+          setDapitData(prevData => ({ ...prevData, group: group.name }));
+        }
+        else {
+          setGroupListByTrainerBoolean(false);
+          setDapitData(prevData => ({ ...prevData, group: '' }));
+        }
+        const idPersonalInstractor = personalInstractorsComp.find(personalInstractor => personalInstractor.idTrainer === selectedTrainer._id!);
+        if (idPersonalInstractor) {
 
-  setDapitData({ ...dapitData, [field]: val });
-  
-  if (field === 'nameTrainer') {
-    // setDapitData(prevData => ({ ...prevData, idTrainer: key || ''}));
-    console.log ("group after nameTrainer val:",val);
-    const selectedTrainer = trainersComp.find(trainer => trainer.name === val);
-    if (selectedTrainer) {
-      console.log("groupsComp group after nameTrainer:",groupsComp);
-      console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
-      //add the trainer id to the dapitData
-      setDapitData(prevData => ({ ...prevData, idTrainer: selectedTrainer._id! }));
-      const group = groupsComp.find(group => group.idsTrainers?.includes(selectedTrainer._id!));
-      console.log("group after nameTrainer:",group);
-      if (group) {
-        //add the group name
-        setGroupListByTrainerBoolean(true);
-        setDapitData(prevData => ({ ...prevData, group: group.name }));
+        //add the personalInstractor id to the dapitData
+          setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
+          console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
+          console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
+          const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
+          console.log("personal after nameTrainer personalName:",personalName);
+          
+          //add personal name to the dapitData
+          setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
+          console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
+        }
+        else {
+          setDapitData(prevData => ({ ...prevData, idPersonalInstractor: '', namePersonalInstractor: '' }));
+        }
       }
       else {
         setGroupListByTrainerBoolean(false);
-        setDapitData(prevData => ({ ...prevData, group: '' }));
+        setDapitData(prevData => ({
+          ...prevData,
+          idPersonalInstractor: '',
+          namePersonalInstractor: '', 
+          group: ''
+        }));
       }
-      const idPersonalInstractor = personalInstractorsComp.find(personalInstractor => personalInstractor.idTrainer === selectedTrainer._id!);
-      if (idPersonalInstractor) {
-
-      //add the personalInstractor id to the dapitData
-        setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
-        console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
-        console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
-        const personalName = instructorsComp.find(instructor => instructor._id === idPersonalInstractor?.idInstractor);
-        console.log("personal after nameTrainer personalName:",personalName);
-        
-        //add personal name to the dapitData
-        setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
-        console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
+    }
+    if (field === 'nameInstructor') {
+      const selectedInstructor = instructorsComp.find(instructor => instructor.name === val);
+      if (selectedInstructor) {
+        //add the instructor id to the dapitData
+        setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));
+      }
+    }
+    if (field === 'group') {
+      console.log ("group after group val:",val);
+      const theGroup = groupsComp.find(group => group.name === val);
+      
+      if (theGroup) {
+        //add the group id to the dapitData
+        const trainers = trainersComp.filter(trainer => theGroup.idsTrainers?.includes(trainer._id!));
+        console.log("Trainers in the selected group:", trainers);
+        setTrainerListByGroup(trainers);
+        setTrainerListByGroupBoolean(true);
       }
       else {
-        setDapitData(prevData => ({ ...prevData, idPersonalInstractor: '', namePersonalInstractor: '' }));
+        setTrainerListByGroupBoolean(false);
+      }
+      
+    };
+    if (field === 'session') {
+      const selectedSession = sessionsComp.find(session => session.name === val);
+      if (selectedSession) {
+        setSyllabusOptions(selectedSession.silabus);
+        setDapitData(prevData => ({ ...prevData, session: selectedSession.name }));
+      } else {
+        setSyllabusOptions([]);
+        setDapitData(prevData => ({ ...prevData, session: '' }));
       }
     }
-    else {
-      setGroupListByTrainerBoolean(false);
-      setDapitData(prevData => ({
-        ...prevData,
-        idPersonalInstractor: '',
-        namePersonalInstractor: '', 
-        group: ''
-      }));
-    }
-  }
-  if (field === 'nameInstructor') {
-    const selectedInstructor = instructorsComp.find(instructor => instructor.name === val);
-    if (selectedInstructor) {
-      //add the instructor id to the dapitData
-      setDapitData(prevData => ({ ...prevData, idInstractor: selectedInstructor._id! }));
-    }
-  }
-  if (field === 'group') {
-    console.log ("group after group val:",val);
-    const theGroup = groupsComp.find(group => group.name === val);
-    
-    if (theGroup) {
-      //add the group id to the dapitData
-      const trainers = trainersComp.filter(trainer => theGroup.idsTrainers?.includes(trainer._id!));
-      console.log("Trainers in the selected group:", trainers);
-      setTrainerListByGroup(trainers);
-      setTrainerListByGroupBoolean(true);
-    }
-    else {
-      setTrainerListByGroupBoolean(false);
-    }
-    
   };
-  if (field === 'session') {
-    const selectedSession = sessionsComp.find(session => session.name === val);
-    if (selectedSession) {
-      setSyllabusOptions(selectedSession.silabus);
-      setDapitData(prevData => ({ ...prevData, session: selectedSession.name }));
-    } else {
-      setSyllabusOptions([]);
-      setDapitData(prevData => ({ ...prevData, session: '' }));
-    }
-  }
-};
  
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapitData) => {
     console.log("handleNestedChange ");
@@ -275,9 +290,32 @@ const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextArea
     props.onclose();
   }
 
-  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Submitting dapit details');
+    setIsSubmitted(true);
+    if (!clientID || !otp || !permissions) {
+      setValidationMessage2('You must be logged in to submit a DAPIT');
+      return;
+    }
+    else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
+      setValidationMessage2('you dont allow to submit a dapit of other instructor');
+      return;
+    }
+    const missingFields = [];
+    if (!dapitData.nameInstructor) missingFields.push('Instructor');
+    if (!dapitData.nameTrainer) missingFields.push('Trainer');
+    if (!dapitData.idInstractor) missingFields.push('Instructor ID');
+    if (!dapitData.idTrainer) missingFields.push('Trainer ID');
+    if (!dapitData.group) missingFields.push('Group');
+    if (!dapitData.session) missingFields.push('Session');
+    if (!dapitData.syllabus) missingFields.push('Syllabus');
+    if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
+    if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
+    if (sessionStorage.getItem('client-id'))
+    if (missingFields.length > 0) {
+      setValidationMessage(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      return;
+    }
     try{
         //trainerID: trainerID, PersonalInstractorID: PersonalInstractorID, InstractorID: InstractorID, personalName: personalName
         // const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstructor); 
@@ -496,11 +534,26 @@ const getCellStyle = (value: number | undefined) => {
     // <Modal show={true} onHide={onClose} size="xl" style={{ fontSize: '0.9em', overflowY: 'auto' }}>
 
     <Modal show={true} onHide={handleOnClose} size="xl" style={{ fontSize: '0.9em', overflowY: 'auto' }}>
-      <Modal.Header style={{fontSize:"20px"}} closeButton>
-        <Button variant="secondary" className="float-start" onClick={toPDF}>
-            Download PDF
-        </Button>
-      </Modal.Header>
+    <Modal.Header style={{ fontSize: "20px" }} closeButton>
+      <Button variant="secondary" className="float-start" onClick={toPDF}>
+        Download PDF
+      </Button>
+      {validationMessage2 ? (
+        <div style={{ color: 'red', marginTop: '10px', marginLeft: '5px', marginRight: '5px' }}>
+          {validationMessage2.split('\n').map((msg, idx) => (
+            <div key={idx}>{msg}</div>
+          ))}
+        </div>
+      ) : (
+        validationMessage && (
+          <div style={{ color: 'red', marginTop: '10px', marginLeft: '5px', marginRight: '5px' }}>
+            {validationMessage.split('\n').map((msg, idx) => (
+              <div key={idx}>{msg}</div>
+            ))}
+          </div>
+        )
+      )}
+    </Modal.Header>
       <Modal.Body>
         <div className="container" ref={contentRef}>
           <Row className="mb-3">

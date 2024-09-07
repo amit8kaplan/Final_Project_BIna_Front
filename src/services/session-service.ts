@@ -39,11 +39,17 @@ export const verifyOtp = async (clientId: string, otp: string) => {
 
 export const RegularDeleteSession = async () => {
     try{
+
+
         const headers = getAuthHeaders();
         if (!headers || !headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
         const response = await apiClient.delete('/auth/RegularDeleteSession', {headers});
+        sessionStorage.removeItem('client-id');
+        sessionStorage.removeItem('otp');
+        sessionStorage.removeItem('ttl');
+        sessionStorage.removeItem('permissions');
         return response.data;
     }
     catch (error) {

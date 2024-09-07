@@ -9,6 +9,7 @@ const CurrentSession: React.FC = () => {
     const { instructors } = useDataContext();
     const clientId = useSessionStorage('client-id');
     const otp = useSessionStorage('otp');
+    const permissions = useSessionStorage('permissions');
     const [instructor, setInstructor] = useState<string>('');
     const [show, setShow] = useState(false);
     const [ttl, setTtl] = useState<number>(0);
@@ -97,6 +98,7 @@ const CurrentSession: React.FC = () => {
                                    x
                                 </Button>
                             </div>
+                            <span>{permissions ?  `permissions: ${permissions}` : 'no permssions'}</span>
                             <ProgressBar
                                 now={ttlPercentage}
                                 variant={isTtlUnderOneMinute ? 'danger' : 'info'}
