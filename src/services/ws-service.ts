@@ -37,6 +37,8 @@ class WebSocketService {
 
     this.ws.onmessage = (event) => {
       console.log('Message from server:', event.data);
+      console.log('sessionConsole Message from server:', event.data);
+      this.processMessage(event.data);
       this.emitter.emit('message', event.data); // Emit the message event
     };
 
@@ -51,7 +53,26 @@ class WebSocketService {
       this.retryConnection();
     };
   }
-
+  private processMessage(message: string) {
+    try {
+      const data = JSON.parse(message);
+      if (data.allSessions && data.allSessions.length > 0) {
+        const sessions = data.allSessions.map((session: any) => ({
+          storedClientId: session.storedClientId,
+          permissions: session.permissions,
+          ttl: session.ttl,
+        }));
+        if (sessionStorage.getItem('sessions')) {
+          sessionStorage.removeItem('sessions');
+        }
+        sessionStorage.setItem('sessions', JSON.stringify(sessions));
+        const sessionConsole = sessionStorage.getItem('sessions');
+        console.log('sessionConsole', sessionConsole);
+      }
+    } catch (error) {
+      console.error('Failed to process message:', error);
+    }
+  }
   private retryConnection() {
     if (this.retryCount < this.maxRetries) {
       this.retryCount++;
