@@ -2,20 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Container, Table, Collapse, Button, OverlayTrigger, Tooltip, Modal } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { handleFiltersSubmit } from '../services/dapit-serivce';
-import { trainersData, sessionsData, categoriesData, silabusPerSessionData } from '../public/data';
+import { trainersData, categoriesData } from '../public/data';
 import { getMegamGradesAvg, getAveragePerformance } from '../services/matrics-serivce';
 import ViewDapit from '../components/view_Dapit';
 import Sidebar_piano from '../components/sidebar_piano';
 import { css } from 'jquery';
+import { ISession, IInstractor, ITrainer, IGroup } from '../public/interfaces';
+import { useDataContext } from '../DataContext';
 
 interface IpianoProps {
-  group: string;
+  groupData: IGroup;
 }
 
 const Piano: React.FC<IpianoProps> = (props) => {
   const location = useLocation();
   const state = location.state as IpianoProps || {};
-  const group = state.group || props.group;
+  const groupData = state.groupData || props.groupData;
+  console.log("groupData ", groupData)
   const [dapits, setDapits] = useState<any[]>([]);
   const [avgPerformance, setAvgPerformance] = useState<any | null>(null);
   const [openSessions, setOpenSessions] = useState<{ [key: string]: boolean }>({});
@@ -29,15 +32,23 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [columnOrder, setColumnOrder] = useState(categoriesData);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const { groups, instructors, sessions,trainers ,personalInstractors } = useDataContext();
+  const InstractorsComp: IInstractor[] = instructors || [];
+  console.log("trainer", trainers)
+  const trainersComp: ITrainer[] = trainers.filter(
+    (trainer) => trainer._id && groupData.idsTrainers?.includes(trainer._id)
+  ) || [];
+  console.log("trainerComp", trainersComp)
+  const sessionsComp: ISession[] = sessions || [];
+  const groupsComp: IGroup[] = groups || [];
+
   useEffect(() => {
-    
     fetchDapits();
+  }, [groupData]);
 
-  }, [group]);
-
-  const handleShowModal = (dapit:any) => {
+  const handleShowModal = (dapit: any) => {
     console.log('dapit:', dapit);
-    if (dapit != undefined){
+    if (dapit != undefined) {
       setSelectedDapit(dapit);
       setShowModal(true);
     }
@@ -70,7 +81,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
 
   const fetchDapits = async () => {
     try {
-      const allDapits = await handleFiltersSubmit({ group: group });
+      const allDapits = await handleFiltersSubmit({ group: groupData.name });
       const dapitsWithKeys = allDapits.map((item: any, index: any) => ({
         ...item,
         key: index
@@ -91,10 +102,10 @@ const Piano: React.FC<IpianoProps> = (props) => {
       const mapObjects = arrangeTheDapits(sortedDapits);
       setMapObjectsDapits(mapObjects);
 
-      const getMegamGradesAvg1 = await getMegamGradesAvg(group);
+      const getMegamGradesAvg1 = await getMegamGradesAvg(groupData);
       console.log('getMegamGradesAvg1:', getMegamGradesAvg1);
 
-      const AveragePerformance = await getAveragePerformance(group);
+      const AveragePerformance = await getAveragePerformance(groupData.name);
       console.log('getAveragePerformance1:', AveragePerformance);
       const avgHanichPerPreformance = AveragePerformance.avgHanichPerPreformance;
       console.log('avgHanichPerPreformance:', avgHanichPerPreformance);
@@ -105,14 +116,14 @@ const Piano: React.FC<IpianoProps> = (props) => {
     }
 
     try {
-      const MegamGradesAvg = await getMegamGradesAvg(group);
+      const MegamGradesAvg = await getMegamGradesAvg(groupData);
       setAvgPerformance(MegamGradesAvg);
     } catch (error) {
       console.error('Error fetching dapits:', error);
     }
 
     try {
-      const AveragePerformance = await getAveragePerformance(group);
+      const AveragePerformance = await getAveragePerformance(groupData.name);
       setAvgPerformance(AveragePerformance);
     } catch (error) {
       console.error('Error fetching dapits:', error);
@@ -176,162 +187,160 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const noUnderlineStyle = {
     textDecoration: 'none'
   };
-  return (
-    <div className ="d-flex">
-<Sidebar_piano
-       categoriesData={categoriesData}
-       visibleColumns={visibleColumns}
-       setVisibleColumns={setVisibleColumns}
-       handleMoveColumn={handleMoveColumn}
-       isOpen={isSidebarOpen}
-       toggleSidebar={toggleSidebar}
-      />
-    <Container>
-        
-      <h1 className="mt-4">{group}</h1>
-      
-      <Table striped bordered hover table-sm className="mt-4">
-      <thead>
-        <tr>
-            <th style={fixedCellStyle}></th>
-            <th style={fixedCellStyle}>Trainer</th>
-            {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-            <th key={idx} style={fixedCellStyle}>{category}</th>
-            ))}
-        </tr>
-        </thead>
 
-        <tbody>
-        {trainersData.map((trainer, trainerIdx) => (
-            <React.Fragment key={trainerIdx}>
+  return (
+    <div className="d-flex">
+      <Sidebar_piano
+        categoriesData={categoriesData}
+        visibleColumns={visibleColumns}
+        setVisibleColumns={setVisibleColumns}
+        handleMoveColumn={handleMoveColumn}
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+      />
+      <Container>
+        <h1 className="mt-4">{groupData.name}</h1>
+        <Table striped bordered hover size="sm" className="mt-4">
+          <thead>
+            <tr>
+              <th style={fixedCellStyle}></th>
+              <th style={fixedCellStyle}>Trainer</th>
+              {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                <th key={idx} style={fixedCellStyle}>{category}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {trainersComp.map((trainer, trainerIdx) => (
+              <React.Fragment key={trainerIdx}>
                 <tr>
-                <td style={fixedCellStyle}>
-                    <Button style={noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSession(trainer)}>+</Button>
-                </td>
-                <td style={fixedCellStyle}>{trainer}</td>
-                {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                    <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer]?.[category] || 0) }}>
-                    {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer]?.[category] || ''}
-                    </td>
-                ))}
-                </tr>
-              <Collapse in={openSessions[trainer]}>
-                <tr>
-                  <td colSpan={columnOrder.filter(col => visibleColumns.includes(col)).length + 2}>
-                    <Table striped bordered hover table-sm>
-                      <thead>
-                        <tr>
-                          <th style={fixedCellStyle}></th>
-                          <th style={fixedCellStyle}>Session</th>
-                          {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                            <th key={idx} style={fixedCellStyle}>{category}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sessionsData.map((session, sessionIdx) => (
-                          <React.Fragment key={sessionIdx}>
-                            <tr>
-                              <td style={fixedCellStyle}>
-                                <Button style={noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSilabus(trainer, session)}>+</Button>
-                              </td>
-                              <td style={fixedCellStyle}>{session}</td>
-                              {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer]?.[session]?.[category] || 0) }}>
-                                  {AveragePerformance?.["ResavgPerformance"]?.[trainer]?.[session]?.[category] || ''}
-                                </td>
-                              ))}
-                            </tr>
-                            <Collapse in={openSilabus[trainer]?.[session]}>
-                              <tr>
-                                <td colSpan={columnOrder.filter(col => visibleColumns.includes(col)).length + 2}>
-                                  <Table striped bordered hover table-sm>
-                                    <thead>
-                                      <tr>
-                                        <th style={fixedCellStyle}></th>
-                                        <th style={fixedCellStyle}>Silabus</th>
-                                        {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                                          <th key={idx} style={fixedCellStyle}>{category}</th>
-                                        ))}
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {silabusPerSessionData[0][session]?.map((silabus:any, silabusIdx:any) => (
-                                        <tr key={silabusIdx}>
-                                          <td>
-                                            <Button style={noUnderlineStyle} 
-                                              variant="link" 
-                                              size="sm"
-                                              onClick={() => handleShowModal(dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus))}
-                                            >
-                                              +
-                                            </Button>
-                                          </td>
-                                          <td style={fixedCellStyle}>{silabus}</td>
-                                          {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => {
-                                            let res = dapits.find(d => d.nameTrainer === trainer && d.session === session && d.silabus === silabus);
-                                            let check = '';
-                                            let check2 = '';
-                                            if (res && res[category] && res[category][0]?.value) {
-                                              check = res[category][0].value;
-                                              check2 = res[category][0].description;
-                                            }
-                                            if (res && category === "finalGrade") {
-                                              check = res.finalGrade;
-                                              check2 = ''
-                                            } else if (res && category === "changeTobeCommender") {
-                                              check = res.changeTobeCommender;
-                                              check2 =''
-                                            }
-                                            return (
-                                              <OverlayTrigger
-                                                key={idx}
-                                                placement="top"
-                                                overlay={<Tooltip id={`tooltip-${trainerIdx}-${sessionIdx}-${silabusIdx}-${idx}`}>{check2}</Tooltip>}
-                                              >
-                                                <td style={{ ...fixedCellStyle, ...getCellStyle(parseFloat(check) || 0) }}>
-                                                  {check}
-                                                </td>
-                                              </OverlayTrigger>
-                                            );
-                                          })}
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </Table>
-                                </td>
-                              </tr>
-                            </Collapse>
-                          </React.Fragment>
-                        ))}
-                      </tbody>
-                    </Table>
+                  <td style={fixedCellStyle}>
+                    <Button style={noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSession(trainer.name)}>+</Button>
                   </td>
+                  <td style={fixedCellStyle}>{trainer.name}</td>
+                  {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                    <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) }}>
+                      {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || ''}
+                    </td>
+                  ))}
                 </tr>
-              </Collapse>
-            </React.Fragment>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td style={fixedCellStyle}></td>
-            <td style={fixedCellStyle}>Avg Group</td>
-            {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-              <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) }}>
-                {AveragePerformance?.["avgGroup"]?.[category] || ''}
-              </td>
+                <Collapse in={openSessions[trainer.name]}>
+                  <tr>
+                    <td colSpan={columnOrder.filter(col => visibleColumns.includes(col)).length + 2}>
+                      <Table striped bordered hover size="sm">
+                        <thead>
+                          <tr>
+                            <th style={fixedCellStyle}></th>
+                            <th style={fixedCellStyle}>Session</th>
+                            {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                              <th key={idx} style={fixedCellStyle}>{category}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sessionsComp.map((session, sessionIdx) => (
+                            <React.Fragment key={sessionIdx}>
+                              <tr>
+                                <td style={fixedCellStyle}>
+                                  <Button style={noUnderlineStyle} variant="link" size="sm" onClick={() => toggleSilabus(trainer.name, session.name)}>+</Button>
+                                </td>
+                                <td style={fixedCellStyle}>{session.name}</td>
+                                {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0) }}>
+                                    {AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || ''}
+                                  </td>
+                                ))}
+                              </tr>
+                              <Collapse in={openSilabus[trainer.name]?.[session.name]}>
+                                <tr>
+                                  <td colSpan={columnOrder.filter(col => visibleColumns.includes(col)).length + 2}>
+                                    <Table striped bordered hover size="sm">
+                                      <thead>
+                                        <tr>
+                                          <th style={fixedCellStyle}></th>
+                                          <th style={fixedCellStyle}>Silabus</th>
+                                          {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                                            <th key={idx} style={fixedCellStyle}>{category}</th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {session.silabus.map((silabus: number, silabusIdx: number) => (
+                                          <tr key={silabusIdx}>
+                                            <td>
+                                              <Button style={noUnderlineStyle}
+                                                variant="link"
+                                                size="sm"
+                                                onClick={() => handleShowModal(dapits.find(d => d.nameTrainer === trainer.name && d.session === session.name && d.silabus === silabus))}
+                                              >
+                                                +
+                                              </Button>
+                                            </td>
+                                            <td style={fixedCellStyle}>{silabus}</td>
+                                            {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => {
+                                              let res = dapits.find(d => d.nameTrainer === trainer.name && d.session === session.name && d.silabus === silabus);
+                                              let check = '';
+                                              let check2 = '';
+                                              if (res && res[category] && res[category][0]?.value) {
+                                                check = res[category][0].value;
+                                                check2 = res[category][0].description;
+                                              }
+                                              if (res && category === "finalGrade") {
+                                                check = res.finalGrade;
+                                                check2 = ''
+                                              } else if (res && category === "changeTobeCommender") {
+                                                check = res.changeTobeCommender;
+                                                check2 = ''
+                                              }
+                                              return (
+                                                <OverlayTrigger
+                                                  key={idx}
+                                                  placement="top"
+                                                  overlay={<Tooltip id={`tooltip-${trainerIdx}-${sessionIdx}-${silabusIdx}-${idx}`}>{check2}</Tooltip>}
+                                                >
+                                                  <td style={{ ...fixedCellStyle, ...getCellStyle(parseFloat(check) || 0) }}>
+                                                    {check}
+                                                  </td>
+                                                </OverlayTrigger>
+                                              );
+                                            })}
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </Table>
+                                  </td>
+                                </tr>
+                              </Collapse>
+                            </React.Fragment>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </td>
+                  </tr>
+                </Collapse>
+              </React.Fragment>
             ))}
-          </tr>
-        </tfoot>
-      </Table>
-      {/* Modal */}
-      {showModal && (
-        <ViewDapit 
-          selectedDapit={selectedDapit} 
-          onClose={handleCloseModal} 
-        />
-      )}
-    </Container>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td style={fixedCellStyle}></td>
+              <td style={fixedCellStyle}>Avg Group</td>
+              {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
+                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) }}>
+                  {AveragePerformance?.["avgGroup"]?.[category] || ''}
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </Table>
+        {/* Modal */}
+        {showModal && (
+          <ViewDapit
+            selectedDapit={selectedDapit}
+            onClose={handleCloseModal}
+          />
+        )}
+      </Container>
     </div>
   );
 };

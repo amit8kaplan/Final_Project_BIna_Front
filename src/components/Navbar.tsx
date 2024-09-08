@@ -50,7 +50,7 @@ export function Nav_componnets() {
                   key={group._id}
                   as={Link}
                   to={"/Piano"}
-                  state={{ group: group }}
+                  state={{ groupData: group }}
                 >
                   {group.name}
                 </NavDropdown.Item>

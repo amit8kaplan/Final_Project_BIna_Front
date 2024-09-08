@@ -70,7 +70,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const theTrainer : ITrainer = state.theTrainer || props.theTrainer || defaultTrainer;
     const theGroup = state.theGroup || props.theGroup || '';
     const theDapit = state.theDapit || props.theDapit || '';
-    
+    const [theDapitBoolean, setTheDapitBoolean] = useState<boolean>(!!theDapit || !theDapit);
+
     const thePI : IInstractor | undefined = state.thePesonalINstractor || props.thePesonalINstractor || defaultInstractor
     console.log("the Trainer" , theTrainer)
     console.log("the PI", thePI)
@@ -631,7 +632,7 @@ const getCellStyle = (value: number | undefined) => {
           <Row className="mb-3">
             <Col md={3}>
               <h4>Instractor</h4>
-              <Form.Control as="select" value={dapitData.nameInstractor} onChange={(e) => handleChange(e, 'nameInstractor')}>
+              <Form.Control as="select" value={dapitData.nameInstractor}  onChange={(e) => handleChange(e, 'nameInstractor')}>  
                 <option value="">Select Instractor</option>
                 {InstractorsComp.map((Instractor, idx) => (
                   <option key={Instractor._id!} value={Instractor.name} data-id={Instractor._id!}>
