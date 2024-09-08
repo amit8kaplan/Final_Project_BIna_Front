@@ -1,6 +1,7 @@
 import exp from "constants";
 import apiClient from "./api-client";
 
+
 //todo: i added here idInstractor , now i need to deal with it in the server
 export interface IPostforSubmit {
     idTrainer: string;
@@ -11,6 +12,8 @@ export interface IPostforSubmit {
     date: Date;
     _id?: string;
     file: File | null
+    filePath?: string;
+
 }
 interface ILikes {
     _id: string;
@@ -84,16 +87,49 @@ export const getWall = async (trainerId: string) => {
         console.error('Error fetching wall:', error);
     }
 }
-
 export const postPost = async (post: IPostforSubmit) => {
-    try{
-        const response = await apiClient.post("/post/", post);
+    const formData = new FormData();
+
+    // Log individual fields
+    console.log("postPost idTrainer:", post.idTrainer);
+    console.log("postPost nameInstractor:", post.nameInstractor);
+    console.log("postPost idInstractor:", post.idInstractor);
+    console.log("postPost title:", post.title);
+    console.log("postPost content:", post.content);
+    console.log("postPost date:", post.date);
+    console.log("postPost file:", post.file);
+
+    formData.append("idTrainer", post.idTrainer);
+    formData.append("nameInstractor", post.nameInstractor);
+    formData.append("idInstractor", post.idInstractor);
+    if (post.title) formData.append("title", post.title);
+    if (post.content) formData.append("content", post.content);
+    formData.append("date", post.date.toISOString()); // Convert date to ISO string
+    if (post._id) formData.append("_id", post._id);
+    if (post.file !=null )
+        if (post.file) formData.append("file", post.file); // Correctly append the file
+    console.log("postPost", JSON.stringify(formData))
+    // Log FormData entries
+    for (let pair of formData.entries()) {
+        if (pair[1] instanceof File) {
+            console.log(`postPost ${pair[0]}: [File] name=${pair[1].name}, size=${pair[1].size}, type=${pair[1].type}`);
+        } else {
+            console.log(`postPost ${pair[0]}: ${pair[1]}`);
+        }
+    }
+
+    try {
+        const response = await apiClient.post("/post/", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return response.data;
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error posting post:', error);
+        throw error; // Re-throw the error to handle it in the calling function
     }
-}
+};
 
 export const getLikes = async (trainerId: string) => {
     try{
@@ -104,6 +140,33 @@ export const getLikes = async (trainerId: string) => {
         console.error('Error fetching likes:', error);
     }
 }
+export const getFile = async (filePath: string) => {
+    console.log("getFile in wall-service")
+    filePath = encodeURIComponent(filePath)
+    try {
+        const response = await apiClient.get(`/post/getFileByPathFile/${filePath}`, {
+            responseType: 'blob' // Ensure the response is treated as a binary file
+        });
+
+        if (response.status === 200) {
+            console.log("getFile the res is 200")
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const fileName = filePath.split('/').pop(); // Extract the filename from the filePath
+            link.setAttribute('download', fileName || 'download'); // Set the file name
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            return 200;
+        } else {
+            throw new Error('Failed to download file');
+        }
+    } catch (error) {
+        console.error('Error getting file:', error);
+        throw error;
+    }
+};
 
 export const putLike = async (idDapitOrPost: string, like: string, count: number) => {
     console.log("putLike: ", idDapitOrPost, like, count);

@@ -5,9 +5,11 @@ import { set } from 'react-hook-form';
 import { FaEye, FaComment } from 'react-icons/fa';
  import ViewPost  from '../components/view_Post'; // Assuming you have a ViewPost component
 import {dateOnly} from '../services/dapit-serivce';
-import { getWall, IPostforSubmit, postPost, getLikes,getComments, putLike, postLike , handleLike} from '../services/wall-service';
+import { getWall, IPostforSubmit, postPost, getLikes,getComments, putLike, postLike , handleLike, getFile} from '../services/wall-service';
 import LikeAndComment from './LikeAndComment';
 import ViewComments from './ViewComments';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-solid-svg-icons'; // Import the specific icon
 interface ILikes {
     _id: string;
     flag: boolean;
@@ -29,13 +31,14 @@ interface Icomments{
         title?: string;
         content?: string;
         date?: string;
+        filePath?:string;
     };
     idTrainer: string | undefined;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
-
+    console.log("start of postCard")
     const [newDate, setNewDate] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
@@ -43,14 +46,28 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const [likes, setLikes] = useState<ILikes[]>([]);
     const [comments, setComments] = useState<Icomments[]>([]);
     useEffect(()=>{
-        //console.log('post: ', post);
+        console.log('postCard: ', post);
         if (post.date !==null && post.date !== undefined) {
             setNewDate(dateOnly(post.date));
         }
         fetchLikes();
         fetchComments();
     }, [post, showComments]);
+    // useEffect(()=>{
+    //     console.log("ongoing fetch")
+    //     fetchFile();            
 
+    // })
+    const fetchFile = async () =>{
+        try {
+            if (post.filePath && post.filePath!=''){
+                console.log('get file', post.filePath)
+                await getFile(post.filePath)
+            }
+        }catch(error){
+            console.error('Error download the file', error)
+        }
+    }
     const fetchLikes = async () => {
         try {
             if (!idTrainer) {
@@ -129,19 +146,29 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     return (
         <div >
                 <Card style={ {border: "double"}}>
-                    <Card.Body  >
+                    <Card.Body>
                         <Row>
-                            <Col 
-                                md={2} 
-                                onClick={()=> handleOpenViewPostModal(post)} 
-                                style={{
-                                    ...(showComments ? { opacity: "0.3"} : {}),
-                                    ...cursorpointer()
-                                }}
-                                    >
-                                <Card.Subtitle className="mb-2 text-muted">{post.nameInstractor}</Card.Subtitle>
-                                <Card.Subtitle className="mb-2 text-muted">{newDate }</Card.Subtitle>
-                            </Col>
+                        <Col 
+                            md={2} 
+                            style={{
+                                ...(showComments ? { opacity: "0.3"} : {}),
+                                ...cursorpointer()
+                            }}
+                            >
+                            <Card.Subtitle className="mb-2 text-muted" onClick={() => handleOpenViewPostModal(post)}>{post.nameInstractor}</Card.Subtitle>
+                            <Card.Subtitle className="mb-2 text-muted" onClick={() => handleOpenViewPostModal(post)}>{newDate}</Card.Subtitle>
+                            {post.filePath && post.filePath !== '' ? (
+                                <FontAwesomeIcon 
+                                    icon={faFile} 
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent triggering the parent onClick
+                                        fetchFile();
+                                    }} 
+                                    style={{ cursor: 'alias', marginLeft: '10px' }} 
+                                />
+                            ) : null
+                            }
+                        </Col>
                             <Col md={8} 
                                 style={{ 
                                     ...borderCol(), 
