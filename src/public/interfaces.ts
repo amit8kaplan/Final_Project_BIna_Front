@@ -6,12 +6,22 @@ export interface IInstractor {
     email: string;
     permissions?: string;
 }
+export const defaultInstractor: IInstractor = {
+    name: '',
+    _id: '',
+    email: '',
+    permissions: ''
+};
 
 export interface ITrainer{
     name: string;
     _id?: string;
 }
 
+export const defaultTrainer: ITrainer ={
+    name: "",
+    _id: ""
+}
 export interface ISession{
     name: string;
     silabus: number[]; 

@@ -11,6 +11,7 @@ import { set } from 'react-hook-form';
 import {IDapitforSubmit, ChangeData }from '../services/dapit-serivce';
 import { IDapit } from '../public/interfaces';
 import useSessionStorage from '../hooks/useSessionStorage';
+import {defaultInstractor, defaultTrainer} from "../public/interfaces"
 interface Dapit {
   idInstractor: string;
   _id?: string;
@@ -352,10 +353,11 @@ const View: React.FC = () => {
       )}
       {showEditDapit && (
             <AddDapit
+            thePesonalINstractor = {defaultInstractor}
             theDapit={editDapit}
             onclose={handleCloseEditDapit}
             theGroup=''
-            theTrainer=''
+            theTrainer= {defaultTrainer}
             handleSubmit={handleSubmitInView}
           />
         )}

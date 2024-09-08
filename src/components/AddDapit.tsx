@@ -10,7 +10,7 @@ import {getIdpersonalInstractor} from '../services/id-service';
 import '../css/add_dapit.css';
 import { downloadPdf } from '../services/pdf-service';
 import { useDataContext } from '../DataContext';
-import {ITrainer, IDapit } from '../public/interfaces';
+import {ITrainer, IDapit, IPersonalInstractor, IInstractor , defaultInstractor, defaultTrainer} from '../public/interfaces';
 import { set } from 'react-hook-form';
 import useSessionStorage from '../hooks/useSessionStorage';
 
@@ -52,8 +52,9 @@ export interface IDapitData {
 
 interface IAddDapitProps {
   onclose: () => void;
-  theTrainer: string;
+  theTrainer: ITrainer;
   theGroup: string;
+  thePesonalINstractor: IInstractor ;
   handleSubmit: (submitDapit: IDapitforSubmit) => void;
   theDapit: IDapit | undefined;
 }
@@ -66,9 +67,13 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const [group, setGroup] = useState<string>('');
     const state = location.state as IAddDapitProps || {};
     const contentRef = useRef<HTMLDivElement | null>(null);
-    const theTrainer = state.theTrainer || props.theTrainer || '';
+    const theTrainer : ITrainer = state.theTrainer || props.theTrainer || defaultTrainer;
     const theGroup = state.theGroup || props.theGroup || '';
     const theDapit = state.theDapit || props.theDapit || '';
+    
+    const thePI : IInstractor | undefined = state.thePesonalINstractor || props.thePesonalINstractor || defaultInstractor
+    console.log("the Trainer" , theTrainer)
+    console.log("the PI", thePI)
     const [trainerListByGroupBoolean, setTrainerListByGroupBoolean] = useState<boolean>(false);
     const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
     const [groupListByTrainerBoolean, setGroupListByTrainerBoolean] = useState<boolean>(false);
@@ -96,11 +101,11 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const [dapitData, setDapitData] = useState<IDapit>({
     date: theDapit && theDapit.date ? theDapit.date : new Date(),
     idInstractor: theDapit && theDapit.idInstractor ? theDapit.idInstractor : '',
-    idTrainer: theDapit && theDapit.idTrainer ? theDapit.idTrainer : '',
+    idTrainer: theDapit && theDapit.idTrainer ? theDapit.idTrainer : theTrainer._id!,
     nameInstractor: theDapit && theDapit.nameInstractor ? theDapit.nameInstractor : '',
-    nameTrainer: theDapit && theDapit.nameTrainer ? theDapit.nameTrainer : theTrainer,
-    namePersonalInstractor: theDapit && theDapit.namePersonalInstractor ? theDapit.namePersonalInstractor : '',
-    idPersonalInstractor: theDapit && theDapit.idPersonalInstractor ? theDapit.idPersonalInstractor : '',
+    nameTrainer: theDapit && theDapit.nameTrainer ? theDapit.nameTrainer : theTrainer.name,
+    namePersonalInstractor: theDapit && theDapit.namePersonalInstractor ? theDapit.namePersonalInstractor : thePI.name!,
+    idPersonalInstractor: theDapit && theDapit.idPersonalInstractor ? theDapit.idPersonalInstractor : thePI._id!,
     group: theDapit && theDapit.group ? theDapit.group : theGroup,
     session: theDapit && theDapit.session ? theDapit.session : '',
     silabus: theDapit && theDapit.silabus ? theDapit.silabus : undefined,
@@ -188,8 +193,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     console.log("AddDapit useEffect");
     if (isSubmitted) {
     const missingFields = [];
-      if (!dapitData.nameInstractor || !dapitData.idInstractor) missingFields.push('Instractor');
-      if (!dapitData.nameTrainer || !dapitData.idTrainer) missingFields.push('Trainer');
+      if (!dapitData.nameInstractor || !dapitData.idInstractor ) missingFields.push('Instractor');
+      if (!dapitData.nameTrainer || !dapitData.idTrainer || dapitData.idTrainer =="" || dapitData.nameTrainer =="") missingFields.push('Trainer');
       if (!dapitData.group) missingFields.push('Group');
       if (!dapitData.session) missingFields.push('Session');
       if (!dapitData.silabus) missingFields.push('silabus');
@@ -699,11 +704,11 @@ const getCellStyle = (value: number | undefined) => {
               </Form.Control>
             </Col>
             <Col md={4}>
-              <h4>Syllabus</h4>
+              <h4>silabus</h4>
               <Form.Control
                 as="select"
                 value={dapitData.silabus}
-                onChange={(e) => handleChange(e, 'syllabus')}
+                onChange={(e) => handleChange(e, 'silabus')}
               >
                 <option value="">Select Syllabus</option>
                 {syllabusOptions.map((silabus, idx) => (

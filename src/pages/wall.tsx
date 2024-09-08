@@ -10,7 +10,7 @@ import DapitCard from '../components/DapitCard';
 import AddDapit from '../components/AddDapit';
 import { FaFilePdf } from "react-icons/fa6";
 import { downloadPdf } from '../services/pdf-service';
-import { ITrainer, IGroup, IInstractor } from '../public/interfaces';
+import { ITrainer, IGroup, IInstractor, defaultInstractor, defaultTrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { setgroups } from 'process';
 
@@ -25,6 +25,7 @@ const Wall: React.FC<IWallProps> = (props) => {
 
     const state = location.state as IWallProps || {};
     const trainer: ITrainer = state.trainer || props.trainer;
+    console.log("trainer in wall", trainer)
     const [showAddDapit, setShowAddDapit] = useState(false);
     const { groups, instructors, personalInstractors } = useDataContext();
     const PersonalINstractorsComp = personalInstractors || [];
@@ -36,7 +37,7 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [theGroup, setTheGroup] = useState<IGroup>({ idsInstractors: [], idsTrainers: [], _id: undefined, name: "" });
     const [showDapitModal, setShowDapitModal] = useState(false);
     const [flagShowAllComments, setFlagShowAllComments] = useState<boolean>(false);
-    const [thepersonalInstractor, setThePersonalInstractor] = useState<IInstractor | undefined>(undefined);
+    const [thepersonalInstractor, setThePersonalInstractor] = useState<IInstractor>();
     const [sessionTrainerId, setSessionTrainerId] = useState<string>('')
     useEffect(() => {
         setWallData([]);
@@ -147,8 +148,9 @@ const Wall: React.FC<IWallProps> = (props) => {
                             <Button className='m-1' onClick={() => setShowAddDapit(true)}>Add Dapit</Button>
                             {showAddDapit && (
                                 <AddDapit
+                                    thePesonalINstractor = {thepersonalInstractor? thepersonalInstractor as IInstractor : defaultInstractor }
                                     onclose={handleCloseAddDapit}
-                                    theTrainer={trainer.name}
+                                    theTrainer={trainer}
                                     theGroup={theGroup.name}
                                     theDapit={undefined}
                                     handleSubmit={handleSubmitInWall}
