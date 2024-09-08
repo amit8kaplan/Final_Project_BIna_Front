@@ -296,6 +296,7 @@ const View: React.FC = () => {
   const handleSubmitInView = async (submitDapit: IDapitforSubmit) =>{
     console.log("handleSubmitInView: ", submitDapit)
     try{
+      submitDapit._id = editDapit?._id;
       const response = await ChangeData(submitDapit);
       console.log("handleSubmitInView response: ", response)
       handleCloseEditDapit();

@@ -1,5 +1,5 @@
 import apiClient from "./api-client";
-import { getAuthHeaders,verifyRegular } from "../public/data";
+import { getAuthHeaders,verifyRegular,getPermissions } from "../public/data";
 
 export interface IDapitforSubmit {
     nameInstractor: string;
@@ -78,27 +78,35 @@ export const getDapits = async (filters: any) => {
 }
 
 export const ChangeData = async (dapit: IDapitforSubmit) => {
+    console.log("ChangeData dapit_id: ", dapit);
+    console.log("ChangeData dapit_id: ", dapit._id);
+
     try {
         let response;
-        const headers = getAuthHeaders();
-        if (!headers || !headers['client-id'] || !headers['otp']) {
+        const authHeaders = getAuthHeaders();
+        const permissions = getPermissions();
+        const headers = {
+            ...authHeaders,
+            ...(permissions ? { permissions } : {})
+        };
+        if (!headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
         const prevDapit = await getDapitById(dapit._id!);
         if (prevDapit.idInstractor !== dapit.idInstractor) {
             response = await apiClient.put(`/dapit/ChangeAdminData/${dapit._id}`, dapit, { headers });
-        }
-        else if (verifyRegular(headers['client-id'], dapit.idInstractor) === true) {
-            response = await apiClient.put(`/dapit/ChangeRegularData/${dapit._id}`, dapit, { headers })
-        }
-        else {
+        } else if (verifyRegular(headers['client-id'], dapit.idInstractor) === true) {
+            response = await apiClient.put(`/dapit/ChangeRegularData/${dapit._id}`, dapit, { headers });
+        } else {
             throw new Error('Not Auth Instructor ID does not match the client ID, in client side');
         }
         return response.data;
     } catch (error) {
         console.error('Error updating dapit:', error);
     }
-}
+};
+
+
 
 
 export const handleFiltersSubmit = async (filterData: any) => {
@@ -112,9 +120,12 @@ export const handleFiltersSubmit = async (filterData: any) => {
     }
   }
 
-export const getDapitById = async (id: string) => {
+  export const getDapitById = async (id: string) => {
+    console.log("getDapitById id: ", id);
     try {
-        const response = await apiClient.get(`/dapit/${id}`);
+        const response = await apiClient.get(`/dapit/getDapitById`, {
+            params: { id }
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching dapit by id:', error);
