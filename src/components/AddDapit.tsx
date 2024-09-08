@@ -188,10 +188,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     console.log("AddDapit useEffect");
     if (isSubmitted) {
     const missingFields = [];
-      if (!dapitData.nameInstractor) missingFields.push('Instractor');
-      if (!dapitData.nameTrainer) missingFields.push('Trainer');
-      if (!dapitData.idInstractor) missingFields.push('Instractor ID');
-      if (!dapitData.idTrainer) missingFields.push('Trainer ID');
+      if (!dapitData.nameInstractor || !dapitData.idInstractor) missingFields.push('Instractor');
+      if (!dapitData.nameTrainer || !dapitData.idTrainer) missingFields.push('Trainer');
       if (!dapitData.group) missingFields.push('Group');
       if (!dapitData.session) missingFields.push('Session');
       if (!dapitData.silabus) missingFields.push('silabus');
@@ -199,7 +197,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     
       if (missingFields.length > 0) {
-        setValidationMessage(`Please fill in the following required fields:\n ${missingFields.join(', ')}`);
+        setValidationMessage(` ${missingFields.join(', ')}`);
       } else {
         setValidationMessage('');
       }
@@ -368,10 +366,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       return;
     }
     const missingFields = [];
-    if (!dapitData.nameInstractor) missingFields.push('Instractor');
-    if (!dapitData.nameTrainer) missingFields.push('Trainer');
-    if (!dapitData.idInstractor) missingFields.push('Instractor ID');
-    if (!dapitData.idTrainer) missingFields.push('Trainer ID');
+    if (!dapitData.nameInstractor || !dapitData.idInstractor) missingFields.push('Instractor');
+    if (!dapitData.nameTrainer || !dapitData.idTrainer) missingFields.push('Trainer');
     if (!dapitData.group) missingFields.push('Group');
     if (!dapitData.session) missingFields.push('Session');
     if (!dapitData.silabus) missingFields.push('silabus');
@@ -379,7 +375,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     if (sessionStorage.getItem('client-id'))
     if (missingFields.length > 0) {
-      setValidationMessage(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      setValidationMessage(` ${missingFields.join(', ')}`);
       return;
     }
     try{
@@ -605,21 +601,25 @@ const getCellStyle = (value: number | undefined) => {
       <Button variant="secondary" className="float-start" onClick={toPDF}>
         Download PDF
       </Button>
-      {validationMessage2 ? (
-        <div style={{ color: 'red', marginTop: '10px', marginLeft: '5px', marginRight: '5px' }}>
-          {validationMessage2.split('\n').map((msg, idx) => (
-            <div key={idx}>{msg}</div>
-          ))}
-        </div>
-      ) : (
-        validationMessage && (
-          <div style={{ color: 'red', marginTop: '10px', marginLeft: '5px', marginRight: '5px' }}>
-            {validationMessage.split('\n').map((msg, idx) => (
-              <div key={idx}>{msg}</div>
-            ))}
-          </div>
-        )
-      )}
+      <div className="w-100 d-flex justify-content-center">
+        {validationMessage2 ? (
+            <div className="alert alert-danger text-center" role="alert" style={{ color: 'red',  fontSize: '0.875rem', width: '50%' }}>
+                <h6 className='alert-heading' style={{ fontSize: '1rem' }}><strong>Error Premissions</strong></h6>
+                {validationMessage2.split('\n').map((msg, idx) => (
+                    <div key={idx}>{msg}</div>
+                ))}
+            </div>
+        ) : (
+            validationMessage && (
+                <div className="alert alert-danger text-center" role="alert" style={{ color: 'red',  fontSize: '0.875rem', width: '80%' }}>
+                    <h4 className='alert-heading' style={{ fontSize: '1rem' }}><strong>Please fill in the following required fields</strong></h4>
+                    {validationMessage.split('\n').map((msg, idx) => (
+                        <div key={idx}>{msg}</div>
+                    ))}
+                </div>
+            )
+        )}
+    </div>
     </Modal.Header>
       <Modal.Body>
         <div className="container" ref={contentRef}>

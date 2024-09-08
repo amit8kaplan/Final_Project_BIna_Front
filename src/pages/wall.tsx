@@ -33,18 +33,17 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [theGroup, setTheGroup] = useState<IGroup>({ idsInstractors: [], idsTrainers: [], _id: undefined, name: "" });
     const [showDapitModal, setShowDapitModal] = useState(false);
     const [flagShowAllComments, setFlagShowAllComments] = useState<boolean>(false);
-    const [thepersonalInstractor, setThePersonalInstractor] = useState<IInstractor|undefined>(undefined)
+    const [thepersonalInstractor, setThePersonalInstractor] = useState<IInstractor | undefined>(undefined);
 
     useEffect(() => {
         setWallData([]);
         if (trainer._id === undefined) {
             return;
         }
-        
-        const idPersonalInstractor :string | undefined = PersonalINstractorsComp.find((pi) => pi.idTrainer === trainer._id )?.idInstractor
-        if (idPersonalInstractor!= undefined)
-        {
-            setThePersonalInstractor(InstractorsComp.find((ins)=> ins._id===idPersonalInstractor))
+
+        const idPersonalInstractor: string | undefined = PersonalINstractorsComp.find((pi) => pi.idTrainer === trainer._id)?.idInstractor;
+        if (idPersonalInstractor) {
+            setThePersonalInstractor(InstractorsComp.find((ins) => ins._id === idPersonalInstractor));
         }
         const group: IGroup | undefined = groupsComp.find((group) => group.idsTrainers?.includes(trainer._id!));
         if (group === undefined) {
@@ -116,52 +115,67 @@ const Wall: React.FC<IWallProps> = (props) => {
 
     return (
         <Container ref={contentRef}>
-            <Row className="p-1">
-                <Col md={6}>
-                    <h3>{trainer.name} Wall</h3>
-                </Col>
-                <Col md={6} className="text-end">
-                    <h5>{theGroup.name}</h5>
-                    <h6>{thepersonalInstractor?.name}</h6>
-                </Col>
-            </Row>
-            <Row className="mb-2">
-                <Col md={4}>
-                    <Button className='m-1' onClick={() => setShowAddPostModal(true)}>Add Post</Button>
-                    <Button className='m-1' onClick={() => setShowAddDapit(true)}>Add Dapit</Button>
-                    {showAddDapit && (
-                        <AddDapit
-                            onclose={handleCloseAddDapit}
-                            theTrainer={trainer.name}
-                            theGroup={theGroup.name}
-                            theDapit={undefined}
-                            handleSubmit={handleSubmitInWall}
-                        />
-                    )}
-                    <Button className='m-1'>
-                        <FaFilePdf onClick={toPDF} />
-                    </Button>
-                </Col>
-            </Row>
-            <Row>
-                {wallData.length !== 0 ? wallData.map((item, index) => (
-                    <Col key={index} md={12} className="mb-3">
-                        <div>
-                            {item.title !== undefined || item.content !== undefined ? (
-                                <PostCard post={item} idTrainer={trainer._id} />
-                            ) : <DapitCard selectedDapit={item} idTrainer={trainer._id} />}
-                        </div>
-                    </Col>
-                )) : <div>There is no data to display</div>}
-            </Row>
+            {trainer.name === "" ? (
+                <div className="mt-4">
+                    <div className="alert alert-danger" role="alert">
+                        <h4 className="alert-heading">Error</h4>
+                        <p>I'm sorry, there was a problem understanding which trainer's wall you want to see.</p>
+                        <p>Please choose again.</p>
+                        <p>If it still doesn't work, please open a call to the "BIna Team".</p>
+                        <hr />
+                        <p className="mb-0">Thank you for your understanding.</p>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <Row className="p-1">
+                        <Col md={6}>
+                            <h3>{trainer.name} Wall</h3>
+                        </Col>
+                        <Col md={6} className="text-end">
+                            <h5>{theGroup.name}</h5>
+                            <h6>{thepersonalInstractor?.name}</h6>
+                        </Col>
+                    </Row>
+                    <Row className="mb-2">
+                        <Col md={4}>
+                            <Button className='m-1' onClick={() => setShowAddPostModal(true)}>Add Post</Button>
+                            <Button className='m-1' onClick={() => setShowAddDapit(true)}>Add Dapit</Button>
+                            {showAddDapit && (
+                                <AddDapit
+                                    onclose={handleCloseAddDapit}
+                                    theTrainer={trainer.name}
+                                    theGroup={theGroup.name}
+                                    theDapit={undefined}
+                                    handleSubmit={handleSubmitInWall}
+                                />
+                            )}
+                            <Button className='m-1'>
+                                <FaFilePdf onClick={toPDF} />
+                            </Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        {wallData.length !== 0 ? wallData.map((item, index) => (
+                            <Col key={index} md={12} className="mb-3">
+                                <div>
+                                    {item.title !== undefined || item.content !== undefined ? (
+                                        <PostCard post={item} idTrainer={trainer._id} />
+                                    ) : <DapitCard selectedDapit={item} idTrainer={trainer._id} />}
+                                </div>
+                            </Col>
+                        )) : <div>There is no data to display</div>}
+                    </Row>
 
-            <AddPostModal
-                show={showAddPostModal}
-                handleClose={() => setShowAddPostModal(false)}
-                handleSave={handleAddPost}
-            />
-            {selectedDapit && (
-                <ViewDapit selectedDapit={selectedDapit} onClose={handleCloseDapitModal} />
+                    <AddPostModal
+                        show={showAddPostModal}
+                        handleClose={() => setShowAddPostModal(false)}
+                        handleSave={handleAddPost}
+                    />
+                    {selectedDapit && (
+                        <ViewDapit selectedDapit={selectedDapit} onClose={handleCloseDapitModal} />
+                    )}
+                </>
             )}
         </Container>
     );

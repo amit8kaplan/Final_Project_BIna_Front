@@ -73,7 +73,7 @@ function App() {
         <Container className="mb-4">
           <Routes>
             <Route path="/Piano" element={<Piano group={"defult"} />} />
-            <Route path="/Wall" element={<Wall trainer={{name: "defult", _id: "0"}} />} />
+            <Route path="/Wall" element={<Wall trainer={{name: "", _id: "0"}} />} />
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             {isLogin ? null : <Route path="/register" element={<YourComponent />} />}
