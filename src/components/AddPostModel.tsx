@@ -1,23 +1,39 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-
+import { useDataContext } from '../DataContext';
+import { IInstractor } from '../public/interfaces';
 interface AddPostModalProps {
   show: boolean;
   handleClose: () => void;
-  handleSave: (title: string, text: string, instractorName: string) => void;
+  handleSave: (title: string, text: string, instractorID: string,instractorName:string, file:File|null) => void;
 }
 
 const AddPostModal: React.FC<AddPostModalProps> = ({ show, handleClose, handleSave }) => {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [instractorName, setInstractorName] = useState('');
+  const [instractorID, setInstractorID] = useState<string>();
+  const [instractorName, setInstractorName] = useState<string>();
+  const { instructors,} =  useDataContext();
+  const InstractorsComp = instructors || [];
+  const handleChageInsName = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLSelectElement;
+    setInstractorName(target.value);
+    const selectedOption = target.selectedOptions[0];
+    const instID = selectedOption ? selectedOption.getAttribute('data-id') : '0';
+    setInstractorID(instID);
+  }
   const handleSubmit = () => {
-    handleSave(title, text,instractorName);
-   Close()
+    if (instractorID && instractorName){
+      handleSave(title, text,instractorID, instractorName, file);
+    }else {
+      handleSave(title,text, "","", file )
+    }
+    Close()
   };
   const Close = () => {
     setTitle('');
+    setInstractorID('')
     setInstractorName('');
     setText('');
     setFile(null);
@@ -46,8 +62,15 @@ const AddPostModal: React.FC<AddPostModalProps> = ({ show, handleClose, handleSa
           </Form.Group>
           <Form.Group controlId="formInstractorName">
             <Form.Label>Instractor Name</Form.Label>
-            <Form.Control type="text" placeholder="Enter Ins Name" value={instractorName} onChange={e => setInstractorName(e.target.value)} />
-          </Form.Group>
+            <Form.Control as="select" value={instractorName} 
+            onChange={(e) => handleChageInsName(e)}>
+                <option value="">Select Instractor</option>
+                {InstractorsComp.map((Instractor, idx) => (
+                  <option key={Instractor._id!} value={Instractor.name} data-id={Instractor._id!}>
+                    {Instractor.name}
+                  </option>
+                ))}
+              </Form.Control>          </Form.Group>
           <Form.Group controlId="formText">
             <Form.Label>Text</Form.Label>
             <Form.Control as="textarea" rows={3} placeholder="Enter text" value={text} onChange={e => setText(e.target.value)} />

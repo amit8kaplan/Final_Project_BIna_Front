@@ -10,6 +10,7 @@ export interface IPostforSubmit {
     content?: string;
     date: Date;
     _id?: string;
+    file: File | null
 }
 interface ILikes {
     _id: string;

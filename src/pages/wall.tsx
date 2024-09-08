@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import ViewDapit from '../components/view_Dapit'; // Assuming you have a ViewDapit component
 import { postDapit, IDapitforSubmit } from '../services/dapit-serivce';
 import { getWall, IPostforSubmit, postPost } from '../services/wall-service';
@@ -12,6 +12,7 @@ import { FaFilePdf } from "react-icons/fa6";
 import { downloadPdf } from '../services/pdf-service';
 import { ITrainer, IGroup, IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
+import { setgroups } from 'process';
 
 interface IWallProps {
     trainer: ITrainer;
@@ -20,6 +21,8 @@ interface IWallProps {
 const Wall: React.FC<IWallProps> = (props) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const location = useLocation();
+    const navigate = useNavigate(); // Initialize useNavigate
+
     const state = location.state as IWallProps || {};
     const trainer: ITrainer = state.trainer || props.trainer;
     const [showAddDapit, setShowAddDapit] = useState(false);
@@ -34,10 +37,11 @@ const Wall: React.FC<IWallProps> = (props) => {
     const [showDapitModal, setShowDapitModal] = useState(false);
     const [flagShowAllComments, setFlagShowAllComments] = useState<boolean>(false);
     const [thepersonalInstractor, setThePersonalInstractor] = useState<IInstractor | undefined>(undefined);
-
+    const [sessionTrainerId, setSessionTrainerId] = useState<string>('')
     useEffect(() => {
         setWallData([]);
         if (trainer._id === undefined) {
+            navigate('/'); // Navigate to home if trainer._id is undefined
             return;
         }
 
@@ -45,13 +49,13 @@ const Wall: React.FC<IWallProps> = (props) => {
         if (idPersonalInstractor) {
             setThePersonalInstractor(InstractorsComp.find((ins) => ins._id === idPersonalInstractor));
         }
+        fetchWallData();
+
         const group: IGroup | undefined = groupsComp.find((group) => group.idsTrainers?.includes(trainer._id!));
-        if (group === undefined) {
-            return;
+        if (group !== undefined) {
+            setTheGroup(group);
         }
 
-        setTheGroup(group);
-        fetchWallData();
     }, [trainer, flagShowAllComments]);
 
     const fetchWallData = async () => {
@@ -66,19 +70,19 @@ const Wall: React.FC<IWallProps> = (props) => {
         }
     };
 
-    const handleAddPost = async (title: string, text: string, instractorName: string) => {
+    const handleAddPost = async (title: string, text: string,instractorID: string, instractorName: string, file:File| null) => {
         try {
-            const idInstractor = InstractorsComp.find((instractor) => instractor.name === instractorName)?._id || '0';
             if (trainer._id === undefined) {
                 return;
             }
             const submitPost: IPostforSubmit = {
                 idTrainer: trainer._id,
-                idInstractor: idInstractor,
+                idInstractor: instractorID,
                 nameInstractor: instractorName,
                 title: title,
                 content: text,
                 date: new Date(),
+                file: file? file : null
             };
             await postPost(submitPost);
             fetchWallData();
