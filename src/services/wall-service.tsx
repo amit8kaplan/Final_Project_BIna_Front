@@ -1,9 +1,11 @@
 import exp from "constants";
 import apiClient from "./api-client";
 
+//todo: i added here idInstractor , now i need to deal with it in the server
 export interface IPostforSubmit {
     idTrainer: string;
     nameInstractor: string;
+    idInstractor: string;
     title?: string;
     content?: string;
     date: Date;

@@ -1,24 +1,24 @@
 import React from 'react';
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link, useNavigate, useLocation, NavLink } from "react-router-dom";
-import { instructorsData, trainersData, sessionsData, groupsData, matricsData } from "../public/data";
+// import { instructorsData, trainersData, sessionsData, groupsData, matricsData } from "../public/data";
 import ChatBotModal from './ChatBot';  // Import the ChatBotModal component
 import SessionModal from './SessionModal';  // Import the SessionModal component
 import CurrentSession from './CurrentSession';  // Import the CurrentSession component
+import { useDataContext } from '../DataContext';
+import { IGroup, ITrainer } from '../public/interfaces';
 
 export function Nav_componnets() {
   const location = useLocation();
   const navigate = useNavigate();
-  const instructors = instructorsData;
-  const trainers = trainersData;
-  const sessions = sessionsData;
-  const groups = groupsData;
+  const { groups, instructors, trainers, sessions , personalInstractors} =  useDataContext();
 
-  const handleAddDapit = () => {
-    navigate('/newDapit', {
-      state: { instructors: instructors, trainers: trainers, sessions: sessions, groups: groups }
-    });
-  };
+  const InstractorsComp = instructors || [];
+  const trainersComp = trainers || [];
+  const sessionsComp = sessions || [];
+  const groupsComp = groups || [];
+  const personalInstractorsComp = personalInstractors || [];
+
 
   return (
     <Navbar sticky="top" bg="light" expand="lg" className="shadow-sm mb-3 mt-0">
@@ -30,47 +30,46 @@ export function Nav_componnets() {
             <NavLink
               className="nav-link"
               to="/AddDapit"
-              state={{ instructors: instructors, trainers: trainers, sessions: sessions, groups: groups }}
             >Dapit</NavLink>
             <Nav.Link as={Link} to="/viewDapit">View</Nav.Link>
             <NavDropdown title="Wall" id="basic-nav-dropdown">
-              {trainersData.map((item, index) => (
+              {trainersComp.map((trainer: ITrainer) => (
                 <NavDropdown.Item
-                  key={index}
+                  key={trainer._id}
                   as={Link}
                   to={"/Wall"}
-                  state={{ trainerName: item, instructors: instructors, trainers: trainers, sessions: sessions, groups: groups }}
+                  state={{ trainer: trainer}}
                 >
-                  {item}
+                  {trainer.name}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
             <NavDropdown title="Piano" id="basic-nav-dropdown">
-              {groupsData.map((item, index) => (
+              {groupsComp.map((group: IGroup) => (
                 <NavDropdown.Item
-                  key={index}
+                  key={group._id}
                   as={Link}
                   to={"/Piano"}
-                  state={{ group: item }}
+                  state={{ group: group }}
                 >
-                  {item}
+                  {group.name}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
-            <NavDropdown title="Megame" id="basic-nav-dropdown">
-              {groupsData.map((item, index) => (
+            {/* <NavDropdown title="Megame" id="basic-nav-dropdown">
+              {groupsComp.map((item, index) => (
                 <NavDropdown.Item key={index} as={Link} to={'/Megama'} state={{ group: item }}>
                   {item}
                 </NavDropdown.Item>
               ))}
-            </NavDropdown>
-            <NavDropdown title="Matrics" id="basic-nav-dropdown">
+            </NavDropdown> */}
+            {/* <NavDropdown title="Matrics" id="basic-nav-dropdown">
               {matricsData.map((item, index) => (
                 <NavDropdown.Item key={index} as={Link} to={'/Matrics'} state={{ matrics: item }}>
                   {item}
                 </NavDropdown.Item>
               ))}
-            </NavDropdown>
+            </NavDropdown> */}
           </Nav>
           <ChatBotModal />  {/* Add the ChatBotModal component here */}
           <SessionModal />  {/* Add the SessionModal component here */}
