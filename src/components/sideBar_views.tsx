@@ -1,13 +1,29 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { groupsData, instructorsData, sessionsData, trainersData } from '../public/data';
-import { Button } from 'react-bootstrap';
-
+// import { groupsData, instructorsData, sessionsData, trainersData } from '../public/data';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import useSessionStorage from "../hooks/useSessionStorage"
+import { useDataContext } from '../DataContext';
+import {ITrainer} from "../public/interfaces";
 interface SidebarComProps {
     onSubmit: (filters: any) => void;
 }
 
 export function Sidebar_com({ onSubmit }: SidebarComProps) {
+    const client_id = useSessionStorage('client-id');
+    const otp = useSessionStorage('otp');
+    const permissions = useSessionStorage('permissions');
+    const { groups, instructors, trainers, sessions , personalInstractors} =  useDataContext();
+    const InstractorsComp = instructors || [];
+    const trainersComp = trainers || [];
+    const sessionsComp = sessions || [];
+    const groupsComp = groups || [];
+    const personalInstractorsComp = personalInstractors || [];
+    const [trainerListByGroupBoolean, setTrainerListByGroupBoolean] = useState<boolean>(false);
+    const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
+    const [sessionSelected, setSessionSelected] = useState<boolean>(false);
+    const [syllabusOptions, setSyllabusOptions] = useState<number[]>([]);
+
     const initialFiltersState = {
         nameInstractor: '',
         nameTrainer: '',
@@ -37,12 +53,29 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
     const [filters, setFilters] = useState(initialFiltersState);
     const [enabledFilters, setEnabledFilters] = useState(initialEnabledFiltersState);
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field:string ) => {
+        const { name, value  } = e.target;
+        console.log("handleFilterChange in sideBar" , name , value, field);
         setFilters({
             ...filters,
-            [name]: value
+            [field]: value
         });
+        // if (!value || value === '') {
+        //     setFilters({
+        //         ...filters,
+        //         [field]: ''
+        //     });
+        // }
+        if (field === 'session' && value !== '') {
+            const selectedSession = sessionsComp.find(session => session.name === value);
+            if (selectedSession) {
+                setSessionSelected(true);
+                setSyllabusOptions(selectedSession.silabus);
+            }
+        } else if (name === 'session' && value === '') {
+            setSessionSelected(false);
+            setSyllabusOptions([])
+        }
     };
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +84,12 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
             ...enabledFilters,
             [name]: checked
         });
+        if (!checked) {
+            setFilters({
+                ...filters,
+                [name]: '' // Reset the filter value to the default option
+            });
+        }
     };
 
     const handleSubmitforNone = () => {
@@ -88,11 +127,11 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filternameInstractor" name="nameInstractor" onChange={handleCheckboxChange} checked={enabledFilters.nameInstractor} />
                     <label className="form-check-label" htmlFor="filternameInstractor">Instructor Name</label>
-                    <select className="form-control mt-2" name="nameInstractor" value={filters.nameInstractor} onChange={handleFilterChange} disabled={!enabledFilters.nameInstractor}>
+                    <select className="form-control mt-2" name="nameInstractor" value={filters.nameInstractor} onChange={(e) =>handleFilterChange(e, 'nameInstractor')} disabled={!enabledFilters.nameInstractor}>
                         <option value="">Select Instructor</option>
-                        {instructorsData.map((instructor, idx) => (
-                            <option key={idx} value={instructor}>
-                                {instructor}
+                        {InstractorsComp.map((instructor, idx) => (
+                            <option key={instructor._id} value={instructor.name}>
+                                {instructor.name}
                             </option>
                         ))}
                     </select>
@@ -100,66 +139,93 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterNameTrainer" name="nameTrainer" onChange={handleCheckboxChange} checked={enabledFilters.nameTrainer} />
                     <label className="form-check-label" htmlFor="filterNameTrainer">Trainer Name</label>
-                    <select className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={handleFilterChange} disabled={!enabledFilters.nameTrainer}>
+                    <select className="form-control mt-2" name="nameTrainer" value={filters.nameTrainer} onChange={(e) =>handleFilterChange(e, 'nameTrainer')} disabled={!enabledFilters.nameTrainer}>
                         <option value="">Select Trainer</option>
-                        {trainersData.map((trainer, idx) => (
-                            <option key={idx} value={trainer}>
-                                {trainer}
-                            </option>
-                        ))}
+                        {trainerListByGroupBoolean ? (
+                            trainerListByGroup.map((trainer) => (
+                                <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
+                                {trainer.name}
+                                </option>
+                            ))
+                            ) : (
+                            trainers.map((trainer) => (
+                                <option key={trainer._id!} value={trainer.name} data-id={trainer._id!}>
+                                {trainer.name}
+                                </option>
+                            ))
+                            )}
                     </select>
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filternamePersonalInstractor" name="namePersonalInstractor" onChange={handleCheckboxChange} checked={enabledFilters.namePersonalInstractor} />
                     <label className="form-check-label" htmlFor="filternamePersonalInstractor">Personal Instructor Name</label>
-                    <input type="text" className="form-control mt-2" name="namePersonalInstractor" value={filters.namePersonalInstractor} onChange={handleFilterChange} disabled={!enabledFilters.namePersonalInstractor} />
+                    <input type="text" className="form-control mt-2" name="namePersonalInstractor" value={filters.namePersonalInstractor} onChange={(e) =>handleFilterChange(e, 'namePersonalInstractor')} disabled={!enabledFilters.namePersonalInstractor} />
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterGroup" name="group" onChange={handleCheckboxChange} checked={enabledFilters.group} />
                     <label className="form-check-label" htmlFor="filterGroup">Group</label>
-                    <select className="form-control mt-2" name="group" value={filters.group} onChange={handleFilterChange} disabled={!enabledFilters.group}>
+                    <select className="form-control mt-2" name="group" value={filters.group} onChange={(e) =>handleFilterChange(e, 'group')} disabled={!enabledFilters.group}>
                         <option value="">Select Group</option>
-                        {groupsData.map((group, idx) => (
-                            <option key={idx} value={group}>
-                                {group}
-                            </option>
-                        ))}
+                            {groupsComp.map((group) => (
+                                <option key={group._id!} value={group.name} data-id={group._id!}>
+                                    {group.name}
+                                </option>
+                            ))}
                     </select>
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterSession" name="session" onChange={handleCheckboxChange} checked={enabledFilters.session} />
                     <label className="form-check-label" htmlFor="filterSession">Session</label>
-                    <select className="form-control mt-2" name="session" value={filters.session} onChange={handleFilterChange} disabled={!enabledFilters.session}>
+                    <select className="form-control mt-2" name="session" value={filters.session} onChange={(e) =>handleFilterChange(e, 'session')} disabled={!enabledFilters.session}>
                         <option value="">Select Session</option>
-                        {sessionsData.map((session, index) => (
-                            <option key={index} value={session}>{session}</option>
-                        ))}
+                            {sessionsComp.map((session, idx) => (
+                                <option key={session._id} value={session.name} data-id={session._id!}>
+                                    {session.name}
+                                </option>
+                            ))}
                     </select>
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filtersilabus" name="silabus" onChange={handleCheckboxChange} checked={enabledFilters.silabus} />
-                    <label className="form-check-label" htmlFor="filtersilabus">Silabus No.</label>
-                    <input type="text" className="form-control mt-2" name="silabus" value={filters.silabus} onChange={handleFilterChange} disabled={!enabledFilters.silabus} />
+                    <label className="form-check-label" htmlFor="filtersilabus">Syllabus</label>
+                    {sessionSelected && filters.session ? (
+                        <Form.Control
+                            as="select"
+                            value={filters.silabus}
+                            onChange={(e) =>handleFilterChange(e, 'silabus')}
+                            name="silabus"
+                            disabled={!enabledFilters.silabus}
+                        >
+                            <option value="">Select Syllabus</option>
+                            {syllabusOptions.map((silabus, idx) => (
+                                <option key={idx} value={silabus}>
+                                    {silabus}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    ) : (
+                        <input type="text" className="form-control mt-2" name="silabus" value={filters.silabus} onChange={(e) =>handleFilterChange(e, 'silabus')} disabled={!enabledFilters.silabus} />
+                    )}
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterFinalGrade" name="finalGrade" onChange={handleCheckboxChange} checked={enabledFilters.finalGrade} />
                     <label className="form-check-label" htmlFor="filterFinalGrade">Final Grade</label>
-                    <input type="text" className="form-control mt-2" name="finalGrade" value={filters.finalGrade} onChange={handleFilterChange} disabled={!enabledFilters.finalGrade} />
+                    <input type="text" className="form-control mt-2" name="finalGrade" value={filters.finalGrade} onChange={(e) =>handleFilterChange(e, 'finalGrade')} disabled={!enabledFilters.finalGrade} />
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterchangeTobeCommender" name="changeTobeCommender" onChange={handleCheckboxChange} checked={enabledFilters.changeTobeCommender} />
                     <label className="form-check-label" htmlFor="filterchangeTobeCommender">Change to be Commander</label>
-                    <input type="text" className="form-control mt-2" name="changeTobeCommender" value={filters.changeTobeCommender} onChange={handleFilterChange} disabled={!enabledFilters.changeTobeCommender} />
+                    <input type="text" className="form-control mt-2" name="changeTobeCommender" value={filters.changeTobeCommender} onChange={(e) =>handleFilterChange(e, 'changeTobeCommender')} disabled={!enabledFilters.changeTobeCommender} />
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterStartDate" name="startDate" onChange={handleCheckboxChange} checked={enabledFilters.startDate} />
                     <label className="form-check-label" htmlFor="filterStartDate">Start Date</label>
-                    <input type="date" className="form-control mt-2" name="startDate" value={filters.startDate} onChange={handleFilterChange} disabled={!enabledFilters.startDate} />
+                    <input type="date" className="form-control mt-2" name="startDate" value={filters.startDate} onChange={(e) =>handleFilterChange(e, 'startDate')} disabled={!enabledFilters.startDate} />
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterEndDate" name="endDate" onChange={handleCheckboxChange} checked={enabledFilters.endDate} />
                     <label className="form-check-label" htmlFor="filterEndDate">End Date</label>
-                    <input type="date" className="form-control mt-2" name="endDate" value={filters.endDate} onChange={handleFilterChange} disabled={!enabledFilters.endDate} />
+                    <input type="date" className="form-control mt-2" name="endDate" value={filters.endDate} onChange={(e) =>handleFilterChange(e, 'endDate')} disabled={!enabledFilters.endDate} />
                 </div>
                 <button className="btn btn-primary mt-3" onClick={handleSubmit}>Submit</button>
             </nav>
