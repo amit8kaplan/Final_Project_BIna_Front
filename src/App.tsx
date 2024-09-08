@@ -31,7 +31,10 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 function App() {
   const [isLogin, setIsLogin] = useState(Boolean(sessionStorage.getItem("accessToken")));
   const [messages, setMessages] = useState<string[]>([]);
-
+  sessionStorage.removeItem("client-id");
+  sessionStorage.removeItem("otp");
+  sessionStorage.removeItem("ttl");
+  sessionStorage.removeItem("permissions");
   useEffect(() => {
     const handleStorageChange = () => {
       setIsLogin(Boolean(sessionStorage.getItem("accessToken")));

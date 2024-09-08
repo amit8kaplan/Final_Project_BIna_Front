@@ -1,3 +1,5 @@
+import useSessionStorage from  "../hooks/useSessionStorage";
+
 
 export const instructorsData =  ["Kaplan1", "Kaplan2", "Kaplan2"];
 export const trainersData = ["Amit1", "Amit2", "Amit3"];
@@ -41,8 +43,10 @@ export function setAuthHeaders(clientId: string, otp: string) {
     sessionStorage.setItem('client-id', clientId);
     sessionStorage.setItem('otp', otp);
     if (!sessionStorage.getItem('client-id') || !sessionStorage.getItem('otp')) {
+        console.error('Error setting client ID and OTP');
         return false;
     }
+    console.log('setAuthHeaders:', sessionStorage.getItem("client-id"), sessionStorage.getItem("otp"));
     return true;
 }
 

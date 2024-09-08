@@ -10,6 +10,7 @@ import AddDapit from '../components/AddDapit';
 import { set } from 'react-hook-form';
 import {IDapitforSubmit, ChangeData }from '../services/dapit-serivce';
 import { IDapit } from '../public/interfaces';
+import useSessionStorage from '../hooks/useSessionStorage';
 interface Dapit {
   idInstractor: string;
   _id?: string;
@@ -62,8 +63,8 @@ const View: React.FC = () => {
   const [dapitInIdapit, setDapitInIdapit] = useState<IDapit[]>([]);
   const [selectedDapit, setSelectedDapit] = useState<DetailedDapit | null>(null);
   const [editDapit, setEditDapit] = useState<IDapit | undefined>(undefined);
-  const clientId = sessionStorage.getItem("client-id");
-  const permission = sessionStorage.getItem("permission") || 'regular';
+  const clientId = useSessionStorage("client-id");
+  const permission = useSessionStorage("permission") || 'regular';
   useEffect(() => {
     fetchInitialDapits();
   }, [showEditDapit]);
