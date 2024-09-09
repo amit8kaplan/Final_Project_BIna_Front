@@ -16,6 +16,7 @@ const SessionModal: React.FC = () => {
   const [otpError, setOtpError] = useState('');   // Error message for invalid OTP
   const [ttl, setTtl] = useState<number>(0);      // Time to live for OTP
   const [timer, setTimer] = useState<number>(0);  // Countdown timer
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let countdown: NodeJS.Timeout;
@@ -48,6 +49,7 @@ const SessionModal: React.FC = () => {
 
   const handleSendOtp = async () => {
     console.log("OTP sent");
+    setLoading(true); // Set loading to true
     try {
       const response = await sentOtp(clientId);
       console.log('OTP Response:', response);
@@ -58,6 +60,8 @@ const SessionModal: React.FC = () => {
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
+    } finally {
+      setLoading(false); // Set loading to false
     }
   };
 
@@ -131,10 +135,17 @@ const SessionModal: React.FC = () => {
             </Form.Group>
 
             {selectedInstructor && !otpSent && (
-              <Button className='' variant="primary" onClick={handleSendOtp}>
-                Send OTP
-              </Button>
-            )}
+            <Button className='' variant="primary" onClick={handleSendOtp} disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Sending...
+                </>
+              ) : (
+                "Sent OTP"
+              )}
+            </Button>
+          )}
 
             {otpSent && (
               <>
