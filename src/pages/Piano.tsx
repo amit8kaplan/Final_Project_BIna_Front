@@ -226,7 +226,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                   </td>
                   <td style={fixedCellStyle}>{trainer.name}</td>
                   {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                    <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) : {}) }}>
+                    <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) ||0) : {}) }}>
                       {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || ''}
                     </td>
                   ))}
@@ -253,7 +253,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                 </td>
                                 <td style={fixedCellStyle}>{session.name}</td>
                                 {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                                  <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0): {}) }}>
+                                  <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0) || 0): {}) }}>
                                     {AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || ''}
                                   </td>
                                 ))}
@@ -334,7 +334,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
               <td style={fixedCellStyle}></td>
               <td style={fixedCellStyle}>Avg Group</td>
               {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle?  getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) : {})}}>
+                <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle?  getCellStyle(parseFloat(AveragePerformance?.["avgGroup"]?.[category] || 0) ||0 ) : {})}}>
                   {AveragePerformance?.["avgGroup"]?.[category] || ''}
                 </td>
               ))}
