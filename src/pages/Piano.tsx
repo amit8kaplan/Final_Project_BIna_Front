@@ -31,7 +31,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const [visibleColumns, setVisibleColumns] = useState(categoriesData);
   const [columnOrder, setColumnOrder] = useState(categoriesData);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const [cellStyle, setCellStyle] = useState(false)
   const { groups, instructors, sessions,trainers ,personalInstractors } = useDataContext();
   const InstractorsComp: IInstractor[] = instructors || [];
   console.log("trainer", trainers)
@@ -43,6 +43,13 @@ const Piano: React.FC<IpianoProps> = (props) => {
   const groupsComp: IGroup[] = groups || [];
 
   useEffect(() => {
+    // setDapits([]);
+    // setAvgPerformance(null);
+    // setOpenSessions({});
+    // setOpenSilabus({});
+    // setMapObjectsDapits({});
+    // setAveragePerformance(null);
+    setCellStyle(false)
     fetchDapits();
   }, [groupData]);
 
@@ -109,7 +116,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
       console.log('getAveragePerformance1:', AveragePerformance);
       const avgHanichPerPreformance = AveragePerformance.avgHanichPerPreformance;
       console.log('avgHanichPerPreformance:', avgHanichPerPreformance);
-
+      setCellStyle(true)
       setAveragePerformance(AveragePerformance);
     } catch (error) {
       console.error('Error fetching dapits:', error);
@@ -219,7 +226,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                   </td>
                   <td style={fixedCellStyle}>{trainer.name}</td>
                   {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                    <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) }}>
+                    <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) : {}) }}>
                       {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || ''}
                     </td>
                   ))}
@@ -246,7 +253,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                 </td>
                                 <td style={fixedCellStyle}>{session.name}</td>
                                 {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                                  <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0) }}>
+                                  <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0): {}) }}>
                                     {AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || ''}
                                   </td>
                                 ))}
@@ -298,7 +305,8 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                                   placement="top"
                                                   overlay={<Tooltip id={`tooltip-${trainerIdx}-${sessionIdx}-${silabusIdx}-${idx}`}>{check2}</Tooltip>}
                                                 >
-                                                  <td style={{ ...fixedCellStyle, ...getCellStyle(parseFloat(check) || 0) }}>
+                                                  <td style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(check) || 0) : {})
+                                                 }}>
                                                     {check}
                                                   </td>
                                                 </OverlayTrigger>
@@ -326,7 +334,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
               <td style={fixedCellStyle}></td>
               <td style={fixedCellStyle}>Avg Group</td>
               {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                <td key={idx} style={{ ...fixedCellStyle, ...getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) }}>
+                <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle?  getCellStyle(AveragePerformance?.["avgGroup"]?.[category] || 0) : {})}}>
                   {AveragePerformance?.["avgGroup"]?.[category] || ''}
                 </td>
               ))}
