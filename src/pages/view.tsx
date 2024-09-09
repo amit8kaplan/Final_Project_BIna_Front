@@ -2,17 +2,21 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Sidebar_com } from '../components/sideBar_views';
 import ViewDapit from '../components/view_Dapit';
-import { handleFiltersSubmit } from '../services/dapit-serivce';
+import { deleteDapit, handleFiltersSubmit } from '../services/dapit-serivce';
 import { borderLeftStyle } from 'html2canvas/dist/types/css/property-descriptors/border-style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import AddDapit from '../components/AddDapit';
 import { set } from 'react-hook-form';
 import {IDapitforSubmit, ChangeData }from '../services/dapit-serivce';
 import { IDapit } from '../public/interfaces';
 import useSessionStorage from '../hooks/useSessionStorage';
 import {defaultInstractor, defaultTrainer} from "../public/interfaces"
-interface Dapit {
+import DeleteDapitModal from '../components/DeleteDapitModal';
+
+
+
+export interface Dapit {
   idInstractor: string;
   _id?: string;
   nameInstractor: string;
@@ -59,7 +63,10 @@ interface DetailedDapit extends Dapit {
 
 const View: React.FC = () => {
   const [filters, setFilters] = useState<any>(null);
+  const [deleteCount, setDeleteCount] = useState(0);
   const [showEditDapit, setShowEditDapit] = useState(false);
+  const [showDeleteDapit, setShowDeleteDapit] = useState(false);
+  const [deleteDapitData, setDeleteDapitData] = useState<Dapit | undefined>(undefined);
   const [dapits, setDapits] = useState<Dapit[]>([]);
   const [dapitInIdapit, setDapitInIdapit] = useState<IDapit[]>([]);
   const [selectedDapit, setSelectedDapit] = useState<DetailedDapit | null>(null);
@@ -68,7 +75,8 @@ const View: React.FC = () => {
   const permission = useSessionStorage("permission") || 'regular';
   useEffect(() => {
     fetchInitialDapits();
-  }, [showEditDapit]);
+    setShowDeleteDapit(false);
+  }, [showEditDapit, deleteCount]); // Add deleteCount here
 
   const fetchInitialDapits = async () => {
     try {
@@ -104,7 +112,7 @@ const View: React.FC = () => {
     else if (value === 6) return { backgroundColor: 'khaki' };
     else if (value === 5) return { backgroundColor: 'lightpink' };
     else if (value === 4) return { backgroundColor: 'lightcoral' };
-  
+    
     return {};
   };
   const transformIdapitToDapit = (idapit: IDapit): Dapit => {
@@ -284,6 +292,9 @@ const View: React.FC = () => {
   const handleCloseEditDapit = () => {
     setShowEditDapit(false);
   }
+  const handleCloseDeleteDapit = () => {
+    setShowDeleteDapit(false);
+  }
   const handleEditDapit = (id: string) => {
     try{
       const editDapit = dapitInIdapit.find(dapit => dapit._id === id);
@@ -295,6 +306,32 @@ const View: React.FC = () => {
       console.error('Error fetching detailed dapit:', error);
     }
   }
+  // handle delete dapit - open a modal to confirm the delete
+  const handleOpenDeleleDapitModal =  (dapit: Dapit) => {
+    if (!dapit) {
+      return;
+    }
+    if (dapit._id === '' || dapit._id === undefined) {
+      return;
+    }
+    setShowDeleteDapit(true);
+    setDeleteDapitData (dapit);
+  }
+  const handleDeleteDapitInView = async (id: string, idInstractor: string) => {
+    console.log("handleDeleteDapitInView: before try ", id);
+    if (!id || id === '') handleCloseDeleteDapit();
+    else {
+      try {
+        console.log("handleDeleteDapitInView: ", id);
+        const response = await deleteDapit(id, idInstractor);
+        console.log("handleDeleteDapitInView response: ", response);
+        handleCloseDeleteDapit();
+        setDeleteCount(prevCount => prevCount + 1); // Update delete count
+      } catch (error) {
+        console.error('Error deleting dapit:', error);
+      }
+    }
+  };
   const handleSubmitInView = async (submitDapit: IDapitforSubmit) =>{
     console.log("handleSubmitInView: ", submitDapit)
     try{
@@ -328,16 +365,22 @@ const View: React.FC = () => {
               <tbody>
               {dapits.map(dapit => (
                 <tr key={dapit._id}>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.nameTrainer}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.nameInstractor}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.group}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.session}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.silabus}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.finalGrade}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={getCellStyle(dapit.finalGrade || undefined)}>{dapit.changeToBeCommender}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.nameTrainer}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.nameInstractor}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.group}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.session}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.silabus}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.finalGrade}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.changeToBeCommender}</td>
                   {(permission === 'admin' && clientId) || dapit.idInstractor === clientId ? (
-                    <td>
-                      <FontAwesomeIcon icon={faPen} onClick={() => handleEditDapit(dapit._id ?? '')} />
+                  <td style={{ borderRight: '1px dashed rgba(0, 0, 0, 0.5)' }}>
+                      <FontAwesomeIcon icon={faPen} style={{cursor: 'pointer'}} onClick={() => handleEditDapit(dapit._id ?? '')} />
+                    </td>
+
+                  ) : null}
+                  {(permission === 'admin' && clientId) || dapit.idInstractor === clientId ? (
+                  <td >
+                     <FontAwesomeIcon icon={faTrash} style={{cursor: 'pointer'}} onClick={()=> handleOpenDeleleDapitModal (dapit  || undefined)}/>
                     </td>
                   ) : null}
                 </tr>
@@ -347,7 +390,13 @@ const View: React.FC = () => {
           </div>
         </div>
       </div>
-
+      {showDeleteDapit && (
+        <DeleteDapitModal
+          dapit={deleteDapitData}
+          onClose={() => setShowDeleteDapit(false)}
+          onDelete={handleDeleteDapitInView}
+          />
+      )}
       {selectedDapit && (
         <ViewDapit selectedDapit={selectedDapit} onClose={handleCloseModal} />
       )}

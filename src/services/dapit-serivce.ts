@@ -172,20 +172,29 @@ export const deleteAllDapitsOfGroup = async (groupId: string) => {
     }
 }
 
-export const deleteDapit = async (id: string) => {
+export const deleteDapit = async (id: string, idInstractor:string) => {
     try {
         let response;
-        const dapit = await getDapitById(id);
-        const headers = getAuthHeaders();
+        // const dapit = await getDapitById(id);
+        const authHeaders = getAuthHeaders();
+        const permissions = getPermissions();
+
+        const headers = {
+            ...authHeaders,
+            ...(permissions ? { permissions } : {})
+        };
+        console.log("deleteDapit -service", headers);
         if (!headers || !headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
-        if (verifyRegular(headers['client-id'], dapit.idInstractor) === true ) {
-            response = await apiClient.post(`/dapit/deleteDapitRegular/${id}`, {headers} );
+        console.log("deleteDapit -service", headers['client-id'], headers['otp'], id, idInstractor, permissions);
+        if (verifyRegular(headers['client-id'], idInstractor) === true ) {
+            console.log("deleteDapit -service -regular",true);
+            response = await apiClient.delete(`/dapit/deleteDapitRegular/${id}`, {headers} );
        }
        else 
        {
-        response = await apiClient.post(`/dapit/deleteDapitAdmin/${id}`, {headers} );
+        response = await apiClient.delete(`/dapit/deleteDapitAdmin/${id}`, {headers} );
         }
         return response.data;
     } catch (error) {

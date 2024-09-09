@@ -67,6 +67,17 @@ export function setPermissions(permissions: string) {
 export function getPermissions() {
     return sessionStorage.getItem('permissions');
 }
+export function getPermissionsToHeaders() {
+    const permissions = sessionStorage.getItem('permissions');
+    if (!permissions) {
+        return {
+            'permissions': "",
+        };
+    }
+    return {
+        'permissions': permissions,
+    };
+}
 
 export function setTtl(ttl: string) {
     sessionStorage.setItem('ttl', ttl);
