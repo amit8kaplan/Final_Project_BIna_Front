@@ -62,7 +62,6 @@ const CurrentSession: React.FC = () => {
     const handleClose = () => {
         RegularDeleteSession();
         setShow(false);
-
     };
 
     const handleDoubleClick = () => {
