@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { sentOtp, verifyOtp } from "../services/session-service";
+import { verifyNewOtp , verifyOtpOnCookies, getAllCookies} from "../services/cookies-service";
 import { useDataContext } from '../DataContext';
 import { IInstractor } from "../public/interfaces";
 
@@ -17,7 +18,6 @@ const SessionModal: React.FC = () => {
   const [ttl, setTtl] = useState<number>(0);      // Time to live for OTP
   const [timer, setTimer] = useState<number>(0);  // Countdown timer
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     let countdown: NodeJS.Timeout;
     if (otpSent && ttl > 0) {
@@ -82,6 +82,56 @@ const SessionModal: React.FC = () => {
       setOtp(value);
     }
   };
+
+
+  const handleVerifyOtpForCookie = async () => {
+    if (otp.length === 6) {
+      console.log('OTP Verified handleVerifyOtpForCookie:', otp);
+      try {
+        const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
+        
+        const result = ins ? await verifyNewOtp(ins, "regular", otp, 1) : { res: { message: "Instructor not found" } };
+        console.log('resVerify handleVerifyOtpForCookie:', result);
+        if (result && 'cookie' in result && result.res.message === "OTP verified and session opened") {
+          console.log('OTP verified and session opened handleVerifyOtpForCookie');
+          // sessionStorage.setItem('permissions', result.cookie);
+          // sessionStorage.setItem('ttl', resVerify.ttl);
+          handleClose();
+        } else if (result &&  'res' in result) {
+          setOtpError(result.res.message);
+        }
+      } catch (error) {
+        console.error('Error verifying OTP handleVerifyOtpForCookie:', error);
+        setOtpError('Invalid OTP. Please try again.');
+      }
+    } else {
+      setOtpError('Please enter a valid 6-digit OTP.');
+    }
+  };
+  const handleOtpAgain = async () => {
+    if (otp.length === 6) {
+      console.log('OTP Verified:', otp);
+      try {
+        const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
+        
+        const result = ins ? await verifyOtpOnCookies(ins, otp) : { res: { message: "Instructor not found" } };
+        console.log('resVerify:', result);
+        if (result  && result.res.message === "OTP verified") {
+          console.log('OTP verified and session opened');
+          // sessionStorage.setItem('permissions', result.cookie);
+          // sessionStorage.setItem('ttl', resVerify.ttl);
+          handleClose();
+        } else if (result &&  'res' in result) {
+          setOtpError(result.res.message);
+        }
+      } catch (error) {
+        console.error('Error verifying OTP:', error);
+        setOtpError('Invalid OTP. Please try again.');
+      }
+    } else {
+      setOtpError('Please enter a valid 6-digit OTP.');
+    }
+  }
   const handleVerifyOtp = async () => {
     if (otp.length === 6) {
       console.log('OTP Verified:', otp);
