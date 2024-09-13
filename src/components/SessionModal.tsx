@@ -222,7 +222,9 @@ const SessionModal: React.FC = () => {
                 <Button variant="success" onClick={handleVerifyOtp}>
                   Verify OTP
                 </Button>
-
+                <Button variant="primary" onClick={handleVerifyOtpForCookie}>
+                  Send Cookie
+                </Button>
                 <div>
                   <p>Time to expire the OTP: {timer} seconds</p>
                   {/* {otpError && <p className="text-danger">{otpError}</p>} */}

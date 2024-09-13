@@ -199,6 +199,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       if (!dapitData.group) missingFields.push('Group');
       if (!dapitData.session) missingFields.push('Session');
       if (!dapitData.silabus) missingFields.push('silabus');
+      if (!dapitData.summerize) missingFields.push('Summerize');
       if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
       if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     

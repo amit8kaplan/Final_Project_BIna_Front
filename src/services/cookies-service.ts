@@ -5,6 +5,9 @@ import { data } from "jquery";
 import { set } from "react-hook-form";
 
 
+const splitValue = (value: string): string[] => {
+    return value.split('_');
+}
 const getTTLFromExpires = (expires: string): number => {
     // Extract the date string from the expires string
     const dateString = expires.split('=')[1];
@@ -98,6 +101,24 @@ export const getCookiesByPath = (idInstractor: string) => {
     return cookies;
 }
 
+export const getCookieByIdINValue = (idInstractor: string) => {
+    // The value is the idInstractor + "_" + otp
+    // We want to check if the value is in the cookies based on the idInstractor only
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    console.log('getCookieByIdINValue ca:', ca);
+    const cookies = [];
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.includes(idInstractor + "_")) {
+            cookies.push(c);
+        }
+    }
+    return cookies;
+}
 export const getCookieByidInstractor = (idInstractor: string) => {
     const id = `idInstractor=${idInstractor}`;
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -123,37 +144,35 @@ export const deleteAllCookiesById = (cookies: string[]) => {
         document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
     }
 }
-
-export const setNewCookie = (instructorName: string, idInstractor: string, value: string, hours: number) => {
-    deleteAllCookies();
+// document.cookie = `${instructor.name}=${Value}; Expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; Path=/`;
+export const setNewCookie = (instructorName: string, idInstractor: string, value: string, hours: number, permissions: string) => {
     console.log('setNewCookie:', instructorName, idInstractor, value, hours);
-    const prevCookie = getCookieByidInstractor(idInstractor);
-    console.log('setNewCookie prevCookie:', prevCookie);
+    const val = idInstractor + '_' + permissions;
 
     const newDate = new Date();
+    const maxAge = hours * 60 * 60;
+    const maxAgeString = `Max-Age=${hours * 60 * 60}`;
+    console.log('setNewCookie, maxAge, maxAgeString:', maxAge, maxAgeString);
     console.log('setNewCookie, newDate (local):', newDate);
+    // newDate.setTime(newDate.getTime() + 0.1 * 60 * 60 * 1000);
+    // console.log('setNewCookie, newDate after adding hours (local):', newDate);
+    // const expiresUTC = `Expires=${new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString()}`;
+    // console.log('setNewCookie, newExpires (UTC):', expiresUTC);
 
-    newDate.setTime(newDate.getTime() + hours * 60 * 60 * 1000);
-    console.log('setNewCookie, newDate after adding hours (local):', newDate);
-
-    const expiresUTC = `expires=${newDate.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' })}`;
-    console.log('setNewCookie, newExpires (UTC):', expiresUTC);
-
-    const expiresLocal = newDate.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' });
-    console.log('setNewCookie, newExpires (local):', expiresLocal);
-
+    const prevCookie = getCookieByIdINValue(instructorName);
+    console.log('setNewCookie prevCookie:', prevCookie);
     // Check and handle existing cookies
     if (prevCookie.length === 1) {
         console.log('setNewCookie, prevCookie.length === 1');
         const existingCookie = prevCookie[0];
-        const existingExpires = new Date(existingCookie.split('expires=')[1].split(';')[0]).getTime();
+        const existingExpires = parseInt(existingCookie.split('Max-Age=')[1].split(';')[0], 10);
         console.log('setNewCookie, existingExpires:', existingExpires);
 
-        if (newDate.getTime() > existingExpires) {
+        if (maxAge > existingExpires) {
             console.log('setNewCookie, newExpires > existingExpires');
-            const path = `path=/${idInstractor}`;
-            console.log('setNewCookie, setting new cookie:', instructorName, value, expiresUTC, path);
-            document.cookie = `${instructorName}=${value}; ${expiresUTC}; ${path}`;
+            const path = `path=/`;
+            console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
+            document.cookie = `${instructorName}=${val}; ${maxAgeString}; ${path}`;
             console.log('setNewCookie, document.cookie:', document.cookie);
             return document.cookie;
         } else {
@@ -166,9 +185,9 @@ export const setNewCookie = (instructorName: string, idInstractor: string, value
     }
 
     // Setting new cookie
-    const path = `path=/${idInstractor}`;
-    console.log('setNewCookie, setting new cookie:', instructorName, value, expiresUTC, path);
-    document.cookie = `${instructorName}=${value}; ${expiresUTC}; ${path}`;
+    const path = `path=/`;
+    console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
+    document.cookie = `${instructorName}=${val}; ${maxAgeString}; ${path}`;
     console.log('setNewCookie, document.cookie:', document.cookie);
     return document.cookie;
 }
@@ -192,7 +211,7 @@ export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFrom
     console.log('verifyNewOtp:', instructor, otp, hours, permissionAskingFromClient);
     let res;
     if (instructor._id) {
-        const prevCookies = getCookiesByPath(instructor._id);
+        const prevCookies = getCookieByIdINValue(instructor._id);
         if (prevCookies.length> 1) {
             deleteAllCookiesById(prevCookies);
         }
@@ -204,14 +223,16 @@ export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFrom
                     { clientId:instructor._id, otpUser: otp, permissionFromreq:permissionAskingFromClient, seconds: hours * 60 * 60 },
                     { headers: headers });
             console.log("res.status:", res.status);
+            console.log("res:", res);
             if (res && res.status ===200 && res.data.permissions) {
+                // document.cookie = `${instructor.name}=${Value}; Expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; Path=/`;
                 const docCookie = setNewCookie(instructor.name, instructor._id, otp, hours, res.data.permissions);
                 setAuthHeaders(instructor._id, otp);
                 setPermissions(res.data.permissions);
                 console.log('docCookie:', docCookie);
                 console.log('res.data:', res.data);
-                if (docCookie){
-                    return {cookie : docCookie, res: res.data}; 
+                if (document.cookie){
+                    return {cookie : document.cookie, res: res.data}; 
                 }
             }
         }catch (error) {
