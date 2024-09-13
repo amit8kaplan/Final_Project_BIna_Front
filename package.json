@@ -28,6 +28,7 @@
     "chart.js": "^4.4.3",
     "dotenv": "^16.4.4",
     "html2canvas": "^1.4.1",
+    "js-cookie": "^3.0.5",
     "jspdf": "^2.5.1",
     "mitt": "^3.0.1",
     "node-fetch": "^2.7.0",

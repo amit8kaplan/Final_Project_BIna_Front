@@ -1,4 +1,10 @@
-
+export interface ICookie {
+        name: string;
+        idInstractor: string;
+        permmistion: string;
+        date: string;
+        ttl: number;
+}
 
 export interface IInstractor {
     name: string;

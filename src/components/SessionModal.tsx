@@ -5,7 +5,12 @@ import { verifyNewOtp , verifyOtpOnCookies, getAllCookies} from "../services/coo
 import { useDataContext } from '../DataContext';
 import { IInstractor } from "../public/interfaces";
 
-const SessionModal: React.FC = () => {
+
+interface SessionModalProps {
+  handleCloseFather : () => void;
+}
+
+const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather}) => {
   const { instructors } = useDataContext();
   const [show, setShow] = useState(false);
   const [selectedInstructor, setSelectedInstructor] = useState<string>('');
@@ -97,6 +102,7 @@ const SessionModal: React.FC = () => {
           // sessionStorage.setItem('permissions', result.cookie);
           // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
+          handleCloseFather();
         } else if (result &&  'res' in result) {
           setOtpError(result.res.message);
         }
@@ -134,15 +140,17 @@ const SessionModal: React.FC = () => {
   }
   const handleVerifyOtp = async () => {
     if (otp.length === 6) {
-      console.log('OTP Verified:', otp);
+      console.log('OTP Verified: handleVerifyOtp', otp);
       try {
-        const resVerify = await verifyOtp(clientId, otp);
+        const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
+        const resVerify = await verifyOtp(ins, otp, 1);
         console.log('resVerify:', resVerify);
-        if (resVerify.message === "OTP verified and session opened") {
+        if (resVerify.res.message === "OTP verified and session opened") {
           sessionStorage.setItem('permissions', resVerify.permissions);
           // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
         } else {
+          console.log('OTP verified and session opened else');
           setOtpError(resVerify.message);
         }
       } catch (error) {
@@ -222,9 +230,9 @@ const SessionModal: React.FC = () => {
                 <Button variant="success" onClick={handleVerifyOtp}>
                   Verify OTP
                 </Button>
-                <Button variant="primary" onClick={handleVerifyOtpForCookie}>
+                {/* <Button variant="primary" onClick={handleVerifyOtpForCookie}>
                   Send Cookie
-                </Button>
+                </Button> */}
                 <div>
                   <p>Time to expire the OTP: {timer} seconds</p>
                   {/* {otpError && <p className="text-danger">{otpError}</p>} */}

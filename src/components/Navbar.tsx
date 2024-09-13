@@ -7,7 +7,7 @@ import SessionModal from './SessionModal';  // Import the SessionModal component
 import CurrentSession from './CurrentSession';  // Import the CurrentSession component
 import { useDataContext } from '../DataContext';
 import { IGroup, ITrainer } from '../public/interfaces';
-
+import AllSessions from './AllSessions';
 export function Nav_componnets() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,8 +72,9 @@ export function Nav_componnets() {
             </NavDropdown> */}
           </Nav>
           <ChatBotModal />  {/* Add the ChatBotModal component here */}
-          <SessionModal />  {/* Add the SessionModal component here */}
+          <SessionModal handleCloseFather={()=> {}}/>  {/* Add the SessionModal component here */}
           <CurrentSession />
+          <AllSessions/>
         </Navbar.Collapse>
       </Container>
     </Navbar>

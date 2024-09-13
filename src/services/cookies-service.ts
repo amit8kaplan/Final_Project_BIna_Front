@@ -1,14 +1,16 @@
 import apiClient from "./api-client";
 import { getAuthHeaders,setAuthHeaders, setPermissions, setTtl } from "../public/data";
-import { IInstractor } from "../public/interfaces";
-import { data } from "jquery";
+import { ICookie, IInstractor } from "../public/interfaces";
+import { data, get } from "jquery";
 import { set } from "react-hook-form";
+import useSessionStorage from "../hooks/useSessionStorage";
+// import Cookies from 'js-cookie';
 
 
 const splitValue = (value: string): string[] => {
     return value.split('_');
 }
-const getTTLFromExpires = (expires: string): number => {
+export const getTTLFromExpires = (expires: string): number => {
     // Extract the date string from the expires string
     const dateString = expires.split('=')[1];
     // Parse the date string to a Date object
@@ -138,6 +140,7 @@ export const getCookieByidInstractor = (idInstractor: string) => {
 }
 
 export const deleteAllCookiesById = (cookies: string[]) => {
+    
     for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i];
         const name = cookie.split('=')[0];
@@ -147,37 +150,34 @@ export const deleteAllCookiesById = (cookies: string[]) => {
 // document.cookie = `${instructor.name}=${Value}; Expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; Path=/`;
 export const setNewCookie = (instructorName: string, idInstractor: string, value: string, hours: number, permissions: string) => {
     console.log('setNewCookie:', instructorName, idInstractor, value, hours);
-    const val = idInstractor + '_' + permissions;
 
     const newDate = new Date();
+    const newExpires = new Date(newDate.getTime() + hours * 60 * 60 * 1000);
     const maxAge = hours * 60 * 60;
+    
     const maxAgeString = `Max-Age=${hours * 60 * 60}`;
     console.log('setNewCookie, maxAge, maxAgeString:', maxAge, maxAgeString);
     console.log('setNewCookie, newDate (local):', newDate);
-    // newDate.setTime(newDate.getTime() + 0.1 * 60 * 60 * 1000);
-    // console.log('setNewCookie, newDate after adding hours (local):', newDate);
-    // const expiresUTC = `Expires=${new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString()}`;
-    // console.log('setNewCookie, newExpires (UTC):', expiresUTC);
-
+    const val = idInstractor + '_' + permissions + '_' +newExpires.toUTCString();
     const prevCookie = getCookieByIdINValue(instructorName);
     console.log('setNewCookie prevCookie:', prevCookie);
     // Check and handle existing cookies
     if (prevCookie.length === 1) {
         console.log('setNewCookie, prevCookie.length === 1');
         const existingCookie = prevCookie[0];
-        const existingExpires = parseInt(existingCookie.split('Max-Age=')[1].split(';')[0], 10);
-        console.log('setNewCookie, existingExpires:', existingExpires);
+        const existingExpiresString = existingCookie.split('_')[2];
+        if (existingExpiresString) {
+            const existingExpiresDate = new Date(existingExpiresString);
+            const currentTime = new Date();
+            const existingTTL = Math.floor((existingExpiresDate.getTime() - currentTime.getTime()) / 1000);
+            console.log('setNewCookie, existingTTL:', existingTTL);
 
-        if (maxAge > existingExpires) {
-            console.log('setNewCookie, newExpires > existingExpires');
-            const path = `path=/`;
-            console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
-            document.cookie = `${instructorName}=${val}; ${maxAgeString}; ${path}`;
-            console.log('setNewCookie, document.cookie:', document.cookie);
-            return document.cookie;
-        } else {
-            console.log('setNewCookie, newExpires <= existingExpires');
-            return existingCookie;
+            if (maxAge> existingTTL) {
+                deleteAllCookiesById(prevCookie);
+            } else {
+                console.log('setNewCookie, newExpires <= existingExpires');
+                return existingCookie;
+            }
         }
     } else if (prevCookie.length > 1) {
         console.log('setNewCookie, prevCookie.length > 1');
@@ -186,27 +186,68 @@ export const setNewCookie = (instructorName: string, idInstractor: string, value
 
     // Setting new cookie
     const path = `path=/`;
-    console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
+    // console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
     document.cookie = `${instructorName}=${val}; ${maxAgeString}; ${path}`;
-    console.log('setNewCookie, document.cookie:', document.cookie);
+    // Cookies.set(instructorName, val, { expires: hours / 24, path: '/' });
+    // console.log('setNewCookie, document.cookie:', document.cookie);
     return document.cookie;
 }
 
-
-export const getAllCookies = () => {
+export const getAllCookies = (): ICookie[] => {
+    // console.log('document.cookie:', document.cookie);
     const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    const cookies = [];
+    // console.log('decodedCookie:', decodedCookie);
+    const ca = decodedCookie.split(';'); // Split by semicolon
+    const cookies: ICookie[] = [];
+    const now = new Date();
+
     for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
+        let c = ca[i].trim();
+        if (c) {
+            const [nameValue, expires] = c.split(/(?<=_)(?=Fri|Sat|Sun|Mon|Tue|Wed|Thu)/); // Split by the start of the date string
+            const [name, value] = nameValue.split('=');
+            const [idInstractor, permmistion] = value.split('_');
+            const expirationDate = new Date(expires.trim());
+            const ttl = Math.max(0, Math.floor((expirationDate.getTime() - now.getTime()) / 1000)); // Calculate TTL in seconds
+
+            cookies.push({
+                name: name.trim(),
+                idInstractor: idInstractor.trim(),
+                permmistion: permmistion.trim(),
+                date: expires.trim(),
+                ttl: ttl
+            });
         }
-        cookies.push(c);
     }
     return cookies;
 }
 
+export const addMoreTimeToCookie = async (instructorName: string, idInstractor:string, otp: string, hours: number) => {
+    console.log('addMoreTimeToCookie:', instructorName, idInstractor, otp, hours);
+    if (idInstractor) {
+        const prevCookies = getCookieByIdINValue(idInstractor);
+        if (prevCookies.length >1) {
+            deleteAllCookiesById(prevCookies);
+        }
+        const headers = getAuthHeaders()
+
+        if (prevCookies.length === 1) {
+            try{
+                const res = await apiClient.post('/auth/newTtlSession',
+                     { seconds: hours * 60 * 60} ,{
+                        headers: headers,
+                    });
+                console.log("res.status:", res.status);
+                const docCookie = setNewCookie(instructorName, idInstractor, otp, hours, res.data.permissions);
+                    return {cookie : document.cookie, res: res.data};
+            }catch (error) {
+                console.error('Error adding more time:', error);
+            }
+        }
+    }
+    return {message: "Instructor not found"};
+
+}
 export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFromClient: string, otp: string, hours: number) => {
     console.log('verifyNewOtp:', instructor, otp, hours, permissionAskingFromClient);
     let res;
@@ -260,6 +301,6 @@ export const verifyOtpOnCookies = async (instructor: IInstractor, otp: string) =
             return response.data;
         } catch (error) {
             console.error('Error verifying OTP:', error);
-}
+        }
     }
 }

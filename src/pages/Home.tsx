@@ -41,11 +41,11 @@ export function Home() {
       try {
         const progressResponse = await apiClient.get('/progress/progress_Data');
         setProgressData(progressResponse.data);
-        console.log(progressResponse.data);
+        // console.log(progressResponse.data);
 
         const avgResultsResponse = await apiClient.get('/progress/avg_progress');
         setAvgResultsData(avgResultsResponse.data);
-        console.log(avgResultsResponse.data);
+        // console.log(avgResultsResponse.data);
 
         setLoading(false);
       } catch (err) {

@@ -1,6 +1,7 @@
 import apiClient from "./api-client";
 import { getAuthHeaders,setAuthHeaders, setPermissions, setTtl } from "../public/data";
 import { IInstractor } from "../public/interfaces";
+import { getCookieByIdINValue, deleteAllCookiesById,setNewCookie ,getCookiesByPath} from "./cookies-service";
 export const sentOtp = async (clientId: string) => {
     try {
        
@@ -11,8 +12,8 @@ export const sentOtp = async (clientId: string) => {
     }
 }
 
-export const verifyOtp = async (clientId: string, otp: string) => {
-    console.log('verifyOtp:', clientId, otp);
+export const verifyOtp = async (instructor: IInstractor | undefined, otp: string, hours: number) => {
+    console.log('verifyOtp:', instructor, otp);
     //find the session is open in the client side
     const headers = getAuthHeaders();
     //sent clientID and headers to verify the clientID
@@ -20,21 +21,39 @@ export const verifyOtp = async (clientId: string, otp: string) => {
        headers['client-id'] = "";
        headers['otp'] = "";
     }
-    console.log('headers:', headers);
-    try{
-         const response = await apiClient.post('/auth/verify-otp', { clientId:clientId, otpUser: otp}, {headers: headers });
-         console.log("response.status:", response.status);
-         console.log("response.data:", response.data);
-         if (response.status === 200) {
-            setPermissions(response.data.permissions);
-            setAuthHeaders(clientId, otp);
-            setTtl(response.data.ttl);
-         }
-         return response.data;
-         
-    }catch (error) {
-        console.error('Error verifying OTP:', error);
+    if ( instructor && instructor._id) {
+        const prevCookies = getCookieByIdINValue(instructor._id);
+        if (prevCookies.length> 1) {
+            deleteAllCookiesById(prevCookies);
+        }
+        
+        console.log('headers:', headers);
+        try{
+            const response = await apiClient.post('/auth/verify-otp',
+                { clientId:instructor._id, otpUser: otp},
+                {headers: headers });
+            console.log("response.status:", response.status);
+            console.log("response.data:", response.data);
+            if (response.status === 200 && response.data.permissions) {
+                const docCookie = setNewCookie(instructor.name, instructor._id, otp, hours, response.data.permissions); 
+                if (docCookie) {
+                    console.log('docCookie response.data.permissions:', docCookie, response.data.permissions);
+                    setPermissions(response.data.permissions);
+                    setAuthHeaders(instructor._id, otp);
+                    setTtl(response.data.ttl);
+                    return {cookie : document.cookie, res: response.data}; 
+                }
+            }
+            return response.data;
+        }catch (error) {
+            console.error('Error verifying OTP:', error);
+            if (instructor._id) {
+                const cookies = getCookiesByPath(instructor._id);
+                deleteAllCookiesById(cookies);
+            }
+        }
     }
+    return {message: "Instructor not found"};
 }
 
 export const RegularDeleteSession = async () => {

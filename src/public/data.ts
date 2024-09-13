@@ -62,6 +62,8 @@ export function deleteAllHeaders (){
 
 export function setPermissions(permissions: string) {
     sessionStorage.setItem('permissions', permissions);
+    console.log('setPermissions:', permissions);
+    console.log('setPermissions:', sessionStorage.getItem('permissions'));
 }
 
 export function getPermissions() {
