@@ -66,6 +66,7 @@ export interface IPost{
 export interface IPersonalInstractor{
     idInstractor: string;
     idTrainer: string;
+    _id?: string;
 }
 
 export interface ILikes{

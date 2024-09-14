@@ -25,7 +25,7 @@ const AdminInstructor: React.FC = () => {
         setSelectedInstructor(instructor);
         setInstructorName(instructor.name);
         setNewInstructorMail(instructor.email);
-        setNewInstructorPermission(instructor.permissions);
+        setNewInstructorPermission(instructor.permissions || 'regular');
         setShowEditInstructorModal(true);
     };
 

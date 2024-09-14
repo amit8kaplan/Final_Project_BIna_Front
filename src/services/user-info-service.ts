@@ -98,10 +98,10 @@ export const getAllSessions = async () => {
  */
 
 
-export const newPersonalInstractor = async (instractorName: string, trainerName:String)=>{
+export const newPersonalInstractor = async (instractorId: string, trainerId:String)=>{
     try {
         const headers = getAuthHeaders();
-        const response = await apiClient.post("/user_info/newPersonalInstractor", {instractorName, trainerName}, {headers});
+        const response = await apiClient.post("/user_info/newPersonalInstractor", {instractorId, trainerId}, {headers});
         return response.data;
     } catch (error) {
         console.error('Error creating personal instractor:', error);
@@ -246,10 +246,10 @@ export const updateSession = async (sessionId: string, sessionName: string, sila
     }
 }
 
-export const updatePersonalInstractor = async (personalInstractorId: string, instractorName: string, TrainerName: string)=>{
+export const updatePersonalInstractor = async (personalInstractorId: string, instractorId: string, trainerId: string)=>{
     try {
         const headers = getAuthHeaders();
-        const response = await apiClient.put("/user_info/updatePersonalInstractor", {instractorName, TrainerName, _id: personalInstractorId}, {headers});
+        const response = await apiClient.put("/user_info/updatePersonalInstractor", {instractorId, trainerId, _id: personalInstractorId}, {headers});
         return response.data;
     } catch (error) {
         console.error('Error updating personal instractor:', error);
@@ -290,6 +290,19 @@ export const deleteTrainer = async (trainerId: string)=>{
         return response.data;
     } catch (error) {
         console.error('Error deleting trainer:', error);
+    }
+}
+
+export const deletePersonalInstractor = async (personalInstractorId: string)=>{
+    try {
+        const headers = getAuthHeaders()
+        const response = await apiClient.delete("/user_info/deletePersonalInstractor", {
+            headers: headers,
+            params: { personalInstractorId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting personal instractor:', error);
     }
 }
 

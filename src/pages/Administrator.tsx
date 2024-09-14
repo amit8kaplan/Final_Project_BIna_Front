@@ -4,7 +4,8 @@ import { useDataContext } from '../DataContext';
 import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IInstractor, ITrainer } from '../public/interfaces';
 import AdminTrainer from '../components/AdminTraienr'
-import AdminInstructor from '../components/AdminInstructor';
+import AdminInstructor from '../components/adminInstructor';
+import AdminPersonalInstructor from '../components/AdminPersonalInstructor';
 
 const Administrator: React.FC = () => {
     const { trainers, personalInstractors, instructors, groups, sessions,
@@ -42,81 +43,10 @@ const Administrator: React.FC = () => {
                         <Col>
                             <AdminInstructor />
                         </Col>
+                        <Col>
+                            <AdminPersonalInstructor />
+                        </Col>
                         
-
-                      
-                        {/* Personal Instructors Section */}
-                        <Col>
-                            <h4>Personal Instructors</h4>
-                            <Table striped bordered hover responsive>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {personalInstructorsComp.map((instructor, index) => (
-                                        <tr key={index}>
-                                            <td>{instructor.name}</td>
-                                            <td>
-                                                <Button variant="success" size="sm" className="me-2">Add</Button>
-                                                <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                                                <Button variant="danger" size="sm">Delete</Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </Col>
-                        {/* Groups Section */}
-                        <Col>
-                            <h4>Groups</h4>
-                            <Table striped bordered hover responsive>
-                                <thead>
-                                    <tr>
-                                        <th>Group Name</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {groupsComp.map((group, index) => (
-                                        <tr key={index}>
-                                            <td>{group.name}</td>
-                                            <td>
-                                                <Button variant="success" size="sm" className="me-2">Add</Button>
-                                                <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                                                <Button variant="danger" size="sm">Delete</Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </Col>
-                        {/* Sessions Section */}
-                        <Col>
-                            <h4>Sessions</h4>
-                            <Table striped bordered hover responsive>
-                                <thead>
-                                    <tr>
-                                        <th>Session ID</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {sessionsComp.map((session, index) => (
-                                        <tr key={index}>
-                                            <td>{session.sessionId}</td>
-                                            <td>
-                                                <Button variant="success" size="sm" className="me-2">Add</Button>
-                                                <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                                                <Button variant="danger" size="sm">Delete</Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </Col>
                     </Row>
                 </div>
             ) : (
