@@ -1,71 +1,117 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ICookie, IInstractor } from "../public/interfaces";
 import { useDataContext } from '../DataContext';
-import { Button, Modal, Dropdown } from 'react-bootstrap';
+import { Button, Modal, Dropdown, Form } from 'react-bootstrap';
 import useSessionStorage from '../hooks/useSessionStorage';
-import { getAllCookies, addMoreTimeToCookie } from "../services/cookies-service";
+import { getAllCookies, addMoreTimeToCookie, deleteTheCookies } from "../services/cookies-service";
+import { verifyOtpAgain } from "../services/session-service";
+import { setAuthHeaders, setPermissions } from '../public/data';
 import SessionModal from './SessionModal';
-import {verifyOtpAgain, getAllsession} from "../services/session-service";
-import { setAuthHeaders,setPermissions } from '../public/data';
 import { set } from 'react-hook-form';
 
 const AllSessions: React.FC = () => {
     const { instructors } = useDataContext();
-    const cookies = getAllCookies();
-    const clientId = useSessionStorage('client-id');
-    const permissions = useSessionStorage('permissions');
-    const otp = useSessionStorage('otp');
-    console.log("all useSessionStorage:", clientId, permissions, otp);
+    const [cookies, setCookies] = useState<ICookie[]>(getAllCookies());
+    const [clientID, setClientID] = useState<string>('');
+    const [permissions, setPermissions] = useState<string>('');
+    const [otp, setOtp] = useState<string>('');
+    const [otpSent, setOtpSent] = useState(false);  // Track if OTP is sent
     const [showModal, setShowModal] = useState(false);
-    const [showNewSession, setShowNewSession] = useState(false);
-
     const [validCookies, setValidCookies] = useState<ICookie[]>([]);
-    const [theOpenSession, setTheOpenSession] = useState<ICookie>();
-    const [theOpenSessionFlag, setTheOpenSessionFlag] = useState(false);
+    const [theOpenSession, setTheOpenSession] = useState<ICookie | null>(null);
     const [showMoreTimeOptions, setShowMoreTimeOptions] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [showChangeSessionOptions, setShowChangeSessionOptions] = useState(false);
     const [selectedTime, setSelectedTime] = useState<number>(0);
     const [selectedSession, setSelectedSession] = useState<ICookie | null>(null);
     const [newOtp, setNewOtp] = useState<string>('');
-    const [otpError, setOtpError] = useState('');   // Error message for invalid OTP
+    const [otpError, setOtpError] = useState<string>('');
+    const [sessionChanged, setSessionChanged] = useState(false); // New state to track session changes
+    const [sessionDeletedChanged, setSessionDeletedChanged] = useState(false); // New state to track session changes
+    const [addTime, setAddTime] = useState(false); // New state to track session changes
+    const [ttl, setTtl] = useState<number>(0);
+    const [remainingTime, setRemainingTime] = useState<number>(0);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         fetchAllCookies();
-        fetchAllSession();
         fetchWhoIsTheHeader();
-    }, [instructors, clientId]);
-    const fetchAllSession = async () => {
-        const allSession = await getAllsession();
-        console.log("allSession:", allSession);
-        
-    }
+        setOtpSent(false);
+        setSelectedTime(0);
+    }, [addTime, instructors, clientID, sessionChanged, sessionDeletedChanged, otpError]); // Add sessionChanged to the dependency array
+
     const fetchAllCookies = async () => {
-        const cookies: ICookie[] = getAllCookies();
-        console.log("all cookies:", cookies);
-        const validCookiesinFetch = cookies.filter(cookie => 
+        const cookiesFetch = getAllCookies();
+        const validCookies = cookiesFetch.filter(cookie => 
             instructors.some(instructor => instructor._id === cookie.idInstractor)
         );
-        setValidCookies(validCookiesinFetch);
+        setCookies(cookiesFetch); // Update the cookies state
+        setValidCookies(validCookies);
     };
 
     const fetchWhoIsTheHeader = async () => {
-        if (clientId) {
-            const TheOpen = validCookies.find(cookie => cookie.idInstractor === clientId);
-            setTheOpenSession(TheOpen);
-            console.log("TheOpen:", TheOpen);
-            setTheOpenSessionFlag(true);
+        setClientID(sessionStorage.getItem('client-id') || '');
+        setOtp(sessionStorage.getItem('otp') || '');
+        setPermissions(sessionStorage.getItem('permissions') || '');
+        if (clientID) {
+            const openSession = validCookies.find(cookie => cookie.idInstractor === clientID);
+            setTheOpenSession(openSession || null);
+        } else {
+            setTheOpenSession(null);
         }
     };
 
-    const handleShow = () => setShowModal(true);
-    const handleShowNewSession = () => setShowNewSession(true);
+    // useEffect(() => {
+    //     setTtl(theOpenSession ? parseInt(theOpenSession.ttl, 10) : 0);
+    // }, [theOpenSession]);
+
+    useEffect(() => {
+        if (theOpenSession) {
+            const sessionTTL = parseInt(theOpenSession.ttl, 10);
+            setTtl(sessionTTL);
+            if (remainingTime === 0) {
+                setRemainingTime(sessionTTL); // Set remaining time when the session is opened
+            }
+            startTimer(sessionTTL); // Start the timer if no remaining time is saved
+        }
+    }, [theOpenSession]);
+    const startTimer = (initialTtl: number) => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+        }
+
+        timerRef.current = setInterval(() => {
+            setRemainingTime(prevTtl => {
+                if (prevTtl <= 0) {
+                    clearInterval(timerRef.current!);
+                    return 0;
+                }
+                return prevTtl - 1;
+            });
+        }, 1000);
+    };
+
+    const handleShow = () => {
+        setShowModal(true);
+        setSelectedSession(null); // Reset selected session
+        setNewOtp(''); // Reset OTP input
+        setOtpError(''); // Reset OTP error
+        if (remainingTime > 0 && theOpenSession != null) {
+            startTimer(remainingTime); // Continue the timer from the remaining time when the modal is reopened
+        }
+    };
 
     const handleClose = () => {
+        setOtpError('');
+        setNewOtp('');
         setShowModal(false);
+        setOtpSent(false);  // Reset the modal state when closed
         setShowMoreTimeOptions(false);
         setShowDeleteConfirmation(false);
         setShowChangeSessionOptions(false);
+        if (timerRef.current) {
+            clearInterval(timerRef.current); // Keep track of remaining time when closing modal
+        }
     };
 
     const handleGetMoreTime = () => {
@@ -81,61 +127,69 @@ const AllSessions: React.FC = () => {
     };
 
     const handleChangeSession = () => {
-        console.log('Change session');
         setShowMoreTimeOptions(false);
         setShowDeleteConfirmation(false);
         setShowChangeSessionOptions(true);
-        console.log('Change session', showChangeSessionOptions, validCookies);
     };
 
-    const handleSubmitMoreTime = () => {
-        // Logic to add more time to the cookie
-        console.log('addMoreTimeToCookie More time added:', selectedTime);
-        console.log(" addMoreTimeToCookie selectedTime:", selectedTime);
-        console.log(" addMoreTimeToCookie validCookies[0].name && validCookies[0].idInstractor && otp &&", validCookies[0].name, validCookies[0].idInstractor, otp);
-        if (validCookies[0].name && validCookies[0].idInstractor && otp &&  validCookies[0].idInstractor!="" && validCookies[0].name!="" && otp!="") {
-            addMoreTimeToCookie(validCookies[0].name,validCookies[0].idInstractor, otp, selectedTime);
+    const handleSubmitMoreTime = async () => {
+        if (theOpenSession && theOpenSession.name && theOpenSession.idInstractor && otp && selectedTime > 0) {
+            await addMoreTimeToCookie(theOpenSession.name, theOpenSession.idInstractor, otp, selectedTime);
+            // Fetch the cookies again to refresh the state
+            await fetchAllCookies();
+            setAddTime(!addTime);
+            handleClose();
+
+            // Update the TTL of the open session
+            let tempOpenSession = { ...theOpenSession };
+            tempOpenSession.ttl = (parseInt(tempOpenSession.ttl, 10) + (selectedTime * 3600)).toString();
+            setTheOpenSession(tempOpenSession);
+            setTtl(parseInt(tempOpenSession.ttl, 10)); // Update the TTL state
+            setRemainingTime(parseInt(tempOpenSession.ttl, 10)); // Restart the remaining time with the updated TTL
+            startTimer(parseInt(tempOpenSession.ttl, 10));
+
         }
-        else {
-            console.log("Error in addMoreTimeToCookie");
-        }
-        handleClose();
     };
 
-    const handleConfirmDelete = () => {
-        // Logic to delete the session cookie
-        console.log('Session deleted:', theOpenSession);
-        handleClose();
+    const handleConfirmDelete = async () => {
+        if (theOpenSession && theOpenSession.idInstractor && otp) {
+            await deleteTheCookies(theOpenSession.idInstractor, otp);
+            setSessionDeletedChanged(!sessionDeletedChanged);
+            handleClose();
+            setTheOpenSession(null);
+        }
     };
 
     const handleSubmitChangeSession = async () => {
         if (newOtp.length === 6 && selectedSession && selectedSession.idInstractor) {
-            console.log('OTP Verified:', newOtp, selectedSession);
-            try{
-                const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === selectedSession?.idInstractor);
-                console.log("ins:", ins);
-                const resVerify = await verifyOtpAgain(ins, newOtp);
-                console.log('resVerify:', resVerify);  
-                if (resVerify.res.message === "OTP verified") {
+            const instructor = instructors.find(instructor => instructor._id === selectedSession.idInstractor);
+            if (instructor) {
+                setOtpSent(true);
+                const resVerify = await verifyOtpAgain(instructor, newOtp);
+                if (resVerify.res && resVerify.res.message === "OTP verified") {
                     setAuthHeaders(selectedSession.idInstractor, newOtp);
                     setPermissions(resVerify.res.permissions);
-                    console.log('OTP verified and session opened');
+                    setTheOpenSession(selectedSession); // Update the open session to the selected session
+                    setTtl(parseInt(selectedSession.ttl, 10)); // Update the TTL state
+                    setRemainingTime(parseInt(selectedSession.ttl, 10)); // Update the remaining time
+                    startTimer(parseInt(selectedSession.ttl, 10)); // Start the timer for the new session
                     handleClose();
+                } else if (resVerify.message) {
+                    setOtpError(resVerify.message);
+                } else {
+                    setOtpError('An unknown error occurred.');
                 }
-                else{
-                    console.log('OTP verified and session opened else');
-                    setOtpError(resVerify.res.message);
-                }
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                setOtpError('Invalid OTP. Please try again.');
             }
-        }
-        else {
+        } else {
             setOtpError('Please enter a valid 6-digit OTP.');
         }
     };
 
+    const handleInstructorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const instructorId = e.target.value;
+        const theCookie = validCookies.find(cookie => cookie.idInstractor === instructorId) || null;
+        setSelectedSession(theCookie);
+    };
 
     return (
         <div>
@@ -144,36 +198,46 @@ const AllSessions: React.FC = () => {
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Session Details</Modal.Title>
-                    <SessionModal handleCloseFather={handleClose}/>
                 </Modal.Header>
                 <Modal.Body>
-                    {showChangeSessionOptions && (
+                    {showChangeSessionOptions ? (
                         <div>
-                            <Dropdown onSelect={(e) => setSelectedSession(validCookies.find(cookie => cookie.idInstractor === e) || null)}>
-                                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    Select Session
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {validCookies.map((cookie, index) => (
-                                        <Dropdown.Item key={index} eventKey={cookie.idInstractor}>{cookie.name}</Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                            <input
-                                type="text"
-                                placeholder="Enter OTP"
-                                value={newOtp}
-                                onChange={(e) => setNewOtp(e.target.value)}
-                                style={{ marginTop: '10px', display: 'block' }}
-                            />
-                            <Button variant="primary" onClick={handleSubmitChangeSession} style={{ marginTop: '10px' }}>Submit</Button>
+                            <Form>
+                                <Form.Group controlId="formInstructor">
+                                    <Form.Label>Select Instructor & session</Form.Label>
+                                    <Form.Control
+                                        className='mb-2'
+                                        as="select"
+                                        value={selectedSession ? selectedSession.idInstractor : ''}
+                                        onChange={handleInstructorChange}
+                                        disabled={otpSent} // Disable if OTP is sent
+                                    >
+                                        <option value="">Select Instructor</option>
+                                        {validCookies.map((cookie) => (
+                                            <option key={cookie.idInstractor} value={cookie.idInstractor}>{cookie.name}</option>
+                                        ))}
+                                    </Form.Control>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter 6-digit OTP"
+                                        value={newOtp}
+                                        maxLength={6}
+                                        pattern="\d*"
+                                        onChange={(e) => setNewOtp(e.target.value)}
+                                        style={{ marginTop: '10px' }}
+                                        isInvalid={otpError !== ''}
+                                    />
+                                    {otpError && <p style={{ color: 'red' }}>{otpError}</p>}
+                                    <Button variant="primary" onClick={handleSubmitChangeSession} style={{ marginTop: '10px' }}>Submit</Button>
+                                </Form.Group>
+                            </Form> 
                         </div>
-                    )}
-                    {theOpenSessionFlag && theOpenSession && (
+                    ) : theOpenSession ? (
                         <div>
                             <p><strong>Name:</strong> {theOpenSession.name}</p>
-                            <p><strong>TTL:</strong> {(parseInt(theOpenSession.ttl) / 3600).toFixed(2)} hours</p>
-                            {!showMoreTimeOptions && !showDeleteConfirmation && !showChangeSessionOptions && (
+                            {/* <p><strong>TTL:</strong> {(ttl / 3600).toFixed(2)} hours</p> */}
+                            <p><strong>Remaining Time</strong> {(remainingTime)} Hours  </p>
+                            {!showMoreTimeOptions && !showDeleteConfirmation && (
                                 <div>
                                     <Button variant="secondary" onClick={handleGetMoreTime}>Get More Time</Button>
                                     <Button variant="danger" onClick={handleDeleteSession} style={{ marginLeft: '10px' }}>Delete Session</Button>
@@ -181,17 +245,28 @@ const AllSessions: React.FC = () => {
                             )}
                             {showMoreTimeOptions && (
                                 <div>
-                                    <Dropdown onSelect={(e) => setSelectedTime(Number(e))}>
-                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                            Select Time
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item eventKey="1">1 Hour</Dropdown.Item>
-                                            <Dropdown.Item eventKey="2">2 Hours</Dropdown.Item>
-                                            <Dropdown.Item eventKey="3">3 Hours</Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                    <Button variant="primary" onClick={handleSubmitMoreTime} style={{ marginTop: '10px' }}>Submit</Button>
+                                    <Form>
+                                        <Form.Group controlId="formSelectTime">
+                                            <Form.Label>Select Time</Form.Label>
+                                            <Form.Control
+                                                as="select"
+                                                value={selectedTime}
+                                                onChange={(e) => setSelectedTime(Number(e.target.value))}
+                                                style={{ marginTop: '10px' }}
+                                                isInvalid={otpError !== ''}
+                                            >
+                                                <option value="">Select Time</option>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((time) => (
+                                                    <option key={time} value={time}>
+                                                        {time} Hour{time > 1 ? 's' : ''}
+                                                    </option>
+                                                ))}
+                                            </Form.Control>
+                                            <Button variant="primary" onClick={handleSubmitMoreTime} style={{ marginTop: '10px' }}>
+                                                Submit
+                                            </Button>
+                                        </Form.Group>
+                                    </Form>
                                 </div>
                             )}
                             {showDeleteConfirmation && (
@@ -201,13 +276,14 @@ const AllSessions: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                    ) : (
+                        <p>No session selected.</p>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="warning" onClick={handleChangeSession} style={{ marginLeft: '10px' }}>Change Session</Button>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
+                    <Button variant="warning" onClick={handleChangeSession}>Switch Session</Button>
+                    <SessionModal handleCloseFather={handleClose} onSessionChange={() => setSessionChanged(!sessionChanged)} />
                 </Modal.Footer>
             </Modal>
         </div>

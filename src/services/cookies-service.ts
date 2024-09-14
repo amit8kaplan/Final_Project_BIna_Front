@@ -1,5 +1,5 @@
 import apiClient from "./api-client";
-import { getAuthHeaders,setAuthHeaders, setPermissions, setTtl } from "../public/data";
+import { deleteAllHeaders,getAuthHeaders,setAuthHeaders, setPermissions, setTtl } from "../public/data";
 import { ICookie, IInstractor } from "../public/interfaces";
 import { data, get } from "jquery";
 import { set } from "react-hook-form";
@@ -305,3 +305,25 @@ export const verifyOtpOnCookies = async (instructor: IInstractor, otp: string) =
     }
 }
 
+export const deleteTheCookies =async  (idInstractor: string , otp: string) => {
+    const headers = getAuthHeaders();
+    
+    console.log('deleteTheCookies:', idInstractor, otp);
+    if (idInstractor && headers['client-id'] && headers['otp'] && headers['client-id']!= '' && headers['otp']!= '') {
+        deleteAllCookiesById(getCookieByIdINValue(idInstractor));
+        try{
+            const res = await apiClient.delete('/auth/deleteCookie',
+                    { headers: headers });
+            if (res.status === 200 && res.data.message === 'Session deleted successfully') {
+                deleteAllCookiesById(getCookieByIdINValue(idInstractor));
+            }
+            console.log("res.status:", res.status);
+            console.log("res:", res);
+            deleteAllHeaders()
+            return res.data;
+        }catch(error){
+            console.error('Error deleting cookies:', error);
+        }
+    }
+   return {message: "Instructor not found"}; 
+}

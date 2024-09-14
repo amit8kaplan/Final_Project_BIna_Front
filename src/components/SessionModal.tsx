@@ -5,12 +5,12 @@ import { verifyNewOtp , verifyOtpOnCookies, getAllCookies} from "../services/coo
 import { useDataContext } from '../DataContext';
 import { IInstractor } from "../public/interfaces";
 
-
 interface SessionModalProps {
   handleCloseFather : () => void;
+  onSessionChange: () => void; // New prop for session change callback
 }
 
-const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather}) => {
+const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather, onSessionChange}) => {
   const { instructors } = useDataContext();
   const [show, setShow] = useState(false);
   const [selectedInstructor, setSelectedInstructor] = useState<string>('');
@@ -23,6 +23,7 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather}) => {
   const [ttl, setTtl] = useState<number>(0);      // Time to live for OTP
   const [timer, setTimer] = useState<number>(0);  // Countdown timer
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     let countdown: NodeJS.Timeout;
     if (otpSent && ttl > 0) {
@@ -88,56 +89,6 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather}) => {
     }
   };
 
-
-  const handleVerifyOtpForCookie = async () => {
-    if (otp.length === 6) {
-      console.log('OTP Verified handleVerifyOtpForCookie:', otp);
-      try {
-        const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
-        
-        const result = ins ? await verifyNewOtp(ins, "regular", otp, 1) : { res: { message: "Instructor not found" } };
-        console.log('resVerify handleVerifyOtpForCookie:', result);
-        if (result && 'cookie' in result && result.res.message === "OTP verified and session opened") {
-          console.log('OTP verified and session opened handleVerifyOtpForCookie');
-          // sessionStorage.setItem('permissions', result.cookie);
-          // sessionStorage.setItem('ttl', resVerify.ttl);
-          handleClose();
-          handleCloseFather();
-        } else if (result &&  'res' in result) {
-          setOtpError(result.res.message);
-        }
-      } catch (error) {
-        console.error('Error verifying OTP handleVerifyOtpForCookie:', error);
-        setOtpError('Invalid OTP. Please try again.');
-      }
-    } else {
-      setOtpError('Please enter a valid 6-digit OTP.');
-    }
-  };
-  const handleOtpAgain = async () => {
-    if (otp.length === 6) {
-      console.log('OTP Verified:', otp);
-      try {
-        const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
-        
-        const result = ins ? await verifyOtpOnCookies(ins, otp) : { res: { message: "Instructor not found" } };
-        console.log('resVerify:', result);
-        if (result  && result.res.message === "OTP verified") {
-          console.log('OTP verified and session opened');
-          // sessionStorage.setItem('permissions', result.cookie);
-          // sessionStorage.setItem('ttl', resVerify.ttl);
-          handleClose();
-        } else if (result &&  'res' in result) {
-          setOtpError(result.res.message);
-        }
-      } catch (error) {
-        console.error('Error verifying OTP:', error);
-        setOtpError('Invalid OTP. Please try again.');
-      }
-    } else {
-      setOtpError('Please enter a valid 6-digit OTP.');
-    }
-  }
   const handleVerifyOtp = async () => {
     if (otp.length === 6) {
       console.log('OTP Verified: handleVerifyOtp', otp);
@@ -149,6 +100,8 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather}) => {
           sessionStorage.setItem('permissions', resVerify.permissions);
           // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
+          handleCloseFather();
+          onSessionChange(); // Trigger the session change callback
         } else {
           console.log('OTP verified and session opened else');
           setOtpError(resVerify.message);
