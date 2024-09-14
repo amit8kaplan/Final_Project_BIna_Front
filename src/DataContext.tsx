@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession } from "./public/interfaces";
-import { getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
+import { updateTrainer,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 
 interface DataContextProps {
     groups: IGroup[];
@@ -10,6 +10,7 @@ interface DataContextProps {
     personalInstractors: IPersonalInstractor[];
     addTrainer: (trainerName: string) => Promise<void>;
     deleteTrainerInDataContext: (trainerId: string) => Promise<void>;
+    editTrainer: (trainerId: string, trainerName: string ) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -64,8 +65,23 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error deleting trainer:', error);
         }
     }
+    const editTrainer= async ( trainerId: string,trainerName: string) => {
+        try {
+            
+            const res = await updateTrainer(trainerId, trainerName);
+            if (res.data) {
+                setTrainers(prevTrainers => [...prevTrainers, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding trainer:', error);
+        }
+    }
     return (
-        <DataContext.Provider value={{ groups, instructors, trainers, sessions, personalInstractors, addTrainer, deleteTrainerInDataContext }}>
+        <DataContext.Provider value={{
+             groups, instructors, trainers, sessions, personalInstractors,
+              addTrainer, deleteTrainerInDataContext,editTrainer
+               }}>
             {children}
         </DataContext.Provider>
     );

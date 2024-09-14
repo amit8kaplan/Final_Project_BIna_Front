@@ -173,6 +173,7 @@ export const newSession = async ( sessionName: string, silabuses: number[])=>{
 
 export const updateTrainer = async (trainerId: string, trainerName: string)=>{
     try {
+        console.log("updateTrainer, trainerName" , trainerName)
         const headers = getAuthHeaders()
         const trainerData:ITrainer ={
             name: trainerName,

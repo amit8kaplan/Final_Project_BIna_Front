@@ -6,7 +6,7 @@ import { ITrainer } from '../public/interfaces';
 
 const Administrator: React.FC = () => {
     const { trainers, personalInstractors, instructors, groups, sessions,
-         addTrainer,deleteTrainerInDataContext } = useDataContext();
+         addTrainer,deleteTrainerInDataContext ,editTrainer} = useDataContext();
     const personalInstructorsComp = personalInstractors || [];
     const instructorsComp = instructors || [];
     const groupsComp = groups || [];
@@ -90,12 +90,17 @@ const Administrator: React.FC = () => {
         }
     };
 
-    const handleSaveTrainerName = () => {
-        if (selectedTrainer) {
+    const handleSaveTrainerName =async () => {
+        if (selectedTrainer && selectedTrainer._id && trainerName) {
             // Update the trainer's name (this should ideally be done via an API call)
-            selectedTrainer.name = trainerName;
-            setShowEditTrainerModal(false);
-            setSelectedTrainer(null);
+            try{
+                await editTrainer(selectedTrainer._id,trainerName);
+                setShowEditTrainerModal(false);
+                setSelectedTrainer(null);
+            }catch(error){
+                console.error('Error updating trainer:', error);
+                
+            }
         }
     };
 
