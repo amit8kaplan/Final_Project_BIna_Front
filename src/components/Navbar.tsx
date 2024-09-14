@@ -8,11 +8,14 @@ import CurrentSession from './CurrentSession';  // Import the CurrentSession com
 import { useDataContext } from '../DataContext';
 import { IGroup, ITrainer } from '../public/interfaces';
 import AllSessions from './AllSessions';
+import Administrator from '../pages/Administrator';
+import useSessionStorage from '../hooks/useSessionStorage';
+
 export function Nav_componnets() {
   const location = useLocation();
   const navigate = useNavigate();
   const { groups, instructors, trainers, sessions , personalInstractors} =  useDataContext();
-
+  const permmistion = useSessionStorage('permissions');
   const InstractorsComp = instructors || [];
   const trainersComp = trainers || [];
   const sessionsComp = sessions || [];
@@ -58,6 +61,10 @@ export function Nav_componnets() {
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
+            {permmistion && permmistion === 'admin' ? (
+              <Nav.Link as={Link} to="/Admin">Admin</Nav.Link>
+            ) : null}
+
             {/* <NavDropdown title="Megame" id="basic-nav-dropdown">
               {groupsComp.map((item, index) => (
                 <NavDropdown.Item key={index} as={Link} to={'/Megama'} state={{ group: item }}>

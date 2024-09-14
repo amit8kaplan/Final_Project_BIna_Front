@@ -16,6 +16,7 @@ import MyCourses from "./pages/MyCourses";
 import MyReviews from "./pages/MyReviews";
 import NewDapit from "./pages/new_dapit";
 import Piano from "./pages/Piano";
+import Administrator from "./pages/Administrator";
 import './App.css';
 import './css/Login.css';
 import ChatBot from "./components/ChatBot";
@@ -73,6 +74,7 @@ function App() {
         <Container className="mb-4">
           <Routes>
             <Route path="/Piano" element={<Piano group={"defult"} />} />
+            <Route path="/Admin" element={<Administrator />} />
             <Route path="/Wall" element={<Wall trainer={{name: "", _id: "0"}} />} />
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
