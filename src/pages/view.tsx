@@ -72,7 +72,8 @@ const View: React.FC = () => {
   const [selectedDapit, setSelectedDapit] = useState<DetailedDapit | null>(null);
   const [editDapit, setEditDapit] = useState<IDapit | undefined>(undefined);
   const clientId = useSessionStorage("client-id");
-  const permission = useSessionStorage("permission") || 'regular';
+  const permission = useSessionStorage("permissions") || 'regular';
+  console.log("permission in view.tsx: ", permission)
   useEffect(() => {
     fetchInitialDapits();
     setShowDeleteDapit(false);
