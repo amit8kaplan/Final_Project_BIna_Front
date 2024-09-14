@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession } from "./public/interfaces";
-import { updateTrainer,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
+import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 
 interface DataContextProps {
     groups: IGroup[];
@@ -11,6 +11,9 @@ interface DataContextProps {
     addTrainer: (trainerName: string) => Promise<void>;
     deleteTrainerInDataContext: (trainerId: string) => Promise<void>;
     editTrainer: (trainerId: string, trainerName: string ) => Promise<void>;
+    addInstractor: (instractorName: string, email:string, permmistion: string) => Promise<void>;
+    editInstractor: (instractorId:string, instractorName: string, email:string, permmistion: string) => Promise<void>;
+    deleteInstractorInDataContext: (instractorId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -77,10 +80,45 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding trainer:', error);
         }
     }
+    const addInstractor = async (instractorName: string, email:string, permmistion: string) => {
+        try {
+            const res = await newInstractor(instractorName, email, permmistion);
+            if (res.data) {
+                setInstructors(prevInstructors => [...prevInstructors, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding instractor:', error);
+        }
+    }
+    const editInstractor= async (instractorId:string, instractorName: string, email:string, permmistion: string) => {
+        try {
+            const res = await updateInstractor(instractorId,instractorName, email, permmistion);
+            if (res.data) {
+                setInstructors(prevInstructors => [...prevInstructors, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding instractor:', error);
+        }
+    }
+    const deleteInstractorInDataContext = async (instractorId: string) => {
+        try {
+            const res = await deleteInstractor(instractorId);
+            if (res.data) {
+                setInstructors(prevInstructors => prevInstructors.filter(instractor => instractor._id !== instractorId));
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error deleting instractor:', error);
+        }
+    }
+
     return (
         <DataContext.Provider value={{
              groups, instructors, trainers, sessions, personalInstractors,
-              addTrainer, deleteTrainerInDataContext,editTrainer
+              addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
+              editInstractor,deleteInstractorInDataContext
                }}>
             {children}
         </DataContext.Provider>

@@ -124,11 +124,12 @@ export const newTrainer = async (trainerName: string)=>{
     }
 }
 
-export const newInstractor = async ( instractorName: string, permissions: string)=>{
+export const newInstractor = async ( instractorName: string, email: string, permissions: string)=>{
     try {
         const instractorData:IInstractor ={
             name: instractorName,
-            permissions: permissions
+            permissions: permissions,
+            email: email
         }
         const headers = getAuthHeaders()
         const response = await apiClient.post("/user_info/newInstractor", instractorData, {headers});
@@ -189,12 +190,13 @@ export const updateTrainer = async (trainerId: string, trainerName: string)=>{
     }
 }
 
-export const updateInstractor = async (instractorId: string, instractorName: string, permissions: string)=>{
+export const updateInstractor = async (instractorId: string, instractorName: string,email:string, permissions: string)=>{
     try {
         const headers = getAuthHeaders()
         const instractorData:IInstractor ={
             name: instractorName,
             permissions: permissions,
+            email: email,
             _id: instractorId
         }
         const response = await apiClient.put("/user_info/updateInstractor",instractorData, {
