@@ -3,8 +3,12 @@ import { ICookie, IInstractor } from "../public/interfaces";
 import { useDataContext } from '../DataContext';
 import { Button, Modal, Dropdown } from 'react-bootstrap';
 import useSessionStorage from '../hooks/useSessionStorage';
-import { getAllCookies,addMoreTimeToCookie } from "../services/cookies-service";
+import { getAllCookies, addMoreTimeToCookie } from "../services/cookies-service";
 import SessionModal from './SessionModal';
+import {verifyOtpAgain, getAllsession} from "../services/session-service";
+import { setAuthHeaders,setPermissions } from '../public/data';
+import { set } from 'react-hook-form';
+
 const AllSessions: React.FC = () => {
     const { instructors } = useDataContext();
     const cookies = getAllCookies();
@@ -22,15 +26,23 @@ const AllSessions: React.FC = () => {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [showChangeSessionOptions, setShowChangeSessionOptions] = useState(false);
     const [selectedTime, setSelectedTime] = useState<number>(0);
-    const [selectedSession, setSelectedSession] = useState<string>('');
+    const [selectedSession, setSelectedSession] = useState<ICookie | null>(null);
+    const [newOtp, setNewOtp] = useState<string>('');
+    const [otpError, setOtpError] = useState('');   // Error message for invalid OTP
 
     useEffect(() => {
         fetchAllCookies();
+        fetchAllSession();
         fetchWhoIsTheHeader();
     }, [instructors, clientId]);
-
+    const fetchAllSession = async () => {
+        const allSession = await getAllsession();
+        console.log("allSession:", allSession);
+        
+    }
     const fetchAllCookies = async () => {
         const cookies: ICookie[] = getAllCookies();
+        console.log("all cookies:", cookies);
         const validCookiesinFetch = cookies.filter(cookie => 
             instructors.some(instructor => instructor._id === cookie.idInstractor)
         );
@@ -41,6 +53,7 @@ const AllSessions: React.FC = () => {
         if (clientId) {
             const TheOpen = validCookies.find(cookie => cookie.idInstractor === clientId);
             setTheOpenSession(TheOpen);
+            console.log("TheOpen:", TheOpen);
             setTheOpenSessionFlag(true);
         }
     };
@@ -57,7 +70,6 @@ const AllSessions: React.FC = () => {
 
     const handleGetMoreTime = () => {
         setShowMoreTimeOptions(true);
-        
         setShowDeleteConfirmation(false);
         setShowChangeSessionOptions(false);
     };
@@ -69,9 +81,11 @@ const AllSessions: React.FC = () => {
     };
 
     const handleChangeSession = () => {
+        console.log('Change session');
         setShowMoreTimeOptions(false);
         setShowDeleteConfirmation(false);
         setShowChangeSessionOptions(true);
+        console.log('Change session', showChangeSessionOptions, validCookies);
     };
 
     const handleSubmitMoreTime = () => {
@@ -94,11 +108,34 @@ const AllSessions: React.FC = () => {
         handleClose();
     };
 
-    const handleSubmitChangeSession = () => {
-        // Logic to change the session
-        console.log('Session changed to:', selectedSession, 'with OTP:', otp);
-        handleClose();
+    const handleSubmitChangeSession = async () => {
+        if (newOtp.length === 6 && selectedSession && selectedSession.idInstractor) {
+            console.log('OTP Verified:', newOtp, selectedSession);
+            try{
+                const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === selectedSession?.idInstractor);
+                console.log("ins:", ins);
+                const resVerify = await verifyOtpAgain(ins, newOtp);
+                console.log('resVerify:', resVerify);  
+                if (resVerify.res.message === "OTP verified") {
+                    setAuthHeaders(selectedSession.idInstractor, newOtp);
+                    setPermissions(resVerify.res.permissions);
+                    console.log('OTP verified and session opened');
+                    handleClose();
+                }
+                else{
+                    console.log('OTP verified and session opened else');
+                    setOtpError(resVerify.res.message);
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                setOtpError('Invalid OTP. Please try again.');
+            }
+        }
+        else {
+            setOtpError('Please enter a valid 6-digit OTP.');
+        }
     };
+
 
     return (
         <div>
@@ -107,13 +144,31 @@ const AllSessions: React.FC = () => {
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Session Details</Modal.Title>
-                    {/* <Button className="m-1"variant="primary" size="sm" onClick={handleShowNewSession}>
-                        Open Session
-                    </Button> */}
                     <SessionModal handleCloseFather={handleClose}/>
                 </Modal.Header>
                 <Modal.Body>
-           
+                    {showChangeSessionOptions && (
+                        <div>
+                            <Dropdown onSelect={(e) => setSelectedSession(validCookies.find(cookie => cookie.idInstractor === e) || null)}>
+                                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                    Select Session
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {validCookies.map((cookie, index) => (
+                                        <Dropdown.Item key={index} eventKey={cookie.idInstractor}>{cookie.name}</Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <input
+                                type="text"
+                                placeholder="Enter OTP"
+                                value={newOtp}
+                                onChange={(e) => setNewOtp(e.target.value)}
+                                style={{ marginTop: '10px', display: 'block' }}
+                            />
+                            <Button variant="primary" onClick={handleSubmitChangeSession} style={{ marginTop: '10px' }}>Submit</Button>
+                        </div>
+                    )}
                     {theOpenSessionFlag && theOpenSession && (
                         <div>
                             <p><strong>Name:</strong> {theOpenSession.name}</p>
@@ -145,28 +200,6 @@ const AllSessions: React.FC = () => {
                                     <Button variant="danger" onClick={handleConfirmDelete}>Yes, Delete</Button>
                                 </div>
                             )}
-                            {showChangeSessionOptions && (
-                                <div>
-                                    <Dropdown onSelect={(e) => setSelectedSession(e || '')}>
-                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                            Select Session
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            {validCookies.map((cookie, index) => (
-                                                <Dropdown.Item key={index} eventKey={cookie.idInstractor}>{cookie.name}</Dropdown.Item>
-                                            ))}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter OTP"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
-                                        style={{ marginTop: '10px', display: 'block' }}
-                                    />
-                                    <Button variant="primary" onClick={handleSubmitChangeSession} style={{ marginTop: '10px' }}>Submit</Button>
-                                </div>
-                            )}
                         </div>
                     )}
                 </Modal.Body>
@@ -175,7 +208,6 @@ const AllSessions: React.FC = () => {
                         Close
                     </Button>
                     <Button variant="warning" onClick={handleChangeSession} style={{ marginLeft: '10px' }}>Change Session</Button>
-
                 </Modal.Footer>
             </Modal>
         </div>

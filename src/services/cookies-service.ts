@@ -304,3 +304,4 @@ export const verifyOtpOnCookies = async (instructor: IInstractor, otp: string) =
         }
     }
 }
+
