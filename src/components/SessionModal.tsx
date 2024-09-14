@@ -117,8 +117,8 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather, onSession
 
   return (
     <>
-      <Button className="m-1"variant="primary" size="sm" onClick={handleShow}>
-        Open Session
+      <Button className="m-1"variant="primary"  onClick={handleShow}>
+        New Session
       </Button>
 
       <Modal show={show} onHide={handleClose}>

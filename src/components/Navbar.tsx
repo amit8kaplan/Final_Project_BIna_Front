@@ -26,6 +26,8 @@ export function Nav_componnets() {
         <Navbar.Brand as={Link} to="/">Bina</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
+        <AllSessions/>
+
           <Nav className="me-auto">
             <NavLink
               className="nav-link"
@@ -72,9 +74,6 @@ export function Nav_componnets() {
             </NavDropdown> */}
           </Nav>
           <ChatBotModal />  {/* Add the ChatBotModal component here */}
-          <SessionModal handleCloseFather={()=> {}}/>  {/* Add the SessionModal component here */}
-          <CurrentSession />
-          <AllSessions/>
         </Navbar.Collapse>
       </Container>
     </Navbar>

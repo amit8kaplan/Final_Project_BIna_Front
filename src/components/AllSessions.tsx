@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ICookie, IInstractor } from "../public/interfaces";
 import { useDataContext } from '../DataContext';
-import { Button, Modal, Dropdown, Form } from 'react-bootstrap';
+import { Button, Modal, Dropdown, Form, Row, Col } from 'react-bootstrap';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { getAllCookies, addMoreTimeToCookie, deleteTheCookies } from "../services/cookies-service";
 import { verifyOtpAgain } from "../services/session-service";
 import { setAuthHeaders, setPermissions } from '../public/data';
 import SessionModal from './SessionModal';
 import { set } from 'react-hook-form';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
+
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const AllSessions: React.FC = () => {
     const { instructors } = useDataContext();
@@ -25,7 +29,7 @@ const AllSessions: React.FC = () => {
     const [selectedTime, setSelectedTime] = useState<number>(0);
     const [selectedSession, setSelectedSession] = useState<ICookie | null>(null);
     const [newOtp, setNewOtp] = useState<string>('');
-    const [otpError, setOtpError] = useState<string>('');
+    const [otpError, setOtpError] = useState<string>(''); 
     const [sessionChanged, setSessionChanged] = useState(false); // New state to track session changes
     const [sessionDeletedChanged, setSessionDeletedChanged] = useState(false); // New state to track session changes
     const [addTime, setAddTime] = useState(false); // New state to track session changes
@@ -61,10 +65,6 @@ const AllSessions: React.FC = () => {
         }
     };
 
-    // useEffect(() => {
-    //     setTtl(theOpenSession ? parseInt(theOpenSession.ttl, 10) : 0);
-    // }, [theOpenSession]);
-
     useEffect(() => {
         if (theOpenSession) {
             const sessionTTL = parseInt(theOpenSession.ttl, 10);
@@ -75,6 +75,7 @@ const AllSessions: React.FC = () => {
             startTimer(sessionTTL); // Start the timer if no remaining time is saved
         }
     }, [theOpenSession]);
+
     const startTimer = (initialTtl: number) => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
@@ -193,7 +194,7 @@ const AllSessions: React.FC = () => {
 
     return (
         <div>
-            <Button variant="primary" onClick={handleShow}>Session</Button>
+            <Button variant="" onClick={handleShow}>Session</Button>
 
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -234,25 +235,53 @@ const AllSessions: React.FC = () => {
                         </div>
                     ) : theOpenSession ? (
                         <div>
-                            <p><strong>Name:</strong> {theOpenSession.name}</p>
-                            {/* <p><strong>TTL:</strong> {(ttl / 3600).toFixed(2)} hours</p> */}
-                            <p><strong>Remaining Time</strong> {(remainingTime)} Hours  </p>
+                            <Row>
+                                <Col>
+                                    <h5>{theOpenSession.name}</h5>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <h5>{(remainingTime / 3600).toFixed(2)} Hours</h5>
+                                </Col>
+                            </Row>
                             {!showMoreTimeOptions && !showDeleteConfirmation && (
                                 <div>
-                                    <Button variant="secondary" onClick={handleGetMoreTime}>Get More Time</Button>
-                                    <Button variant="danger" onClick={handleDeleteSession} style={{ marginLeft: '10px' }}>Delete Session</Button>
+                                    {/* <Button variant="secondary" onClick={handleGetMoreTime}>Get More Time</Button> */}
+                                    <FontAwesomeIcon 
+                                        icon={faHourglassHalf} 
+                                        onClick={handleGetMoreTime}
+                                        style={{ 
+                                            backgroundColor: 'green', 
+                                            color: 'white', 
+                                            padding: '5px', 
+                                            borderRadius: '5px' ,
+                                            cursor: 'pointer'
+                                        }} 
+                                    />
+                                    <FontAwesomeIcon 
+                                        icon={faTrash} 
+                                        onClick={handleDeleteSession} 
+                                        style={{ 
+                                            marginLeft: '10px', 
+                                            cursor: 'pointer', 
+                                            backgroundColor: 'red', 
+                                            color: 'white', 
+                                            padding: '5px', 
+                                            borderRadius: '5px' 
+                                        }}
+                                    /> 
+                                    {/* <Button variant="danger" onClick={handleDeleteSession} style={{ marginLeft: '10px' }}>Delete Session</Button> */}
                                 </div>
                             )}
                             {showMoreTimeOptions && (
                                 <div>
                                     <Form>
                                         <Form.Group controlId="formSelectTime">
-                                            <Form.Label>Select Time</Form.Label>
                                             <Form.Control
                                                 as="select"
                                                 value={selectedTime}
                                                 onChange={(e) => setSelectedTime(Number(e.target.value))}
-                                                style={{ marginTop: '10px' }}
                                                 isInvalid={otpError !== ''}
                                             >
                                                 <option value="">Select Time</option>
@@ -281,7 +310,6 @@ const AllSessions: React.FC = () => {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>Close</Button>
                     <Button variant="warning" onClick={handleChangeSession}>Switch Session</Button>
                     <SessionModal handleCloseFather={handleClose} onSessionChange={() => setSessionChanged(!sessionChanged)} />
                 </Modal.Footer>
