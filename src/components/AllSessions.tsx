@@ -42,7 +42,7 @@ const AllSessions: React.FC = () => {
         fetchWhoIsTheHeader();
         setOtpSent(false);
         setSelectedTime(0);
-    }, [addTime, instructors, clientID, sessionChanged, sessionDeletedChanged, otpError]); // Add sessionChanged to the dependency array
+    }, [addTime, instructors, clientID,permissions, sessionChanged, sessionDeletedChanged, otpError]); // Add sessionChanged to the dependency array
 
     const fetchAllCookies = async () => {
         const cookiesFetch = getAllCookies();
@@ -54,9 +54,13 @@ const AllSessions: React.FC = () => {
     };
 
     const fetchWhoIsTheHeader = async () => {
-        setClientID(sessionStorage.getItem('client-id') || '');
-        setOtp(sessionStorage.getItem('otp') || '');
-        setPermissions(sessionStorage.getItem('permissions') || '');
+        const clientIDfetch = sessionStorage.getItem('client-id');
+        const permissionsfetch = sessionStorage.getItem('permissions');
+        const otpfetch = sessionStorage.getItem('otp');
+        setClientID(clientIDfetch || '');
+        setPermissions(permissionsfetch || '');
+        console.log('setPermissions in fetchWhoIsTheHeader :', permissionsfetch, permissions);
+        setOtp(otpfetch || '');
         if (clientID) {
             const openSession = validCookies.find(cookie => cookie.idInstractor === clientID);
             setTheOpenSession(openSession || null);
@@ -235,16 +239,11 @@ const AllSessions: React.FC = () => {
                         </div>
                     ) : theOpenSession ? (
                         <div>
-                            <Row>
-                                <Col>
-                                    <h5>{theOpenSession.name}</h5>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <h5>{(remainingTime / 3600).toFixed(2)} Hours</h5>
-                                </Col>
-                            </Row>
+                            
+                            <h5>{theOpenSession.name}</h5>
+                            <h5>{(remainingTime / 3600).toFixed(2)} Hours</h5>
+                            {/* {permissions && permissions!= "undefined" && permissions!= null && <h5>{permissions} permission</h5>} */}
+                            <h5>{permissions} permission</h5>
                             {!showMoreTimeOptions && !showDeleteConfirmation && (
                                 <div>
                                     {/* <Button variant="secondary" onClick={handleGetMoreTime}>Get More Time</Button> */}

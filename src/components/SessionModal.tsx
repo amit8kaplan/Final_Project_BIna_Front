@@ -97,7 +97,9 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather, onSession
         const resVerify = await verifyOtp(ins, otp, 1);
         console.log('resVerify:', resVerify);
         if (resVerify.res.message === "OTP verified and session opened") {
-          sessionStorage.setItem('permissions', resVerify.permissions);
+          console.log("resVerify", resVerify);
+          console.log('resVerify.permissions:', resVerify.res.permissions);
+          sessionStorage.setItem('permissions', resVerify.res.permissions);
           // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
           handleCloseFather();
