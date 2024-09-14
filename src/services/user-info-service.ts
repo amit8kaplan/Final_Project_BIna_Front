@@ -114,10 +114,13 @@ export const newTrainer = async (trainerName: string)=>{
             name: trainerName
         }
         const headers = getAuthHeaders()
-        const response = await apiClient.post("/user_info/newTrainer", {trainerData}, {headers});
+        const response = await apiClient.post("/user_info/newTrainer", 
+            trainerData,
+            {headers :headers});
         return response.data;
     } catch (error) {
         console.error('Error creating trainer:', error);
+        return {data: error}
     }
 }
 

@@ -61,9 +61,9 @@ export function Nav_componnets() {
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
-            {permmistion && permmistion === 'admin' ? (
+            {/* {permmistion && permmistion === 'admin' ? ( */}
               <Nav.Link as={Link} to="/Admin">Admin</Nav.Link>
-            ) : null}
+            {/* ) : null} */}
 
             {/* <NavDropdown title="Megame" id="basic-nav-dropdown">
               {groupsComp.map((item, index) => (
