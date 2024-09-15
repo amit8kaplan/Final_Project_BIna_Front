@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession } from "./public/interfaces";
 import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
+import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 interface DataContextProps {
     groups: IGroup[];
     instructors: IInstractor[];
@@ -17,6 +18,9 @@ interface DataContextProps {
     addPersonalInstructor: (instractorId: string, trainerId:string) => Promise<void>;
     editPersonalInstructor(idPersonalInstractor: string, instractorId: string, trainerId:string): Promise<void>;
     deletePersonalInstructor: (idPersonalInstractor: string) => Promise<void>;
+    editGroup: (groupId: string, name: string, idsTrainers: string[], idsInstractors: string[] ) => Promise<void>;
+    addGroup: (groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
+    deleteGroupInDataContext: (groupId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -150,6 +154,41 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error deleting personal instructor:', error);
         }
     }
+    const editGroup = async (groupId: string,  name: string, idsTrainers: string[], idsInstractors: string[] ) => {
+        try {
+            //  (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[])=>{
+
+            const res = await updateGroup(groupId, name, idsTrainers, idsInstractors);
+            if (res.data) {
+                setGroups(prevGroups => prevGroups.map(group => group._id === groupId ? res.data : group));
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error updating group:', error);
+        }
+    }
+    const addGroup = async (groupName: string, idsTrainers: string[], idsInstractors: string[]) => {
+        try {
+            const res = await newGroup(groupName, idsTrainers, idsInstractors);
+            if (res.data) {
+                setGroups(prevGroups => [...prevGroups, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding group:', error);
+        }
+    }
+    const deleteGroupInDataContext = async (groupId: string) => {
+        try {
+            const res = await deleteGroup(groupId);
+            if (res.data) {
+                setGroups(prevGroups => prevGroups.filter(group => group._id !== groupId));
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error deleting group:', error);
+        }
+    }
 
 
     return (
@@ -157,7 +196,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
              groups, instructors, trainers, sessions, personalInstractors,
               addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
-              editPersonalInstructor,deletePersonalInstructor
+              editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
+              deleteGroupInDataContext
                }}>
             {children}
         </DataContext.Provider>

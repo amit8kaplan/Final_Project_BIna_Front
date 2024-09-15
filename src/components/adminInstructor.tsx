@@ -10,6 +10,7 @@ const AdminInstructor: React.FC = () => {
     const [showAddInstructorModal, setShowAddInstructorModal] = useState(false);
     const [showEditInstructorModal, setShowEditInstructorModal] = useState(false);
     const [showDeleteInstructorModal, setShowDeleteInstructorModal] = useState(false);
+    const [showInstructorModal, setShowInstructorModal] = useState(false); // New state for showing instructor modal
     const [selectedInstructor, setSelectedInstructor] = useState<IInstractor | null>(null);
     const [instructorName, setInstructorName] = useState('');
     const [newInstructorName, setNewInstructorName] = useState('');
@@ -19,6 +20,11 @@ const AdminInstructor: React.FC = () => {
 
     const handleAddInstructorClick = () => {
         setShowAddInstructorModal(true);
+    };
+
+    const handleInstructorClick = (instructor: IInstractor) => {
+        setSelectedInstructor(instructor);
+        setShowInstructorModal(true);
     };
 
     const handleEditInstructorClick = (instructor: IInstractor) => {
@@ -40,6 +46,11 @@ const AdminInstructor: React.FC = () => {
         setDuplicateInstructorMessage('');
         setNewInstructorMail('');
         setNewInstructorPermission('regular');
+    };
+
+    const handleCloseInstructorModal = () => {
+        setShowInstructorModal(false);
+        setSelectedInstructor(null);
     };
 
     const handleCloseEditInstructorModal = () => {
@@ -143,7 +154,7 @@ const AdminInstructor: React.FC = () => {
                 <tbody>
                     {instructorsComp.map((instructor, index) => (
                         <tr key={index}>
-                            <td>{instructor.name}</td>
+                            <td onClick={() => handleInstructorClick(instructor)}>{instructor.name}</td>
                             <td>
                                 <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditInstructorClick(instructor)}>Edit</Button>
                                 <Button variant="danger" size="sm" onClick={() => handleDeleteInstructorClick(instructor)}>Delete</Button>
@@ -203,6 +214,23 @@ const AdminInstructor: React.FC = () => {
                     <Button variant="primary" onClick={handleAddNewInstructor} disabled={!!duplicateInstructorMessage}>Add Instructor</Button>
                 </Modal.Footer>
             </Modal>
+
+            {selectedInstructor && (
+                <Modal show={showInstructorModal} onHide={handleCloseInstructorModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{selectedInstructor.name}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>Instructor ID: {selectedInstructor._id}</p>
+                        <p>Instructor Name: {selectedInstructor.name}</p>
+                        <p>Instructor Email: {selectedInstructor.email}</p>
+                        <p>Instructor Permission: {selectedInstructor.permissions}</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseInstructorModal}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
 
             {selectedInstructor && (
                 <Modal show={showEditInstructorModal} onHide={handleCloseEditInstructorModal}>

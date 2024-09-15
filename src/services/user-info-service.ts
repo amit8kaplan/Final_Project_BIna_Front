@@ -218,6 +218,7 @@ export const updateGroup = async (groupId: string, groupName: string, idsTrainer
             idsInstractors: idsInstractors,
             _id: groupId
         }
+        console.log("updateGroup, groupData" , groupData, "headers", headers)
         const response = await apiClient.put("/user_info/updateGroup",groupData, {
             headers: headers,
             params: { groupId }
@@ -343,7 +344,7 @@ export const deleteInstractor = async (instractorId: string)=>{
 export const deleteGroup = async (groupId: string)=>{
     try {
         const headers = getAuthHeaders()
-        const response = await apiClient.delete("/user_info/deleteGroup", {
+        const response = await apiClient.delete("/user_info/deleteTheGroup", {
             headers: headers,
             params: { groupId }
         });
