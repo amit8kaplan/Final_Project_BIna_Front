@@ -132,11 +132,11 @@ const AdminGroup: React.FC = () => {
     const handleAddNewGroup = async () => {
         if (groupName) {
             try {
-                await addGroup({
-                    name: groupName,
-                    idsTrainers: selectedTrainers,
-                    idsInstractors: selectedInstructors
-                });
+                await addGroup(
+                     groupName,
+                     selectedTrainers,
+                     selectedInstructors
+                );
                 handleCloseAddGroupModal();
             } catch (error) {
                 console.error('Error adding group:', error);
@@ -147,11 +147,11 @@ const AdminGroup: React.FC = () => {
     const handleSaveGroup = async () => {
         if (selectedGroup && selectedGroup._id && groupName) {
             try {
-                await editGroup(selectedGroup._id, {
-                    name: groupName,
-                    idsTrainers: selectedTrainers,
-                    idsInstractors: selectedInstructors
-                });
+                await editGroup(selectedGroup._id, 
+                     groupName,
+                     selectedTrainers,
+                     selectedInstructors
+                );
                 handleCloseEditGroupModal();
             } catch (error) {
                 console.error('Error updating group:', error);

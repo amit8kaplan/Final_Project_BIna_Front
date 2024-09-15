@@ -3,6 +3,7 @@ import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession } from "./
 import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
+import {newSession,updateSession,deleteSession} from "./services/user-info-service";
 interface DataContextProps {
     groups: IGroup[];
     instructors: IInstractor[];
@@ -21,6 +22,9 @@ interface DataContextProps {
     editGroup: (groupId: string, name: string, idsTrainers: string[], idsInstractors: string[] ) => Promise<void>;
     addGroup: (groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
     deleteGroupInDataContext: (groupId: string) => Promise<void>;
+    addSession: (sessionName: string, sessionSilabus: number[]) => Promise<void>;
+    editSession: (sessionId: string, sessionName: string, sessionSilabus: number[]) => Promise<void>;
+    deleteSessionInDataContext: (sessionId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -189,7 +193,39 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error deleting group:', error);
         }
     }
-
+    const addSession = async (sessionName: string, sessionSilabus: number[]) => {
+        try {
+            const res = await newSession(sessionName, sessionSilabus);
+            if (res.data) {
+                setSessions(prevSessions => [...prevSessions, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding session:', error);
+        }
+    }
+    const editSession = async (sessionId: string, sessionName: string, sessionSilabus: number[]) => {
+        try {
+            const res = await updateSession(sessionId, sessionName, sessionSilabus);
+            if (res.data) {
+                setSessions(prevSessions => [...prevSessions, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding session:', error);
+        }
+    }
+    const deleteSessionInDataContext = async (sessionId: string) => {
+        try {
+            const res = await deleteSession(sessionId);
+            if (res.data) {
+                setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error deleting session:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -197,7 +233,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
-              deleteGroupInDataContext
+              deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext
                }}>
             {children}
         </DataContext.Provider>

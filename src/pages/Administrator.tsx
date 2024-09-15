@@ -7,6 +7,7 @@ import AdminTrainer from '../components/AdminTraienr'
 import AdminInstructor from '../components/adminInstructor';
 import AdminPersonalInstructor from '../components/AdminPersonalInstructor';
 import AdminGroup from '../components/AdminGroup';
+import AdminSession from '../components/AdminSession';
 const Administrator: React.FC = () => {
     const { trainers, personalInstractors, instructors, groups, sessions,
          addTrainer,deleteTrainerInDataContext ,editTrainer,addInstractor,
@@ -52,7 +53,10 @@ const Administrator: React.FC = () => {
                         <Col>
                             <AdminGroup />
                         </Col>
-                        </Row>
+                        <Col>
+                            <AdminSession />
+                        </Col>
+                    </Row>
                 </div>
             ) : (
                 <div>No Admin Access</div>
