@@ -320,6 +320,7 @@ export const deleteTheCookies =async  (idInstractor: string , otp: string) => {
             console.log("res.status:", res.status);
             console.log("res:", res);
             deleteAllHeaders()
+            sessionStorage.removeItem('permissions');
             return res.data;
         }catch(error){
             console.error('Error deleting cookies:', error);

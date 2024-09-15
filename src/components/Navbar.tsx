@@ -1,14 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link, useNavigate, useLocation, NavLink } from "react-router-dom";
-// import { instructorsData, trainersData, sessionsData, groupsData, matricsData } from "../public/data";
 import ChatBotModal from './ChatBot';  // Import the ChatBotModal component
-import SessionModal from './SessionModal';  // Import the SessionModal component
-import CurrentSession from './CurrentSession';  // Import the CurrentSession component
 import { useDataContext } from '../DataContext';
 import { IGroup, ITrainer } from '../public/interfaces';
 import AllSessions from './AllSessions';
-import Administrator from '../pages/Administrator';
 import useSessionStorage from '../hooks/useSessionStorage';
 
 export function Nav_componnets() {
@@ -21,8 +17,16 @@ export function Nav_componnets() {
   const sessionsComp = sessions || [];
   const groupsComp = groups || [];
   const personalInstractorsComp = personalInstractors || [];
-
-
+  const [showAdmin, setShowAdmin] = useState(false);
+  // useEffect
+  useEffect(() => {
+    if (permmistion === 'admin') {
+      setShowAdmin(true);
+    }
+    else {
+      setShowAdmin(false);
+    }
+  }, [permmistion]);
   return (
     <Navbar sticky="top" bg="light" expand="lg" className="shadow-sm mb-3 mt-0">
       <Container>
@@ -61,9 +65,9 @@ export function Nav_componnets() {
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
-            {/* {permmistion && permmistion === 'admin' ? ( */}
+            {showAdmin ? (
               <Nav.Link as={Link} to="/Admin">Admin</Nav.Link>
-            {/* ) : null} */}
+            ) : null}
 
             {/* <NavDropdown title="Megame" id="basic-nav-dropdown">
               {groupsComp.map((item, index) => (
