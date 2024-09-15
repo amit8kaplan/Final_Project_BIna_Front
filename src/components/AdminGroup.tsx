@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IGroup, ITrainer, IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 const AdminGroup: React.FC = () => {
     const { groups, trainers, instructors, addGroup, editGroup, deleteGroupInDataContext } = useDataContext();
     const groupsComp = groups || [];
@@ -23,10 +24,13 @@ const AdminGroup: React.FC = () => {
 
     useEffect(() => {
         const map: { [key: string]: string } = {};
+        
         groupsComp.forEach(group => {
-            group.idsTrainers.forEach(trainerId => {
-                map[trainerId] = group.name;
-            });
+            if (group.idsTrainers){
+                group.idsTrainers.forEach(trainerId => {
+                    map[trainerId] = group.name;
+                });
+            }
         });
         setTrainerGroupMap(map);
     }, [groupsComp]);
@@ -192,9 +196,19 @@ const AdminGroup: React.FC = () => {
                         <tr key={index}>
                             <td onClick={() => handleGroupClick(group)}>{group.name}</td>
                             <td>
-                                <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditGroupClick(group)}>Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeleteGroupClick(group)}>Delete</Button>
-                            </td>
+                            <FontAwesomeIcon
+                                    icon={faPen}
+                                    className="me-2"
+                                    onClick={() => handleEditGroupClick(group)}
+                                    style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
+                                />
+                                <FontAwesomeIcon
+                                    icon={faTrash}
+                                    className='me-2'
+                                    onClick={() => handleDeleteGroupClick(group)}
+                                    style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+                                />
+                           </td>
                         </tr>
                     ))}
                 </tbody>

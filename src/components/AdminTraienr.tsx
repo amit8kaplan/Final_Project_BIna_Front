@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const AdminTrainer: React.FC = () => {
     const { trainers, addTrainer, editTrainer, deleteTrainerInDataContext } = useDataContext();
@@ -131,8 +133,19 @@ const AdminTrainer: React.FC = () => {
                         <tr key={index}>
                             <td onClick={() => handleTrainerClick(trainer)}>{trainer.name}</td>
                             <td>
-                                <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditTrainerClick(trainer)}>Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeleteTrainerClick(trainer)}>Delete</Button>
+                                <FontAwesomeIcon 
+                                    icon={faPen}
+                                    className="me-2"
+                                    onClick={() => handleEditTrainerClick(trainer)}
+                                    style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
+                                />
+                                <FontAwesomeIcon
+                                 icon={faTrash}
+                                 className='me-2'
+                                  onClick={() => handleDeleteTrainerClick(trainer)}
+                                  style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+
+                                   />
                             </td>
                         </tr>
                     ))}

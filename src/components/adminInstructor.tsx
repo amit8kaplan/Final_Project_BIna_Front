@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 const AdminInstructor: React.FC = () => {
     const { instructors, addInstractor, editInstractor, deleteInstractorInDataContext } = useDataContext();
     const instructorsComp = instructors || [];
@@ -156,8 +157,18 @@ const AdminInstructor: React.FC = () => {
                         <tr key={index}>
                             <td onClick={() => handleInstructorClick(instructor)}>{instructor.name}</td>
                             <td>
-                                <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditInstructorClick(instructor)}>Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeleteInstructorClick(instructor)}>Delete</Button>
+                                <FontAwesomeIcon
+                                 icon={faPen} 
+                                 className="me-2" 
+                                 onClick={() => handleEditInstructorClick(instructor)}
+                                 style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
+                                />
+                                <FontAwesomeIcon
+                                 icon={faTrash} 
+                                 className='me-2'
+                                 onClick={() => handleDeleteInstructorClick(instructor)}
+                                 style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+                                />
                             </td>
                         </tr>
                     ))}

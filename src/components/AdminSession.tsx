@@ -3,7 +3,8 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { ISession } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { set } from 'react-hook-form';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 const AdminSession: React.FC = () => {
     const { sessions, addSession, editSession, deleteSessionInDataContext } = useDataContext();
     const sessionsComp = sessions || [];
@@ -129,8 +130,18 @@ const AdminSession: React.FC = () => {
                             <td onClick={() => handleSessionClick(session)}>{session.name}</td>
                             <td onClick={() => handleSessionClick(session)}>{session.silabus.join(', ')}</td>
                             <td>
-                                <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditGroupClick(session)}>Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeleteSessionClick(session)}>Delete</Button>
+                                <FontAwesomeIcon
+                                icon={faPen}
+                                className="me-2" 
+                                onClick={() => handleEditGroupClick(session)}
+                                style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
+                                />
+                                <FontAwesomeIcon
+                                icon={faTrash}
+                                className='me-2'
+                                onClick={() => handleDeleteSessionClick(session)}
+                                style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+                                />
                             </td>
                         </tr>
                     ))}

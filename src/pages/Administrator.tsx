@@ -1,31 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { useDataContext } from '../DataContext';
-import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
-import { IInstractor, ITrainer } from '../public/interfaces';
+import { Button, Row, Col } from 'react-bootstrap';
 import AdminTrainer from '../components/AdminTraienr'
 import AdminInstructor from '../components/adminInstructor';
 import AdminPersonalInstructor from '../components/AdminPersonalInstructor';
 import AdminGroup from '../components/AdminGroup';
 import AdminSession from '../components/AdminSession';
-const Administrator: React.FC = () => {
-    const { trainers, personalInstractors, instructors, groups, sessions,
-         addTrainer,deleteTrainerInDataContext ,editTrainer,addInstractor,
-         editInstractor,deleteInstractorInDataContext} = useDataContext();
-    const personalInstructorsComp = personalInstractors || [];
-    const instructorsComp = instructors || [];
-    const groupsComp = groups || [];
-    const trainersComp = trainers || [];
-    const sessionsComp = sessions || [];
-    const permission = useSessionStorage('permissions');
-    const clientID = useSessionStorage('clientId');
-    const otp = useSessionStorage('otp');
 
+const Administrator: React.FC = () => {
+    const [show, setShow] = useState(false);
+    const permission = useSessionStorage('permissions');
     useEffect(() => {
         if (permission === 'admin') {
-            console.log('admin');
+            setShow(true);
         } else {
-            console.log('not admin');
+            setShow(false);
         }
     }, [permission]);
 
@@ -33,10 +23,8 @@ const Administrator: React.FC = () => {
    
     return (
         <div className="container">
-            {true ? (
-                <div>
-                    <Button variant="primary" className="mb-3" onClick={() => {}}>Admin Actions</Button>
-
+            {show ? (
+                <div className="" style={{marginTop: "40px" }}>
                     <Row className="mb-4">
                         <Col>
                             <AdminTrainer />
@@ -61,9 +49,6 @@ const Administrator: React.FC = () => {
             ) : (
                 <div>No Admin Access</div>
             )}
-
-           
-           
         </div>
     );
 };

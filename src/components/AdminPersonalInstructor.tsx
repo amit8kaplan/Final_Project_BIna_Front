@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IPersonalInstractor, IInstractor, ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const AdminPersonalInstructor: React.FC = () => {
     const { personalInstractors, instructors, trainers, addPersonalInstructor, editPersonalInstructor, deletePersonalInstructor } = useDataContext();
@@ -149,8 +151,18 @@ const AdminPersonalInstructor: React.FC = () => {
                             <td>{getInstructorName(personalInstructor.idInstractor)}</td>
                             <td>{getTrainerName(personalInstructor.idTrainer)}</td>
                             <td>
-                                <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditPersonalInstructorClick(personalInstructor)}>Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeletePersonalInstructorClick(personalInstructor)}>Delete</Button>
+                                <FontAwesomeIcon 
+                                    icon={faPen} 
+                                    className="me-2" 
+                                    style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
+                                    onClick={() => handleEditPersonalInstructorClick(personalInstructor)}
+                                />
+                                <FontAwesomeIcon 
+                                    icon={faTrash} 
+                                    style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+                                    onClick={() => handleDeletePersonalInstructorClick(personalInstructor)}
+                                    className='ms-2'
+                                />
                             </td>
                         </tr>
                     ))}
