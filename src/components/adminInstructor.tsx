@@ -3,9 +3,11 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash,faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import Papa from 'papaparse';
+
 const AdminInstructor: React.FC = () => {
-    const { instructors, addInstractor, editInstractor, deleteInstractorInDataContext } = useDataContext();
+    const { instructors, addInstractorFromCSV, addInstractor, editInstractor, deleteInstractorInDataContext } = useDataContext();
     const instructorsComp = instructors || [];
 
     const [showAddInstructorModal, setShowAddInstructorModal] = useState(false);
@@ -135,6 +137,44 @@ const AdminInstructor: React.FC = () => {
         }
     };
 
+    const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const file = fileInput.files?.[0];
+        if (file) {
+            console.log('Importing instructors from CSV:', file.name);
+            Papa.parse(file, {
+                header: true,
+                complete: async (results) => {
+                    const instructorCSV: IInstractor[] = results.data;
+                    console.log('Instructors from CSV:', instructorCSV);
+                    for (const instructor of instructorCSV) {
+                        if (instructor.name) {
+                            console.log('Adding instructor from CSV:', instructor);
+                            try {
+                                if (instructor._id) {
+                                    console.log('Adding instructor from CSV with ID:', instructor._id);
+                                    await addInstractorFromCSV(instructor._id, instructor.name, instructor.email, instructor.permissions || 'regular');
+                                } else {
+                                    console.log('Adding instructor from CSV without ID:', instructor.name);
+                                    await addInstractor(instructor.name, instructor.email, instructor.permissions || 'regular');
+                                }
+                            } catch (error) {
+                                console.error('Error adding instructor from CSV:', error);
+                            }
+                        }
+                    }
+                    // Reset the file input value
+                    fileInput.value = '';
+                },
+                error: (error) => {
+                    console.error('Error parsing CSV:', error);
+                    // Reset the file input value
+                    fileInput.value = '';
+                }
+            });
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -147,6 +187,20 @@ const AdminInstructor: React.FC = () => {
                     className='me-1'
                     onClick={handleAddInstructorClick} 
                     style={{ cursor: 'pointer', color:'green' }} />
+                    <label htmlFor="import-instructor-csv">
+                        <FontAwesomeIcon
+                         icon={faFileImport}
+                         className='me-1'
+                         style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                          />
+                    </label>
+                    <input
+                        type="file"
+                        id="import-instructor-csv"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleImportCSV}
+                    />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>

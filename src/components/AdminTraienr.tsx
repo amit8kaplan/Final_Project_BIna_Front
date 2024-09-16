@@ -4,7 +4,6 @@ import { ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
-// import {addTrainerFromCSV } from '../services/user-info-service';
 import Papa from 'papaparse';
 
 const AdminTrainer: React.FC = () => {
@@ -114,7 +113,8 @@ const AdminTrainer: React.FC = () => {
     };
 
     const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
+        const fileInput = event.target;
+        const file = fileInput.files?.[0];
         if (file) {
             console.log('Importing trainers from CSV:', file.name);
             Papa.parse(file, {
@@ -138,13 +138,18 @@ const AdminTrainer: React.FC = () => {
                             }
                         }
                     }
+                    // Reset the file input value
+                    fileInput.value = '';
                 },
                 error: (error) => {
                     console.error('Error parsing CSV:', error);
+                    // Reset the file input value
+                    fileInput.value = '';
                 }
             });
         }
     };
+
     return (
         <div>
             <Row className="">
@@ -158,17 +163,16 @@ const AdminTrainer: React.FC = () => {
                         onClick={handleAddTrainerClick}
                         style={{ cursor: 'pointer', color: 'green' }}
                     />
-                    <label htmlFor="import-csv">
+                    <label htmlFor="import-trainer-csv">
                         <FontAwesomeIcon
                          icon={faFileImport}
                          className='me-1'
-                         onClick={handleImportCSV}
                          style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
                           />
                     </label>
                     <input
                         type="file"
-                        id="import-csv"
+                        id="import-trainer-csv"
                         accept=".csv"
                         style={{ display: 'none' }}
                         onChange={handleImportCSV}

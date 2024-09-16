@@ -96,6 +96,69 @@ export const getAllSessions = async () => {
 /**
  * @router POST
  */
+export const newInstractorWithId = async (instractorID: string, instractorName: string, email: string, permissions: string) => {
+    try {
+        const instractorData: IInstractor = {
+            _id: instractorID,
+            name: instractorName,
+            email: email,
+            permissions: permissions
+        }
+        const headers = getAuthHeaders();
+        const response = await apiClient.post("/user_info/newInstractorWithId", instractorData, { headers });
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.status === 409 && error.response.data.message === "name Instractor already exists") {
+            alert(`Error: ${error.response.data.message} - Instractor Name: ${instractorName}`);
+        } else {
+            alert(`Error adding instractor: ${error.message}`);
+        }
+        console.error('Error adding instractor:', error);
+    }
+}
+export const newPersonalInstractorWithId = async (personalInstractorID: string, instractorID: string, trainerID: string) => {
+    try {
+        const personalInstractorData = {
+            _id: personalInstractorID,
+            instractorId: instractorID,
+            trainerId: trainerID
+        }
+        const headers = getAuthHeaders();
+        const response = await apiClient.post("/user_info/newPersonalInstractorWithId", personalInstractorData, { headers });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding personal instractor:', error);
+    }
+}
+export const newGroupWithId = async (groupID: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => {
+    try {
+        const groupData: IGroup = {
+            _id: groupID,
+            name: groupName,
+            idsTrainers: idsTrainers,
+            idsInstractors: idsInstractors
+        }
+        const headers = getAuthHeaders();
+        const response = await apiClient.post("/user_info/newGroupWithId", groupData, { headers });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding group:', error);
+    }
+}
+export const newSessionWithId = async (sessionID: string, sessionName: string, silabuses: number[]) => {
+    try {
+        const sessionData: ISession = {
+            _id: sessionID,
+            name: sessionName,
+            silabus: silabuses
+        }
+        const headers = getAuthHeaders();
+        const response = await apiClient.post("/user_info/newSessionWithId", sessionData, { headers });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding session:', error);
+    }
+}
 
 export const newTrainerWithId = async (trainerID: string, trainerName: string) => {
     try {
