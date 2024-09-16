@@ -3,9 +3,12 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+// import {addTrainerFromCSV } from '../services/user-info-service';
+import Papa from 'papaparse';
+
 const AdminTrainer: React.FC = () => {
-    const { trainers, addTrainer, editTrainer, deleteTrainerInDataContext } = useDataContext();
+    const { trainers, addTrainerFromCSV, addTrainer, editTrainer, deleteTrainerInDataContext } = useDataContext();
     const trainersComp = trainers || [];
 
     const [showTrainerModal, setShowTrainerModal] = useState(false);
@@ -110,6 +113,38 @@ const AdminTrainer: React.FC = () => {
         }
     };
 
+    const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            console.log('Importing trainers from CSV:', file.name);
+            Papa.parse(file, {
+                header: true,
+                complete: async (results) => {
+                    const trainerCSV: ITrainer[] = results.data;
+                    console.log('Trainers from CSV:', trainerCSV);
+                    for (const trainer of trainerCSV) {
+                        if (trainer.name) {
+                            console.log('Adding trainer from CSV:', trainer);
+                            try {
+                                if (trainer._id) {
+                                    console.log('Adding trainer from CSV with ID:', trainer._id);
+                                    await addTrainerFromCSV(trainer._id, trainer.name);
+                                } else {
+                                    console.log('Adding trainer from CSV without ID:', trainer.name);
+                                    await addTrainer(trainer.name);
+                                }
+                            } catch (error) {
+                                console.error('Error adding trainer from CSV:', error);
+                            }
+                        }
+                    }
+                },
+                error: (error) => {
+                    console.error('Error parsing CSV:', error);
+                }
+            });
+        }
+    };
     return (
         <div>
             <Row className="">
@@ -118,10 +153,25 @@ const AdminTrainer: React.FC = () => {
                 </Col>
                 <Col className="text-end">
                     <FontAwesomeIcon
-                    icon={faPlus} 
-                    className='me-1'
-                    onClick={handleAddTrainerClick}
-                    style={{cursor: 'pointer', color: 'green'}}
+                        icon={faPlus}
+                        className='me-1'
+                        onClick={handleAddTrainerClick}
+                        style={{ cursor: 'pointer', color: 'green' }}
+                    />
+                    <label htmlFor="import-csv">
+                        <FontAwesomeIcon
+                         icon={faFileImport}
+                         className='me-1'
+                         onClick={handleImportCSV}
+                         style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                          />
+                    </label>
+                    <input
+                        type="file"
+                        id="import-csv"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleImportCSV}
                     />
                 </Col>
             </Row>
@@ -137,19 +187,18 @@ const AdminTrainer: React.FC = () => {
                         <tr key={index}>
                             <td onClick={() => handleTrainerClick(trainer)}>{trainer.name}</td>
                             <td>
-                                <FontAwesomeIcon 
+                                <FontAwesomeIcon
                                     icon={faPen}
                                     className="me-2"
                                     onClick={() => handleEditTrainerClick(trainer)}
                                     style={{ cursor: 'pointer', color: 'orange', border: '1px solid orange', borderRadius: '4px', padding: '2px' }}
                                 />
                                 <FontAwesomeIcon
-                                 icon={faTrash}
-                                 className='me-2'
-                                  onClick={() => handleDeleteTrainerClick(trainer)}
-                                  style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
-
-                                   />
+                                    icon={faTrash}
+                                    className='me-2'
+                                    onClick={() => handleDeleteTrainerClick(trainer)}
+                                    style={{ cursor: 'pointer', color: 'red', border: '1px solid red', borderRadius: '4px', padding: '2px' }}
+                                />
                             </td>
                         </tr>
                     ))}

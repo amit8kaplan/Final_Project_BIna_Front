@@ -11,23 +11,8 @@ import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport } from '@fortawesome/free-solid-svg-icons';
+import { exportAllDataToCSV } from '../services/csv-serivce';
 
-const exportToCSV = (data: any[], filename: string) => {
-    const csv = Papa.unparse(data);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, filename);
-};
-
-const exportAllDataToCSV = (dataContext: any) => {
-    const { sessions, instructors, groups, trainers, personalInstractors, dapits } = dataContext;
-
-    exportToCSV(sessions, 'sessions.csv');
-    exportToCSV(instructors, 'instructors.csv');
-    exportToCSV(groups, 'groups.csv');
-    exportToCSV(trainers, 'trainers.csv');
-    exportToCSV(personalInstractors, 'personalInstructors.csv');
-    exportToCSV(dapits, 'dapits.csv');
-};
 
 const Administrator: React.FC = () => {
     const { sessions, instructors, groups, trainers, personalInstractors, dapits } = useDataContext();

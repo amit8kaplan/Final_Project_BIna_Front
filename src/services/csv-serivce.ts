@@ -17,3 +17,4 @@ export const exportAllDataToCSV = (dataContext: any) => {
     exportToCSV(personalInstractors, 'personalInstructors.csv');
     exportToCSV(dapits, 'dapits.csv');
 };
+

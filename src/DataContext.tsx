@@ -4,6 +4,7 @@ import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGro
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 import {newSession,updateSession,deleteSession} from "./services/user-info-service";
+import {newTrainerWithId} from "./services/user-info-service";
 import {getDapits} from "./services/dapit-serivce";
 import { set } from 'react-hook-form';
 interface DataContextProps {
@@ -28,6 +29,7 @@ interface DataContextProps {
     addSession: (sessionName: string, sessionSilabus: number[]) => Promise<void>;
     editSession: (sessionId: string, sessionName: string, sessionSilabus: number[]) => Promise<void>;
     deleteSessionInDataContext: (sessionId: string) => Promise<void>;
+    addTrainerFromCSV: (trainerId: string ,trainerName: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -234,6 +236,24 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error deleting session:', error);
         }
     }
+    const addTrainerFromCSV = async (trainerId: string ,trainerName: string) => {
+        console.log("addTrainerFromCSV", trainerId, trainerName);
+        let res:any;
+        try {
+            if (trainerName &&trainerId && trainerId.length > 0 && trainerId!= '') {
+                res = await newTrainerWithId(trainerId, trainerName);
+            }
+            else if (trainerName){
+                res = await newTrainer(trainerName);
+            }    
+            if (res.data) {
+                setTrainers(prevTrainers => [...prevTrainers, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding trainer:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -241,7 +261,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
              addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
-              deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext
+              deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
+              addTrainerFromCSV
                }}>
             {children}
         </DataContext.Provider>

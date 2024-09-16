@@ -97,7 +97,24 @@ export const getAllSessions = async () => {
  * @router POST
  */
 
-
+export const newTrainerWithId = async (trainerID: string, trainerName: string) => {
+    try {
+        const trainerData: ITrainer = {
+            _id: trainerID,
+            name: trainerName
+        }
+        const headers = getAuthHeaders();
+        const response = await apiClient.post("/user_info/newTrainerWithId", trainerData, { headers });
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.status === 409 && error.response.data.message === "name Trainer already exists") {
+            alert(`Error: ${error.response.data.message} - Trainer Name: ${trainerName}`);
+        } else {
+            alert(`Error adding trainer: ${error.message}`);
+        }
+        console.error('Error adding trainer:', error);
+    }
+}
 export const newPersonalInstractor = async (instractorId: string, trainerId:String)=>{
     try {
         const headers = getAuthHeaders();
