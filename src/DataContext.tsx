@@ -33,6 +33,7 @@ interface DataContextProps {
     addInstractorFromCSV: (instractorId: string ,instractorName: string, email:string, permmistion: string) => Promise<void>;
     addPersonalInstructorFromCSV: (id:string,instractorId: string, trainerId:string) => Promise<void>;
     addGrouFromCSV: (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
+    addSessionFromCSV: (sessionId: string, sessionName: string, sessionSilabus: number[]) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -311,6 +312,24 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding group:', error);
         }
     }
+    const addSessionFromCSV = async (sessionId: string, sessionName: string, sessionSilabus: number[]) => {
+        console.log("addSessionFromCSV", sessionId, sessionName, sessionSilabus);
+        let res:any;
+        try {
+            if (sessionId && sessionId.length > 0 && sessionId!= '') {
+                res = await newSession(sessionName, sessionSilabus);
+            }
+            else if (sessionName){
+                res = await newSession(sessionName, sessionSilabus);
+            }
+            if (res.data) {
+                setSessions(prevSessions => [...prevSessions, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding session:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -319,7 +338,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
-              addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV,addGrouFromCSV
+              addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV,
+              addGrouFromCSV, addSessionFromCSV
                }}>
             {children}
         </DataContext.Provider>

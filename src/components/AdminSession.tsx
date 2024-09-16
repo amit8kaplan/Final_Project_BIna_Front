@@ -4,9 +4,11 @@ import { ISession } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { set } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import Papa from 'papaparse';
+
 const AdminSession: React.FC = () => {
-    const { sessions, addSession, editSession, deleteSessionInDataContext } = useDataContext();
+    const { sessions,addSessionFromCSV, addSession, editSession, deleteSessionInDataContext } = useDataContext();
     const sessionsComp = sessions || [];
 
     const [showAddSessionModal, setShowAddSessionModal] = useState(false);
@@ -106,6 +108,47 @@ const AdminSession: React.FC = () => {
         }
     };
 
+    const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const file = fileInput.files?.[0];
+        if (file) {
+            console.log('Importing trainers from CSV:', file.name);
+            Papa.parse(file, {
+                header: true,
+                complete: async (results) => {
+                    const sessionCSV: ISession[] = results.data;
+                    console.log('Trainers from CSV:', sessionCSV);
+                    for (const session of sessionCSV) {
+                        if (session.name) {
+                            console.log('Adding trainer from CSV:', session);
+                            try {
+                                if (session._id) {
+                                    const silabus: number[] = typeof session.silabus === 'string' 
+                                    ? session.silabus.split(',').map(Number).filter(n => !isNaN(n)) 
+                                    : [];
+                                    console.log('Adding trainer from CSV with silabus:', session.silabus);
+                                    await addSessionFromCSV(session._id, session.name, silabus);
+                                } else {
+                                    console.log('Adding trainer from CSV without ID:', session.name);
+                                    await addSession(session.name, session.silabus);
+                                }
+                            } catch (error) {
+                                console.error('Error adding trainer from CSV:', error);
+                            }
+                        }
+                    }
+                    // Reset the file input value
+                    fileInput.value = '';
+                },
+                error: (error) => {
+                    console.error('Error parsing CSV:', error);
+                    // Reset the file input value
+                    fileInput.value = '';
+                }
+            });
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -117,7 +160,22 @@ const AdminSession: React.FC = () => {
                 icon={faPlus} 
                 className='me-1'
                 onClick={handleAddSessionClick} 
-                style={{ cursor: 'pointer', color: 'green' }} />
+                style={{ cursor: 'pointer', color: 'green' }} 
+                />
+                <label htmlFor="import-session-csv">
+                    <FontAwesomeIcon
+                        icon={faFileImport}
+                        className='me-1'
+                        style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                        />
+                </label>
+                <input
+                    type="file"
+                    id="import-session-csv"
+                    accept=".csv"
+                    style={{ display: 'none' }}
+                    onChange={handleImportCSV}
+                />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>
