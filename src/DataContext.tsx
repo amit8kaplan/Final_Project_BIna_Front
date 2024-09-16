@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession, IDapit } from "./public/interfaces";
-import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer, newInstractorWithId } from "./services/user-info-service";
+import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer, newInstractorWithId, newPersonalInstractorWithId } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 import {newSession,updateSession,deleteSession} from "./services/user-info-service";
@@ -31,6 +31,7 @@ interface DataContextProps {
     deleteSessionInDataContext: (sessionId: string) => Promise<void>;
     addTrainerFromCSV: (trainerId: string ,trainerName: string) => Promise<void>;
     addInstractorFromCSV: (instractorId: string ,instractorName: string, email:string, permmistion: string) => Promise<void>;
+    addPersonalInstructorFromCSV: (id:string,instractorId: string, trainerId:string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -273,6 +274,24 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding instractor:', error);
         }
     }
+    const addPersonalInstructorFromCSV = async (id:string,instractorId: string, trainerId:string) => {
+        console.log("addPersonalInstructorFromCSV", id, instractorId, trainerId);
+        let res :any;
+        try {
+            if (id && id.length > 0 && id!= '') {
+                res = await newPersonalInstractorWithId(id, instractorId, trainerId);
+            }
+            else if (instractorId && trainerId){
+                res = await newPersonalInstractor(instractorId, trainerId);
+            }
+            if (res.data) {
+                setPersonalInstractors(prevPersonalInstractors => [...prevPersonalInstractors, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding personal instructor:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -281,7 +300,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
-              addTrainerFromCSV,addInstractorFromCSV
+              addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV
                }}>
             {children}
         </DataContext.Provider>

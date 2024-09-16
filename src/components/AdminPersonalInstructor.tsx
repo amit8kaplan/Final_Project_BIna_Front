@@ -3,10 +3,11 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IPersonalInstractor, IInstractor, ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash ,faPlus} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import Papa from 'papaparse';
 
 const AdminPersonalInstructor: React.FC = () => {
-    const { personalInstractors, instructors, trainers, addPersonalInstructor, editPersonalInstructor, deletePersonalInstructor } = useDataContext();
+    const { personalInstractors, instructors, trainers, addPersonalInstructorFromCSV, addPersonalInstructor, editPersonalInstructor, deletePersonalInstructor } = useDataContext();
     const personalInstructorsComp = personalInstractors || [];
     const instructorsComp = instructors || [];
     const trainersComp = trainers || [];
@@ -126,7 +127,43 @@ const AdminPersonalInstructor: React.FC = () => {
         const trainer = trainersComp.find(trainer => trainer._id === id);
         return trainer ? trainer.name : 'Unknown';
     };
-
+    const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const file = fileInput.files?.[0];
+        if (file) {
+            console.log('Importing trainers from CSV:', file.name);
+            Papa.parse(file, {
+                header: true,
+                complete: async (results) => {
+                    const PICSV: IPersonalInstractor[] = results.data;
+                    console.log('Trainers from CSV:', PICSV);
+                    for (const pi of PICSV) {
+                        if (pi.idTrainer) {
+                            console.log('Adding trainer from CSV:', pi);
+                            try {
+                                if (pi._id) {
+                                    console.log('Adding trainer from CSV with ID:', pi._id);
+                                    await addPersonalInstructorFromCSV(pi._id, pi.idInstractor, pi.idTrainer);
+                                } else {
+                                    console.log('Adding trainer from CSV without ID:', pi.idInstractor, pi.idTrainer);
+                                    await addPersonalInstructor(pi.idInstractor, pi.idTrainer);
+                                }
+                            } catch (error) {
+                                console.error('Error adding trainer from CSV:', error);
+                            }
+                        }
+                    }
+                    // Reset the file input value
+                    fileInput.value = '';
+                },
+                error: (error) => {
+                    console.error('Error parsing CSV:', error);
+                    // Reset the file input value
+                    fileInput.value = '';
+                }
+            });
+        }
+    };
     return (
         <div>
             <Row>
@@ -140,6 +177,20 @@ const AdminPersonalInstructor: React.FC = () => {
                         style={{ cursor: 'pointer', color: 'green'}}
                         onClick={handleAddPersonalInstructorClick}
                      />
+                     <label htmlFor="import-personal-Instractor-csv">
+                        <FontAwesomeIcon
+                         icon={faFileImport}
+                         className='me-1'
+                         style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                          />
+                    </label>
+                    <input
+                        type="file"
+                        id="import-personal-Instractor-csv"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleImportCSV}
+                    />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>
