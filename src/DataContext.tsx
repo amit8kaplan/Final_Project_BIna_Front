@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession, IDapit } from "./public/interfaces";
-import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer, newInstractorWithId, newPersonalInstractorWithId } from "./services/user-info-service";
+import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 import {newSession,updateSession,deleteSession} from "./services/user-info-service";
-import {newTrainerWithId} from "./services/user-info-service";
+import {newTrainerWithId, newGroupWithId,newInstractorWithId, newPersonalInstractorWithId} from "./services/user-info-service";
 import {getDapits} from "./services/dapit-serivce";
 import { set } from 'react-hook-form';
 interface DataContextProps {
@@ -32,6 +32,7 @@ interface DataContextProps {
     addTrainerFromCSV: (trainerId: string ,trainerName: string) => Promise<void>;
     addInstractorFromCSV: (instractorId: string ,instractorName: string, email:string, permmistion: string) => Promise<void>;
     addPersonalInstructorFromCSV: (id:string,instractorId: string, trainerId:string) => Promise<void>;
+    addGrouFromCSV: (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -292,6 +293,24 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding personal instructor:', error);
         }
     }
+    const addGrouFromCSV = async (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => {
+        console.log("addGrouFromCSV", groupId, groupName, idsTrainers, idsInstractors);
+        let res:any;
+        try {
+            if (groupId && groupId.length > 0 && groupId!= '') {
+                res = await newGroupWithId(groupId, groupName, idsTrainers, idsInstractors);
+            }
+            else if (groupName){
+                res = await newGroup(groupName, idsTrainers, idsInstractors);
+            }
+            if (res.data) {
+                setGroups(prevGroups => [...prevGroups, res.data]);
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding group:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -300,7 +319,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
-              addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV
+              addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV,addGrouFromCSV
                }}>
             {children}
         </DataContext.Provider>

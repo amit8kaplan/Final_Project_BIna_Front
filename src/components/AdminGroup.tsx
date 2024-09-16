@@ -3,9 +3,11 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IGroup, ITrainer, IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash ,faPlus} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import Papa from 'papaparse';
+
 const AdminGroup: React.FC = () => {
-    const { groups, trainers, instructors, addGroup, editGroup, deleteGroupInDataContext } = useDataContext();
+    const { groups, trainers, instructors, addGrouFromCSV, addGroup, editGroup, deleteGroupInDataContext } = useDataContext();
     const groupsComp = groups || [];
     const trainersComp = trainers || [];
     const instructorsComp = instructors || [];
@@ -174,6 +176,44 @@ const AdminGroup: React.FC = () => {
         }
     };
 
+    const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        const file = fileInput.files?.[0];
+        if (file) {
+            console.log('Importing trainers from CSV:', file.name);
+            Papa.parse(file, {
+                header: true,
+                complete: async (results) => {
+                    const GroupCSV: IGroup[] = results.data;
+                    console.log('Trainers from CSV:', GroupCSV);
+                    for (const group of GroupCSV) {
+                        if (group.name) {
+                            console.log('Adding trainer from CSV:', group);
+                            try {
+                                if (group._id) {
+                                    console.log('Adding trainer from CSV with ID:', group._id);
+                                    await addGrouFromCSV(group._id, group.name, group.idsTrainers || [], group.idsInstractors||[]);
+                                } else {
+                                    console.log('Adding trainer from CSV without ID:', group.name);
+                                    await addGroup(group.name, group.idsTrainers || [], group.idsInstractors||[]);
+                                }
+                            } catch (error) {
+                                console.error('Error adding trainer from CSV:', error);
+                            }
+                        }
+                    }
+                    // Reset the file input value
+                    fileInput.value = '';
+                },
+                error: (error) => {
+                    console.error('Error parsing CSV:', error);
+                    // Reset the file input value
+                    fileInput.value = '';
+                }
+            });
+        }
+    };
+
     return (
         <div>
             <Row>
@@ -185,7 +225,22 @@ const AdminGroup: React.FC = () => {
                 icon={faPlus} 
                 onClick={handleAddGroupClick} 
                 className='me-1'
-                style={{ cursor: 'pointer', color: 'green' }} />
+                style={{ cursor: 'pointer', color: 'green' }} 
+                />
+                 <label htmlFor="import-group-csv">
+                        <FontAwesomeIcon
+                         icon={faFileImport}
+                         className='me-1'
+                         style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                          />
+                    </label>
+                    <input
+                        type="file"
+                        id="import-group-csv"
+                        accept=".csv"
+                        style={{ display: 'none' }}
+                        onChange={handleImportCSV}
+                    />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>
