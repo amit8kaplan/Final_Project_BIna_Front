@@ -3,7 +3,7 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash,faPlus } from '@fortawesome/free-solid-svg-icons';
 const AdminInstructor: React.FC = () => {
     const { instructors, addInstractor, editInstractor, deleteInstractorInDataContext } = useDataContext();
     const instructorsComp = instructors || [];
@@ -142,7 +142,11 @@ const AdminInstructor: React.FC = () => {
                     <h4>Instructors {instructorsComp.length}</h4>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="success" size="sm" className="me-1" onClick={handleAddInstructorClick}>Add</Button>
+                    <FontAwesomeIcon 
+                    icon={faPlus} 
+                    className='me-1'
+                    onClick={handleAddInstructorClick} 
+                    style={{ cursor: 'pointer', color:'green' }} />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>

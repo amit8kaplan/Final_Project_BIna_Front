@@ -1,14 +1,17 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession } from "./public/interfaces";
+import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession, IDapit } from "./public/interfaces";
 import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 import {newSession,updateSession,deleteSession} from "./services/user-info-service";
+import {getDapits} from "./services/dapit-serivce";
+import { set } from 'react-hook-form';
 interface DataContextProps {
     groups: IGroup[];
     instructors: IInstractor[];
     trainers: ITrainer[];
     sessions: ISession[];
+    dapits: IDapit[];
     personalInstractors: IPersonalInstractor[];
     addTrainer: (trainerName: string) => Promise<void>;
     deleteTrainerInDataContext: (trainerId: string) => Promise<void>;
@@ -35,15 +38,18 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [trainers, setTrainers] = useState<ITrainer[]>([]);
     const [sessions, setSessions] = useState<ISession[]>([]);
     const [personalInstractors, setPersonalInstractors] = useState<IPersonalInstractor[]>([]);
+    const [dapits, setDapits] = useState<IDapit[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const dapits = await getDapits({});
                 const groups = await getAllGroups();
                 const instructors = await getAllInstractors();
                 const trainers = await getAllTrainers();
                 const sessions = await getAllSessions();
                 const personalInstractors = await getAllPersonalInstractors();
+                setDapits(dapits);
                 setGroups(groups);
                 setInstructors(instructors);
                 setTrainers(trainers);
@@ -102,6 +108,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding instractor:', error);
         }
     }
+    
+
     const editInstractor= async (instractorId:string, instractorName: string, email:string, permmistion: string) => {
         try {
             const res = await updateInstractor(instractorId,instractorName, email, permmistion);
@@ -229,8 +237,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     return (
         <DataContext.Provider value={{
-             groups, instructors, trainers, sessions, personalInstractors,
-              addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
+             groups, instructors, trainers, sessions, personalInstractors, dapits,
+             addTrainer, deleteTrainerInDataContext,editTrainer,addInstractor,
               editInstractor,deleteInstractorInDataContext,addPersonalInstructor,
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext

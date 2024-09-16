@@ -4,7 +4,7 @@ import { ISession } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { set } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 const AdminSession: React.FC = () => {
     const { sessions, addSession, editSession, deleteSessionInDataContext } = useDataContext();
     const sessionsComp = sessions || [];
@@ -113,7 +113,11 @@ const AdminSession: React.FC = () => {
                     <h4>Sessions {sessionsComp.length}</h4>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="success" size="sm" className="me-1" onClick={handleAddSessionClick}>Add</Button>
+                <FontAwesomeIcon 
+                icon={faPlus} 
+                className='me-1'
+                onClick={handleAddSessionClick} 
+                style={{ cursor: 'pointer', color: 'green' }} />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>

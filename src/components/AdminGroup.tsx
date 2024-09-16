@@ -3,7 +3,7 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IGroup, ITrainer, IInstractor } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash ,faPlus} from '@fortawesome/free-solid-svg-icons';
 const AdminGroup: React.FC = () => {
     const { groups, trainers, instructors, addGroup, editGroup, deleteGroupInDataContext } = useDataContext();
     const groupsComp = groups || [];
@@ -181,7 +181,11 @@ const AdminGroup: React.FC = () => {
                     <h4>Groups {groupsComp.length}</h4>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="success" size="sm" className="me-1" onClick={handleAddGroupClick}>Add</Button>
+                <FontAwesomeIcon 
+                icon={faPlus} 
+                onClick={handleAddGroupClick} 
+                className='me-1'
+                style={{ cursor: 'pointer', color: 'green' }} />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>

@@ -3,8 +3,7 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-
+import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 const AdminTrainer: React.FC = () => {
     const { trainers, addTrainer, editTrainer, deleteTrainerInDataContext } = useDataContext();
     const trainersComp = trainers || [];
@@ -118,7 +117,12 @@ const AdminTrainer: React.FC = () => {
                     <h4>Trainers {trainersComp.length}</h4>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="success" size="sm" className="me-1" onClick={handleAddTrainerClick}>Add</Button>
+                    <FontAwesomeIcon
+                    icon={faPlus} 
+                    className='me-1'
+                    onClick={handleAddTrainerClick}
+                    style={{cursor: 'pointer', color: 'green'}}
+                    />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>

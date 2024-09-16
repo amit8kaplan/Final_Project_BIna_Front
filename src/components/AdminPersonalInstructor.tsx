@@ -3,7 +3,7 @@ import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
 import { IPersonalInstractor, IInstractor, ITrainer } from '../public/interfaces';
 import { useDataContext } from '../DataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash ,faPlus} from '@fortawesome/free-solid-svg-icons';
 
 const AdminPersonalInstructor: React.FC = () => {
     const { personalInstractors, instructors, trainers, addPersonalInstructor, editPersonalInstructor, deletePersonalInstructor } = useDataContext();
@@ -134,7 +134,12 @@ const AdminPersonalInstructor: React.FC = () => {
                     <h4>Personal Instructors {personalInstructorsComp.length}</h4>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="success" size="sm" className="me-1" onClick={handleAddPersonalInstructorClick}>Add</Button>
+                    <FontAwesomeIcon 
+                        icon={faPlus} 
+                        className='me-1'
+                        style={{ cursor: 'pointer', color: 'green'}}
+                        onClick={handleAddPersonalInstructorClick}
+                     />
                 </Col>
             </Row>
             <Table striped bordered hover responsive>
