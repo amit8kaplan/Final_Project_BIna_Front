@@ -61,7 +61,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({ show, handleClose, handleSa
             <Form.Control type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} />
           </Form.Group>
           <Form.Group controlId="formInstractorName">
-            <Form.Label>Instractor Name</Form.Label>
+            <Form.Label>Instructor Name</Form.Label>
             <Form.Control as="select" value={instractorName} 
             onChange={(e) => handleChageInsName(e)}>
                 <option value="">Select Instractor</option>

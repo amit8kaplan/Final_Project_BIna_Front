@@ -172,11 +172,11 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                         </Col>
                         <Col md={2} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Title>{selectedDapit.session}</Card.Title>
-                            <Card.Text>silabus: {selectedDapit.silabus}</Card.Text>
+                            <Card.Text>syllabus: {selectedDapit.silabus}</Card.Text>
                         </Col>
                         <Col md={2} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>finalGrade: {selectedDapit.finalGrade}</Card.Text>
-                            <Card.Text>chance: {selectedDapit.changeTobeCommender}</Card.Text>
+                            <Card.Text>chances: {selectedDapit.changeTobeCommender}</Card.Text>
                         </Col>
                         <Col md={4} style={{...borderCol(), ...cursorpointer(), ...(showComments ? { opacity: "0.3" } : {})}} onClick={() => handleOpenViewDapitModal(selectedDapit)}>
                             <Card.Text>{selectedDapit.summerize}</Card.Text>

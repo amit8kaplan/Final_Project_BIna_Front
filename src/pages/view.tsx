@@ -505,9 +505,9 @@ const View: React.FC = () => {
                   <th>Instructor</th>
                   <th>Group</th>
                   <th>Session</th>
-                  <th>silabus</th>
+                  <th>Syllabus</th>
                   <th>Final Grade</th>
-                  <th>Change to be Commander</th>
+                  <th>Chances</th>
                 </tr>
               </thead>
               <tbody>

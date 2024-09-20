@@ -244,7 +244,7 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
                     <span style={{ color: data.value !== undefined ? 'inherit' : 'white' }}>:</span>
                   </li> */}
             <div className="col-md-6">
-            <h4>Change to be Commander</h4>
+            <h4>Chance to be a Commander</h4>
               <ul className="list-group">
                 <li className="list-group-item" style={getCellStyle(selectedDapit.changeToBeCommender || undefined)}>
                   <strong>{selectedDapit.changeToBeCommender}</strong>

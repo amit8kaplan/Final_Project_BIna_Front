@@ -114,7 +114,7 @@ export const ChangeData = async (dapit: IDapitforSubmit) => {
             throw new Error('Client ID and OTP are required');
         }
         const prevDapit = await getDapitById(dapit._id!);
-        if (prevDapit.idInstractor !== dapit.idInstractor) {
+        if (prevDapit.idInstractor !== dapit.idInstractor || verifyRegular(headers['client-id'], dapit.idInstractor) === false) {
             response = await apiClient.put(`/dapit/ChangeAdminData/${dapit._id}`, dapit, { headers });
         } else if (verifyRegular(headers['client-id'], dapit.idInstractor) === true) {
             response = await apiClient.put(`/dapit/ChangeRegularData/${dapit._id}`, dapit, { headers });

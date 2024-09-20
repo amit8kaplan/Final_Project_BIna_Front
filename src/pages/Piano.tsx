@@ -196,11 +196,40 @@ const Piano: React.FC<IpianoProps> = (props) => {
   };
 
   const formatNumber = (num: number): string => {
-    if (num === 0) return '';
+    if (isNaN(num) ||num === 0) return '';
     const fixedNum = num.toFixed(2);
     return fixedNum.endsWith('.00') ? num.toString() : fixedNum;
   };
-
+  const getCategoryDisplayName = (category: string): string => {
+    switch (category) {
+      case 'finalGrade':
+        return 'Final Grade';
+      case 'changeTobeCommender':
+        return 'Changes';
+      case 'understandingTheAir':
+        return 'Understanding The Air';
+      case 'thinkingInAir':
+        return 'Thinking In Air';
+      case 'debriefingInAir':
+        return 'Debriefing In Air';
+      case 'implementationExecise':
+        return 'Implementation Execise';
+      case 'dealingWithFailures':
+        return 'Dealing With Failures';
+      case 'dealingWithStress':
+        return 'Dealing With Stress';
+      case 'makingDecisions':
+        return 'Making Decisions';
+      case 'pilotNature':
+        return 'Pilot Nature';
+      case 'crewMember':
+        return 'Crew Member';
+      case 'workingMethod':
+        return 'Working Method';
+      default:
+        return category;
+    }
+  };
   return (
     <div className="d-flex">
       <Sidebar_piano
@@ -219,7 +248,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
               <th style={fixedCellStyle}></th>
               <th style={fixedCellStyle}>Trainer</th>
               {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                <th key={idx} style={fixedCellStyle}>{category}</th>
+                <th key={idx} style={fixedCellStyle}>{getCategoryDisplayName(category)}</th>
               ))}
             </tr>
           </thead>
@@ -246,7 +275,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                             <th style={fixedCellStyle}></th>
                             <th style={fixedCellStyle}>Session</th>
                             {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                              <th key={idx} style={fixedCellStyle}>{category}</th>
+                              <th key={idx} style={fixedCellStyle}>{getCategoryDisplayName(category)}</th>
                             ))}
                           </tr>
                         </thead>
@@ -273,7 +302,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                           <th style={fixedCellStyle}></th>
                                           <th style={fixedCellStyle}>Silabus</th>
                                           {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
-                                            <th key={idx} style={fixedCellStyle}>{category}</th>
+                                            <th key={idx} style={fixedCellStyle}>{getCategoryDisplayName(category)}</th>
                                           ))}
                                         </tr>
                                       </thead>

@@ -632,7 +632,7 @@ const getCellStyle = (value: number | undefined) => {
         <div className="container" ref={contentRef}>
           <Row className="mb-3">
             <Col md={3}>
-              <h4>Instractor</h4>
+              <h4>instructor</h4>
               <Form.Control as="select" value={dapitData.nameInstractor}  onChange={(e) => handleChange(e, 'nameInstractor')}>  
                 <option value="">Select Instractor</option>
                 {InstractorsComp.map((Instractor, idx) => (
@@ -706,7 +706,7 @@ const getCellStyle = (value: number | undefined) => {
               </Form.Control>
             </Col>
             <Col md={4}>
-              <h4>silabus</h4>
+              <h4>syllabus</h4>
               <Form.Control
                 as="select"
                 value={dapitData.silabus}
@@ -793,7 +793,7 @@ const getCellStyle = (value: number | undefined) => {
               />
             </Col>
             <Col md={6}>
-              <h4>Change to be Commander</h4>
+              <h4>Chance to be a Commander</h4>
               <Form.Control
               style={getCellStyle(dapitData.changeTobeCommender || undefined)}
                 type="number"

@@ -214,7 +214,7 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
                 </div>
                 <div className="form-check mt-3">
                     <input type="checkbox" className="form-check-input" id="filterchangeTobeCommender" name="changeTobeCommender" onChange={handleCheckboxChange} checked={enabledFilters.changeTobeCommender} />
-                    <label className="form-check-label" htmlFor="filterchangeTobeCommender">Change to be Commander</label>
+                    <label className="form-check-label" htmlFor="filterchangeTobeCommender">Chances</label>
                     <input type="text" className="form-control mt-2" name="changeTobeCommender" value={filters.changeTobeCommender} onChange={(e) =>handleFilterChange(e, 'changeTobeCommender')} disabled={!enabledFilters.changeTobeCommender} />
                 </div>
                 <div className="form-check mt-3">
