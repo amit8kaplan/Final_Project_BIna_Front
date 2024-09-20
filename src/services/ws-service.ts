@@ -30,19 +30,19 @@ class WebSocketService {
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
-      console.log('Connected to the server');
+      //console.log('Connected to the server');
       this.retryCount = 0;
     };
 
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log('Message from server:', data);
+      //console.log('Message from server:', data);
       this.processMessage(data);
       this.emitter.emit('message', event.data);
     };
 
     this.ws.onclose = () => {
-      console.log('Disconnected from the server');
+      //console.log('Disconnected from the server');
       this.ws = null;
       this.retryConnection();
     };
@@ -61,7 +61,7 @@ class WebSocketService {
         sessionStorage.removeItem('otp');
         sessionStorage.removeItem('ttl');
         sessionStorage.removeItem('permissions');
-        console.log('Removed session storage due to closed session:', clientId);
+        //console.log('Removed session storage due to closed session:', clientId);
       }
     }
   }

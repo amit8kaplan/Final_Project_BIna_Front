@@ -25,7 +25,7 @@ const DeleteDapitModal: React.FC<AddCommentsModalProps> = ({ dapit, onClose, onD
   };
 
   const handleDelete = () => {
-    console.log("delete dapit: ", dapit);
+    //console.log("delete dapit: ", dapit);
     onDelete(dapit?._id!, dapit?.idInstractor!);
     setShow(false);
   };

@@ -76,9 +76,9 @@ const Personal: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log("newUserData: ", newUserData);
+      //console.log("newUserData: ", newUserData);
       const res = await updateUserDetails("1234567890", newUserData);
-      console.log("res: ", res);
+      //console.log("res: ", res);
       // Close the modal after successful submission
       setUserData((prevUserData) => ({
         ...prevUserData,

@@ -28,7 +28,7 @@ export interface Icomment {
     _id?: string;
 }
 export const handleLike = async (idDapitOrPost: string, likes: ILikes[] ) => {
-    console.log("handleLike: ", idDapitOrPost);
+    //console.log("handleLike: ", idDapitOrPost);
     let flag = false
     let count = 0
     likes?.forEach((like: any) => {
@@ -68,9 +68,9 @@ export const fetchComments = async (trainerId: string) => {
 }
 export const changeFlag = async (idDapitOrPost: string) => {
     try{
-        console.log("handleChangeFlag: ", idDapitOrPost)
+        //console.log("handleChangeFlag: ", idDapitOrPost)
         const response = (await apiClient.put('/wall/flag/', {idDapitOrPost}))
-        console.log ("handleChangeFlag the new flag: ", response.data)
+        //console.log ("handleChangeFlag the new flag: ", response.data)
         return response.data;
     }
     catch (error) {
@@ -79,7 +79,7 @@ export const changeFlag = async (idDapitOrPost: string) => {
 }
 export const getWall = async (trainerId: string) => {
     try{
-        console.log("trainerId: ", trainerId)
+        //console.log("trainerId: ", trainerId)
         const response = await apiClient.get(`/wall/${trainerId}`);
         return response.data;
     }
@@ -91,13 +91,13 @@ export const postPost = async (post: IPostforSubmit) => {
     const formData = new FormData();
 
     // Log individual fields
-    console.log("postPost idTrainer:", post.idTrainer);
-    console.log("postPost nameInstractor:", post.nameInstractor);
-    console.log("postPost idInstractor:", post.idInstractor);
-    console.log("postPost title:", post.title);
-    console.log("postPost content:", post.content);
-    console.log("postPost date:", post.date);
-    console.log("postPost file:", post.file);
+    //console.log("postPost idTrainer:", post.idTrainer);
+    //console.log("postPost nameInstractor:", post.nameInstractor);
+    //console.log("postPost idInstractor:", post.idInstractor);
+    //console.log("postPost title:", post.title);
+    //console.log("postPost content:", post.content);
+    //console.log("postPost date:", post.date);
+    //console.log("postPost file:", post.file);
 
     formData.append("idTrainer", post.idTrainer);
     formData.append("nameInstractor", post.nameInstractor);
@@ -108,13 +108,13 @@ export const postPost = async (post: IPostforSubmit) => {
     if (post._id) formData.append("_id", post._id);
     if (post.file !=null )
         if (post.file) formData.append("file", post.file); // Correctly append the file
-    console.log("postPost", JSON.stringify(formData))
+    //console.log("postPost", JSON.stringify(formData))
     // Log FormData entries
     for (let pair of formData.entries()) {
         if (pair[1] instanceof File) {
-            console.log(`postPost ${pair[0]}: [File] name=${pair[1].name}, size=${pair[1].size}, type=${pair[1].type}`);
+            //console.log(`postPost ${pair[0]}: [File] name=${pair[1].name}, size=${pair[1].size}, type=${pair[1].type}`);
         } else {
-            console.log(`postPost ${pair[0]}: ${pair[1]}`);
+            //console.log(`postPost ${pair[0]}: ${pair[1]}`);
         }
     }
 
@@ -141,7 +141,7 @@ export const getLikes = async (trainerId: string) => {
     }
 }
 export const getFile = async (filePath: string) => {
-    console.log("getFile in wall-service")
+    //console.log("getFile in wall-service")
     filePath = encodeURIComponent(filePath)
     try {
         const response = await apiClient.get(`/post/getFileByPathFile/${filePath}`, {
@@ -149,7 +149,7 @@ export const getFile = async (filePath: string) => {
         });
 
         if (response.status === 200) {
-            console.log("getFile the res is 200")
+            //console.log("getFile the res is 200")
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -169,7 +169,7 @@ export const getFile = async (filePath: string) => {
 };
 
 export const putLike = async (idDapitOrPost: string, like: string, count: number) => {
-    console.log("putLike: ", idDapitOrPost, like, count);
+    //console.log("putLike: ", idDapitOrPost, like, count);
     try{
         const response = (await apiClient.put('/wall/likes/', {idDapitOrPost, like, count}))
         return response.data;
@@ -192,7 +192,7 @@ export const postLike = async (idDapitOrPost: string) => {
 export const getComments = async (trainerId: string) => {
     try{
         const response = await apiClient.get(`/wall/comments/${trainerId}`);
-        console.log("getComments: ", response.data)
+        //console.log("getComments: ", response.data)
         return response.data;
     }
     catch (error) {
@@ -213,7 +213,7 @@ export const  putComment = async (idDapitOrPost: string, personalName: string, c
 export const postComment = async (idDapitOrPost: string, personalName: string, content: string) => {
     try{
         const response = (await apiClient.post('/wall/comments/', {idDapitOrPost, personalName, content}))
-        console.log("try1 res postComment: ", response.data)
+        //console.log("try1 res postComment: ", response.data)
         return response.data;
     
     }

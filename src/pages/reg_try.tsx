@@ -50,7 +50,7 @@ export function YourComponent() {
   })
   
   const onsubmit = async (data: any) => {
-    console.log(data)
+    //console.log(data)
     setShowModal(false); // Ensure the modal is not shown by default on each submit attempt
     try {
         const registrationResponse = await registrUser({
@@ -59,20 +59,20 @@ export function YourComponent() {
             user_name: data.userName,
             imgUrl: '', // Include imgUrl if applicable
         });
-        console.log("the user register:", registrationResponse);
-        console.log("the imgSrc: ", imgSrc)
+        //console.log("the user register:", registrationResponse);
+        //console.log("the imgSrc: ", imgSrc)
         const formData = new FormData();
            if (imgSrc!=null){
             formData.append('image', imgSrc);
-            console.log("the formdata: ", formData)
-            console.log("the register response: ", registrationResponse.accessToken)
+            //console.log("the formdata: ", formData)
+            //console.log("the register response: ", registrationResponse.accessToken)
             const upload_photo = await apiClient.post("/user", formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${registrationResponse.accessToken}`,
             },
           });
-          console.log("the photo uploaded: ", upload_photo)
+          //console.log("the photo uploaded: ", upload_photo)
         
         }
 
@@ -80,10 +80,10 @@ export function YourComponent() {
         // If registration is successful, proceed to login the user
         const loginSuccess = await loginUserWithEmailPassword(data.email, data.password);
         if (loginSuccess) {
-          console.log("the login success: ", loginSuccess)
+          //console.log("the login success: ", loginSuccess)
             setModalMessage("Registration Successful! You are now being redirected...");
             setShowModal(true); // Show success modal
-            console.log("the storage token is after loginsuccess and in reg_try:" + sessionStorage.getItem('accessToken'))
+            //console.log("the storage token is after loginsuccess and in reg_try:" + sessionStorage.getItem('accessToken'))
             setTimeout(() => navigate('/store'), 3000); // Redirect user to the store page after a short delay
         }
     } catch (error: any) {
@@ -99,17 +99,17 @@ export function YourComponent() {
 };
   
   const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
-    console.log(credentialResponse)
+    //console.log(credentialResponse)
     try {
         const res = await googleSignin(credentialResponse)
-        console.log(res)
+        //console.log(res)
     } catch (e) {
-        console.log(e)
+        //console.log(e)
     }
 }
 
 const onGoogleLoginFailure = () => {
-    console.log("Google login failed")
+    //console.log("Google login failed")
 }
 
 const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,10 +126,10 @@ const imgSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   };
 const selectImg = () => {
-  console.log("Selecting image...")
+  //console.log("Selecting image...")
   if (fileInputRef.current) {
     fileInputRef.current.click();
-    console.log("Selecting image..." + fileInputRef.current)
+    //console.log("Selecting image..." + fileInputRef.current)
   }
 }
 

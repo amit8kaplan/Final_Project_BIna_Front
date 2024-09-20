@@ -180,21 +180,21 @@ const AdminGroup: React.FC = () => {
         const fileInput = event.target;
         const file = fileInput.files?.[0];
         if (file) {
-            console.log('Importing trainers from CSV:', file.name);
+            //console.log('Importing trainers from CSV:', file.name);
             Papa.parse(file, {
                 header: true,
                 complete: async (results) => {
                     const GroupCSV: IGroup[] = results.data;
-                    console.log('Trainers from CSV:', GroupCSV);
+                    //console.log('Trainers from CSV:', GroupCSV);
                     for (const group of GroupCSV) {
                         if (group.name) {
-                            console.log('Adding trainer from CSV:', group);
+                            //console.log('Adding trainer from CSV:', group);
                             try {
                                 if (group._id) {
-                                    console.log('Adding trainer from CSV with ID:', group._id);
+                                    //console.log('Adding trainer from CSV with ID:', group._id);
                                     await addGrouFromCSV(group._id, group.name, group.idsTrainers || [], group.idsInstractors||[]);
                                 } else {
-                                    console.log('Adding trainer from CSV without ID:', group.name);
+                                    //console.log('Adding trainer from CSV without ID:', group.name);
                                     await addGroup(group.name, group.idsTrainers || [], group.idsInstractors||[]);
                                 }
                             } catch (error) {

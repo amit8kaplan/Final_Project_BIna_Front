@@ -17,7 +17,7 @@ interface IPostProps{
 
 const ViewPost: React.FC<IPostProps> = ({selectedPost, handleClose}) => {
     useEffect(()=>{
-        console.log('selectedPost: ', selectedPost);
+        //console.log('selectedPost: ', selectedPost);
     }, [selectedPost]);
 
     return (

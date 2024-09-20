@@ -36,6 +36,7 @@ interface DataContextProps {
     addGrouFromCSV: (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
     addSessionFromCSV: (sessionId: string, sessionName: string, sessionSilabus: number[]) => Promise<void>;
     addDapitsFromCSV: (DapitData:IDapitforSubmit) => Promise<void>;
+    refreshfunc: () => void;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -58,7 +59,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
                 const sessions = await getAllSessions();
                 const personalInstractors = await getAllPersonalInstractors();
                 setDapits(dapits);
-                console.log("dapits in useContext", dapits);
+                // console.log("dapits in useContext", dapits);
                 setGroups(groups);
                 setInstructors(instructors);
                 setTrainers(trainers);
@@ -83,6 +84,9 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding trainer:', error);
         }
     };
+    const refreshfunc = () => {
+        setRefresh(!refresh);
+    }
     const deleteTrainerInDataContext = async (trainerId: string) => {
         try {
             const res = await deleteTrainer(trainerId);
@@ -244,7 +248,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addTrainerFromCSV = async (trainerId: string ,trainerName: string) => {
-        console.log("addTrainerFromCSV", trainerId, trainerName);
+        // console.log("addTrainerFromCSV", trainerId, trainerName);
         let res:any;
         try {
             if (trainerName &&trainerId && trainerId.length > 0 && trainerId!= '') {
@@ -262,7 +266,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addInstractorFromCSV = async (instractorId: string ,instractorName: string, email:string, permmistion: string) => {
-        console.log("addInstractorFromCSV", instractorId, instractorName, email, permmistion);
+        // console.log("addInstractorFromCSV", instractorId, instractorName, email, permmistion);
         let res:any;
         try {
             if (instractorName &&instractorId && instractorId.length > 0 && instractorId!= '') {
@@ -280,7 +284,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addPersonalInstructorFromCSV = async (id:string,instractorId: string, trainerId:string) => {
-        console.log("addPersonalInstructorFromCSV", id, instractorId, trainerId);
+        // console.log("addPersonalInstructorFromCSV", id, instractorId, trainerId);
         let res :any;
         try {
             if (id && id.length > 0 && id!= '') {
@@ -298,7 +302,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addGrouFromCSV = async (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => {
-        console.log("addGrouFromCSV", groupId, groupName, idsTrainers, idsInstractors);
+        // console.log("addGrouFromCSV", groupId, groupName, idsTrainers, idsInstractors);
         let res:any;
         try {
             if (groupId && groupId.length > 0 && groupId!= '') {
@@ -316,7 +320,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addSessionFromCSV = async (sessionId: string, sessionName: string, sessionSilabus: number[]) => {
-        console.log("addSessionFromCSV", sessionId, sessionName, sessionSilabus);
+        // console.log("addSessionFromCSV", sessionId, sessionName, sessionSilabus);
         let res:any;
         try {
             if (sessionId && sessionId.length > 0 && sessionId!= '') {
@@ -334,7 +338,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         }
     }
     const addDapitsFromCSV = async (DapitData: IDapitforSubmit) => {
-        console.log("addDapitsFromCSV", DapitData);
+        // console.log("addDapitsFromCSV", DapitData);
         let res:any;
         try {
             if (DapitData && DapitData._id && DapitData._id.length > 0 && DapitData._id!= '') {
@@ -357,7 +361,8 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
               addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV,
-              addGrouFromCSV, addSessionFromCSV,addDapitsFromCSV
+              addGrouFromCSV, addSessionFromCSV,addDapitsFromCSV,
+              refreshfunc
                }}>
             {children}
         </DataContext.Provider>

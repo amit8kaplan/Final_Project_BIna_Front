@@ -1,7 +1,7 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 export const downloadPdf = async (content: HTMLDivElement | null, fileName: string) => {
-  console.log('content: ', content);
+  //console.log('content: ', content);
   if (content) {
     // Clone the content to avoid modifying the actual DOM
     const clonedContent = content.cloneNode(true) as HTMLDivElement;

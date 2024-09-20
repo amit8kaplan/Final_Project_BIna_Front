@@ -27,10 +27,10 @@ const fetchData = async () => {
 const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string) => {
     try {
         const queryString = `?${selectedOption}=${searchQuery}`;
-        console.log("the query string is:" + queryString)
+        //console.log("the query string is:" + queryString)
         const response = await apiClient.get(`/course${queryString}`);
-        console.log("the response is:", response.data)
-        console.log(JSON.stringify(response.data))
+        //console.log("the response is:", response.data)
+        //console.log(JSON.stringify(response.data))
         return response.data
     } catch (error) {
         console.error('Error fetching courses by search:', error);
@@ -38,11 +38,11 @@ const fetchCoursesBySearch = async (searchQuery: string, selectedOption: string)
 }
 const fetchCoursesByOwner = async () => {
     try{
-        console.log("the headers are:", await handleAccessToken())
+        //console.log("the headers are:", await handleAccessToken())
         const headers = await handleAccessToken();
         if (headers == null) return;
         const response = await apiClient.get('/course/:1234', {headers});
-        console.log("the response is:", response.data)
+        //console.log("the response is:", response.data)
         return response.data
     
     }
@@ -64,8 +64,8 @@ const putCourse = async (course: Course, courseID :string) => {
 
 const postCourse = async (course: Course) =>{
     const headers = await handleAccessToken();
-    console.log("the headers are:", headers)
-    console.log("the course is:", course)
+    //console.log("the headers are:", headers)
+    //console.log("the course is:", course)
     if (headers == null) return;
     try {
         return await apiClient.post('/course/', course , {headers});
@@ -85,7 +85,7 @@ const postVideo = async (vidScr: File) =>{
             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
             },
         });
-        console.log("the video response is:", videoRes.data.url)
+        //console.log("the video response is:", videoRes.data.url)
         return videoRes.data.url;
     } catch (error) {
         console.error('Error postVideo course:', error);
@@ -97,7 +97,7 @@ const deleteCourse = async (courseID: string) => {
     if (headers == null) return;
     try {
         const response = await apiClient.delete(`/course/${courseID}`, {headers});
-        console.log("the response is:", response.data)
+        //console.log("the response is:", response.data)
         return response.data
     } catch (error) {
         console.error('Error deleteCourse course:', error);

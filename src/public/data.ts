@@ -20,7 +20,7 @@ export const categoriesData = ["identification", "payload", "decryption",
           "crewMember", "finalGrade", "changeTobeCommender"];
 
 export function getAuthHeaders() {
-    console.log('getAuthHeaders');
+    //console.log('getAuthHeaders');
     const clientId = sessionStorage.getItem('client-id');  // Assuming clientId and OTP are stored in local storage
     const otp = sessionStorage.getItem('otp');
     
@@ -46,7 +46,7 @@ export function setAuthHeaders(clientId: string, otp: string) {
         console.error('Error setting client ID and OTP');
         return false;
     }
-    console.log('setAuthHeaders:', sessionStorage.getItem("client-id"), sessionStorage.getItem("otp"));
+    //console.log('setAuthHeaders:', sessionStorage.getItem("client-id"), sessionStorage.getItem("otp"));
     return true;
 }
 
@@ -62,8 +62,8 @@ export function deleteAllHeaders (){
 
 export function setPermissions(permissions: string) {
     sessionStorage.setItem('permissions', permissions);
-    console.log('setPermissions:', permissions);
-    console.log('setPermissions:', sessionStorage.getItem('permissions'));
+    //console.log('setPermissions:', permissions);
+    //console.log('setPermissions:', sessionStorage.getItem('permissions'));
 }
 
 export function getPermissions() {

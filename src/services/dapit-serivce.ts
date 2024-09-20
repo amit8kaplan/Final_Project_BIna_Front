@@ -42,16 +42,16 @@ export interface IDapitforSubmit {
 
 export const postDapit = async (dapit: IDapitforSubmit) => {
 
-    console.log("dapit: ", dapit)
+    //console.log("dapit: ", dapit)
     try{
         let response;
         const headers = getAuthHeaders();
         if (!headers || !headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
-        console.log ("postDapit headers['client-id']: ", headers['client-id']);
-        console.log ("postDapit dapit.idInstractor: ", dapit.idInstractor);
-        console.log("postDapit verifyRegular:", verifyRegular(headers['client-id'], dapit.idInstractor));
+        //console.log ("postDapit headers['client-id']: ", headers['client-id']);
+        //console.log ("postDapit dapit.idInstractor: ", dapit.idInstractor);
+        //console.log("postDapit verifyRegular:", verifyRegular(headers['client-id'], dapit.idInstractor));
 
         if (verifyRegular(headers['client-id'], dapit.idInstractor) === true ) {
              response = await apiClient.post("/dapit/postRegular", dapit, {headers} );
@@ -60,7 +60,7 @@ export const postDapit = async (dapit: IDapitforSubmit) => {
         {
              response = await apiClient.post("/dapit/postAdmin", dapit, {headers} );
         }
-        console.log("the response is:", response.data);
+        //console.log("the response is:", response.data);
         return response.data;
     }
     catch (error) {
@@ -78,7 +78,7 @@ export const getDapits = async (filters: any) => {
     }
 }
 export const postDapitWithId = async (dapit: IDapitforSubmit) => {
-    console.log("postDapitWithId dapit: ", dapit);
+    //console.log("postDapitWithId dapit: ", dapit);
     try {
         let response;
         const authHeaders = getAuthHeaders();
@@ -99,8 +99,8 @@ export const postDapitWithId = async (dapit: IDapitforSubmit) => {
 }
 
 export const ChangeData = async (dapit: IDapitforSubmit) => {
-    console.log("ChangeData dapit_id: ", dapit);
-    console.log("ChangeData dapit_id: ", dapit._id);
+    //console.log("ChangeData dapit_id: ", dapit);
+    //console.log("ChangeData dapit_id: ", dapit._id);
 
     try {
         let response;
@@ -131,10 +131,10 @@ export const ChangeData = async (dapit: IDapitforSubmit) => {
 
 
 export const handleFiltersSubmit = async (filterData: any) => {
-    console.log("handleFilterSubmitinFront  dapit-serice: ", filterData)
+    //console.log("handleFilterSubmitinFront  dapit-serice: ", filterData)
     try {
       const dapits = await getDapits(filterData);
-      console.log("handleFilterSubmitinFront  dapits: ", dapits)
+      //console.log("handleFilterSubmitinFront  dapits: ", dapits)
       return dapits;
     } catch (error) {
       console.error('handleFilterSubmitinFront  Error handling filter submission:', error);
@@ -142,7 +142,7 @@ export const handleFiltersSubmit = async (filterData: any) => {
   }
 
   export const getDapitById = async (id: string) => {
-    console.log("getDapitById id: ", id);
+    //console.log("getDapitById id: ", id);
     try {
         const response = await apiClient.get(`/dapit/getDapitById`, {
             params: { id }
@@ -204,13 +204,13 @@ export const deleteDapit = async (id: string, idInstractor:string) => {
             ...authHeaders,
             ...(permissions ? { permissions } : {})
         };
-        console.log("deleteDapit -service", headers);
+        //console.log("deleteDapit -service", headers);
         if (!headers || !headers['client-id'] || !headers['otp']) {
             throw new Error('Client ID and OTP are required');
         }
-        console.log("deleteDapit -service", headers['client-id'], headers['otp'], id, idInstractor, permissions);
+        //console.log("deleteDapit -service", headers['client-id'], headers['otp'], id, idInstractor, permissions);
         if (verifyRegular(headers['client-id'], idInstractor) === true ) {
-            console.log("deleteDapit -service -regular",true);
+            //console.log("deleteDapit -service -regular",true);
             response = await apiClient.delete(`/dapit/deleteDapitRegular/${id}`, {headers} );
        }
        else 

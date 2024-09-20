@@ -59,7 +59,7 @@ const AllSessions: React.FC = () => {
         const otpfetch = sessionStorage.getItem('otp');
         setClientID(clientIDfetch || '');
         setPermissions(permissionsfetch || '');
-        console.log('setPermissions in fetchWhoIsTheHeader :', permissionsfetch, permissions);
+        //console.log('setPermissions in fetchWhoIsTheHeader :', permissionsfetch, permissions);
         setOtp(otpfetch || '');
         if (clientID) {
             const openSession = validCookies.find(cookie => cookie.idInstractor === clientID);

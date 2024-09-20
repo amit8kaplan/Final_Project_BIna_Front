@@ -116,21 +116,21 @@ const AdminTrainer: React.FC = () => {
         const fileInput = event.target;
         const file = fileInput.files?.[0];
         if (file) {
-            console.log('Importing trainers from CSV:', file.name);
+            //console.log('Importing trainers from CSV:', file.name);
             Papa.parse(file, {
                 header: true,
                 complete: async (results) => {
                     const trainerCSV: ITrainer[] = results.data;
-                    console.log('Trainers from CSV:', trainerCSV);
+                    //console.log('Trainers from CSV:', trainerCSV);
                     for (const trainer of trainerCSV) {
                         if (trainer.name) {
-                            console.log('Adding trainer from CSV:', trainer);
+                            //console.log('Adding trainer from CSV:', trainer);
                             try {
                                 if (trainer._id) {
-                                    console.log('Adding trainer from CSV with ID:', trainer._id);
+                                    //console.log('Adding trainer from CSV with ID:', trainer._id);
                                     await addTrainerFromCSV(trainer._id, trainer.name);
                                 } else {
-                                    console.log('Adding trainer from CSV without ID:', trainer.name);
+                                    //console.log('Adding trainer from CSV without ID:', trainer.name);
                                     await addTrainer(trainer.name);
                                 }
                             } catch (error) {

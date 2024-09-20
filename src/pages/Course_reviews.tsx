@@ -72,7 +72,7 @@ const CourseReviewsPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log('Submitted Review:', reviewForm);
+      //console.log('Submitted Review:', reviewForm);
       const submitRev: Review = {
         course_id: courseID || '', // Set a default value of an empty string if courseID is null
         course_name: TheCourse.name,
@@ -82,7 +82,7 @@ const CourseReviewsPage: React.FC = () => {
         owner_id: TheCourse.owner,
         owner_name: TheCourse.owner_name
       };
-      console.log("the temp form is:", submitRev);
+      //console.log("the temp form is:", submitRev);
       await postReview(submitRev);
       // Reset the form to its initial state here
       setReviewForm({
@@ -104,7 +104,7 @@ const CourseReviewsPage: React.FC = () => {
       if (!courseID) return;
       const res = await fetchReviewsByCourseID(courseID);
       setReviews(res);
-      console.log("the reviews are:", res); // Log the fetched reviews
+      //console.log("the reviews are:", res); // Log the fetched reviews
     } catch (error) {
       console.error('Error fetching reviews:', error);
     }

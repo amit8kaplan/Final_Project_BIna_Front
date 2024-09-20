@@ -63,7 +63,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const navigate = useNavigate();
     // const route = useRoute();
     const location = useLocation();
-    const { groups, instructors, trainers, sessions , personalInstractors} =  useDataContext();
+    const { groups, instructors, trainers, sessions , personalInstractors, refreshfunc} =  useDataContext();
     const [group, setGroup] = useState<string>('');
     const state = location.state as IAddDapitProps || {};
     const contentRef = useRef<HTMLDivElement | null>(null);
@@ -73,8 +73,8 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const [theDapitBoolean, setTheDapitBoolean] = useState<boolean>(!!theDapit || !theDapit);
 
     const thePI : IInstractor | undefined = state.thePesonalINstractor || props.thePesonalINstractor || defaultInstractor
-    console.log("the Trainer" , theTrainer)
-    console.log("the PI", thePI)
+    // //console.log("the Trainer" , theTrainer)
+    // //console.log("the PI", thePI)
     const [trainerListByGroupBoolean, setTrainerListByGroupBoolean] = useState<boolean>(false);
     const [trainerListByGroup, setTrainerListByGroup] = useState<ITrainer[]>([]);
     const [groupListByTrainerBoolean, setGroupListByTrainerBoolean] = useState<boolean>(false);
@@ -87,13 +87,13 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const sessionsComp = sessions || [];
     const groupsComp = groups || [];
     const personalInstractorsComp = personalInstractors || [];
-    console.log("Instractors: ", InstractorsComp)
-    console.log("Trainers: ", trainersComp)
-    console.log("Sessions: ", sessionsComp)
-    console.log("groups: ", groupsComp)
-    console.log("personalInstractors: ", personalInstractorsComp)
-    console.log(theDapit, "theDapit in AddDapit");
-    console.log("theDapit in AddDapit date", theDapit && theDapit.silabus ? theDapit.silabus : undefined);
+    // //console.log("Instractors: ", InstractorsComp)
+    // //console.log("Trainers: ", trainersComp)
+    // //console.log("Sessions: ", sessionsComp)
+    // //console.log("groups: ", groupsComp)
+    // //console.log("personalInstractors: ", personalInstractorsComp)
+    // //console.log(theDapit, "theDapit in AddDapit");
+    // //console.log("theDapit in AddDapit date", theDapit && theDapit.silabus ? theDapit.silabus : undefined);
     const clientID = useSessionStorage('client-id');
     const otp = useSessionStorage('otp');
     const permissions = useSessionStorage('permissions');
@@ -190,39 +190,41 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     changeTobeCommender: theDapit && theDapit.changeTobeCommender ? theDapit.changeTobeCommender : undefined,
 
   });
+
   useEffect(() => {
-    console.log("AddDapit useEffect");
-    if (isSubmitted) {
+  if (isSubmitted) {
     const missingFields = [];
-      if (!dapitData.nameInstractor || !dapitData.idInstractor ) missingFields.push('Instractor');
-      if (!dapitData.nameTrainer || !dapitData.idTrainer || dapitData.idTrainer =="" || dapitData.nameTrainer =="") missingFields.push('Trainer');
-      if (!dapitData.group) missingFields.push('Group');
-      if (!dapitData.session) missingFields.push('Session');
-      if (!dapitData.silabus) missingFields.push('silabus');
-      if (!dapitData.summerize) missingFields.push('Summerize');
-      if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
-      if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
-    
-      if (missingFields.length > 0) {
-        setValidationMessage(` ${missingFields.join(', ')}`);
-      } else {
-        setValidationMessage('');
-      }
-      if (!clientID || !otp || !permissions) {
-        setValidationMessage2('You must be logged in to submit a DAPIT');
-      } else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
-        setValidationMessage2('you dont allow to submit a dapit of other Instractor');
-      } else {
-        setValidationMessage2('');
-      }
+    if (!dapitData.nameInstractor || !dapitData.idInstractor) missingFields.push('Instractor');
+    if (!dapitData.nameTrainer || !dapitData.idTrainer || dapitData.idTrainer === "" || dapitData.nameTrainer === "") missingFields.push('Trainer');
+    if (!dapitData.group) missingFields.push('Group');
+    if (!dapitData.session) missingFields.push('Session');
+    if (!dapitData.silabus) missingFields.push('silabus');
+    if (!dapitData.summerize || dapitData.summerize === "" || dapitData.summerize === null) missingFields.push('Summerize');
+    if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
+    if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
+
+    if (missingFields.length > 0) {
+      setValidationMessage(` ${missingFields.join(', ')}`);
+    } else {
+      setValidationMessage('');
     }
-    if (theDapit && theDapit.silabus) {
-      const selectedSession = sessionsComp.find(session => session.name === theDapit.session);
-      if (selectedSession) {
-        setSyllabusOptions(selectedSession.silabus);
-      }
+    if (!clientID || !otp || !permissions) {
+      setValidationMessage2('You must be logged in to submit a DAPIT');
+    } else if (permissions !== 'admin' && clientID !== dapitData.idInstractor) {
+      setValidationMessage2('you dont allow to submit a dapit of other Instractor');
+    } else {
+      setValidationMessage2('');
     }
-  }, [dapitData,dapitData.nameInstractor, dapitData.nameTrainer,isSubmitted]);
+  }
+  if (theDapit && theDapit.silabus) {
+    const selectedSession = sessionsComp.find(session => session.name === theDapit.session);
+    if (selectedSession) {
+      setSyllabusOptions(selectedSession.silabus);
+    }
+  }
+}, [dapitData, dapitData.nameInstractor, dapitData.nameTrainer, isSubmitted]);
+
+
   const toPDF = () => {
     const content = contentRef.current;
     const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.silabus+"_"+dapitData.nameInstractor;
@@ -238,23 +240,23 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       key = selectedOption.getAttribute('data-id');
     }
 
-    console.log(`try11111 Key: ${key}, Value: ${value}`);
-    console.log("e", e);
-    console.log("handleChange val:", val);
+    // //console.log(`try11111 Key: ${key}, Value: ${value}`);
+    // //console.log("e", e);
+    // //console.log("handleChange val:", val);
 
     setDapitData({ ...dapitData, [field]: val });
     
     if (field === 'nameTrainer') {
       // setDapitData(prevData => ({ ...prevData, idTrainer: key || ''}));
-      console.log ("group after nameTrainer val:",val);
+      // //console.log ("group after nameTrainer val:",val);
       const selectedTrainer = trainersComp.find(trainer => trainer.name === val);
       if (selectedTrainer) {
-        console.log("groupsComp group after nameTrainer:",groupsComp);
-        console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
+        //console.log("groupsComp group after nameTrainer:",groupsComp);
+        //console.log("group after nameTrainer selectedTrainer:",selectedTrainer);
         //add the trainer id to the dapitData
         setDapitData(prevData => ({ ...prevData, idTrainer: selectedTrainer._id! }));
         const group = groupsComp.find(group => group.idsTrainers?.includes(selectedTrainer._id!));
-        console.log("group after nameTrainer:",group);
+        //console.log("group after nameTrainer:",group);
         if (group) {
           //add the group name
           setGroupListByTrainerBoolean(true);
@@ -269,14 +271,14 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
 
         //add the personalInstractor id to the dapitData
           setDapitData(prevData => ({ ...prevData, idPersonalInstractor: idPersonalInstractor?.idInstractor || ''  }));
-          console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
-          console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
+          //console.log("personal after nameTrainer idPersonalInstractor:",idPersonalInstractor);
+          //console.log ("personal after nameTrainer idInstractor:",idPersonalInstractor?.idInstractor);
           const personalName = InstractorsComp.find(Instractor => Instractor._id === idPersonalInstractor?.idInstractor);
-          console.log("personal after nameTrainer personalName:",personalName);
+          //console.log("personal after nameTrainer personalName:",personalName);
           
           //add personal name to the dapitData
           setDapitData(prevData => ({ ...prevData, namePersonalInstractor: personalName?.name || '' }));
-          console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
+          //console.log ("all after using DapitData: NameTrainer, personalName, group  ",dapitData.nameTrainer, dapitData.namePersonalInstractor, dapitData.group);
         }
         else {
           setDapitData(prevData => ({ ...prevData, idPersonalInstractor: '', namePersonalInstractor: '' }));
@@ -300,13 +302,13 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
       }
     }
     if (field === 'group') {
-      console.log ("group after group val:",val);
+      //console.log ("group after group val:",val);
       const theGroup = groupsComp.find(group => group.name === val);
       
       if (theGroup) {
         //add the group id to the dapitData
         const trainers = trainersComp.filter(trainer => theGroup.idsTrainers?.includes(trainer._id!));
-        console.log("Trainers in the selected group:", trainers);
+        //console.log("Trainers in the selected group:", trainers);
         setTrainerListByGroup(trainers);
         setTrainerListByGroupBoolean(true);
       }
@@ -328,17 +330,17 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
   };
  
   const handleNestedChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string, category: keyof IDapit) => {
-    console.log("handleNestedChange ");
-    console.log("handleNestedChange index:",index);
-    console.log("handleNestedChange e:",e);
-    console.log("handleNestedChange field:",field);
-    console.log("handleNestedChange category:",category);
+    //console.log("handleNestedChange ");
+    //console.log("handleNestedChange index:",index);
+    //console.log("handleNestedChange e:",e);
+    //console.log("handleNestedChange field:",field);
+    //console.log("handleNestedChange category:",category);
     if (dapitData[category]!=undefined){
       if (Array.isArray(dapitData[category])) {
           const updatedCategory = (dapitData[category] as Array<{ value: number | undefined, description: string }>).map((item, i) =>
             i === index ? { ...item, [field]: e.target.value } : item
           );
-          console.log("handleNestedChange updatedCategory:",updatedCategory);
+          //console.log("handleNestedChange updatedCategory:",updatedCategory);
           setDapitData({ ...dapitData, [category]: updatedCategory });
       }
     }
@@ -356,7 +358,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
   //   navigate("/")
   // };
   const handleOnClose = () => {
-    console.log("onclose");
+    //console.log("onclose");
     // navigate("/");
     props.onclose();
   }
@@ -379,6 +381,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     if (!dapitData.session) missingFields.push('Session');
     if (!dapitData.silabus) missingFields.push('silabus');
     if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
+    if (dapitData.summerize === '' || !dapitData.summerize || dapitData.summerize == null) missingFields.push('Summerize');
     if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
     if (sessionStorage.getItem('client-id'))
     if (missingFields.length > 0) {
@@ -388,10 +391,10 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     try{
         //trainerID: trainerID, PersonalInstractorID: PersonalInstractorID, InstractorID: InstractorID, personalName: personalName
         // const {trainerID, PersonalInstractorID, InstractorID , personalName} = await getIdpersonalInstractor(dapitData.nameTrainer, dapitData.nameInstractor); 
-        // console.log("trainerID:",trainerID)
-        // console.log("PersonalInstractorID:",PersonalInstractorID)
-        // console.log("InstractorID:",InstractorID)
-        console.log("dapitData.changetobecoma:",dapitData.changeTobeCommender)
+        // //console.log("trainerID:",trainerID)
+        // //console.log("PersonalInstractorID:",PersonalInstractorID)
+        // //console.log("InstractorID:",InstractorID)
+        //console.log("dapitData.changetobecoma:",dapitData.changeTobeCommender)
         const submitDapit: IDapitforSubmit = {
             nameInstractor: dapitData.nameInstractor,
             namePersonalInstractor: dapitData.namePersonalInstractor,
@@ -427,7 +430,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             finalGrade: dapitData.finalGrade,
             summerize: dapitData.summerize
         };
-        console.log("the submit dapit is",submitDapit);
+        //console.log("the submit dapit is",submitDapit);
         // await postDapit(submitDapit);
         // Reset the form to its initial state here
         setDapitData({
@@ -466,6 +469,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             finalGrade:  undefined,
             changeTobeCommender:  undefined,
         });
+        refreshfunc();
         props.handleSubmit(submitDapit);
         // handleOnClose();
     }catch(error){
@@ -505,7 +509,7 @@ const getCellStyle = (value: number | undefined) => {
 };
 
   const handleSendDraft = () => {
-    console.log('Sending draft of dapit details');
+    //console.log('Sending draft of dapit details');
   };
 
   const renderDetailedRatings = () => {

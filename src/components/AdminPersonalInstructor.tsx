@@ -73,7 +73,7 @@ const AdminPersonalInstructor: React.FC = () => {
 
     const handleSavePersonalInstructor = async () => {
         if (selectedPersonalInstructor && selectedPersonalInstructor._id&& selectedInstructorId && selectedTrainerId && !trainerErrorMessage) {
-            console.log ("handleSavePersonalInstructor", selectedPersonalInstructor._id, selectedInstructorId, selectedTrainerId);
+            //console.log ("handleSavePersonalInstructor", selectedPersonalInstructor._id, selectedInstructorId, selectedTrainerId);
             try {
                 await editPersonalInstructor(
                     selectedPersonalInstructor._id,
@@ -89,13 +89,13 @@ const AdminPersonalInstructor: React.FC = () => {
     };
 
     const handleConfirmDeletePersonalInstructor = async () => {
-        console.log ("handleConfirmDeletePersonalInstructor", selectedPersonalInstructor);
+        //console.log ("handleConfirmDeletePersonalInstructor", selectedPersonalInstructor);
         if (selectedPersonalInstructor&& selectedPersonalInstructor._id && selectedPersonalInstructor.idInstractor) {
             try {
                 await deletePersonalInstructor(selectedPersonalInstructor._id);
                 setShowDeletePersonalInstructorModal(false);
                 setSelectedPersonalInstructor(null);
-                console.log ("handleConfirmDeletePersonalInstructor", selectedPersonalInstructor);
+                //console.log ("handleConfirmDeletePersonalInstructor", selectedPersonalInstructor);
             } catch (error) {
                 console.error('handleConfirmDeletePersonalInstructor Error deleting personal instructor:', error);
             }
@@ -131,21 +131,21 @@ const AdminPersonalInstructor: React.FC = () => {
         const fileInput = event.target;
         const file = fileInput.files?.[0];
         if (file) {
-            console.log('Importing trainers from CSV:', file.name);
+            //console.log('Importing trainers from CSV:', file.name);
             Papa.parse(file, {
                 header: true,
                 complete: async (results) => {
                     const PICSV: IPersonalInstractor[] = results.data;
-                    console.log('Trainers from CSV:', PICSV);
+                    //console.log('Trainers from CSV:', PICSV);
                     for (const pi of PICSV) {
                         if (pi.idTrainer) {
-                            console.log('Adding trainer from CSV:', pi);
+                            //console.log('Adding trainer from CSV:', pi);
                             try {
                                 if (pi._id) {
-                                    console.log('Adding trainer from CSV with ID:', pi._id);
+                                    //console.log('Adding trainer from CSV with ID:', pi._id);
                                     await addPersonalInstructorFromCSV(pi._id, pi.idInstractor, pi.idTrainer);
                                 } else {
-                                    console.log('Adding trainer from CSV without ID:', pi.idInstractor, pi.idTrainer);
+                                    //console.log('Adding trainer from CSV without ID:', pi.idInstractor, pi.idTrainer);
                                     await addPersonalInstructor(pi.idInstractor, pi.idTrainer);
                                 }
                             } catch (error) {

@@ -90,9 +90,9 @@ const MyCourses: React.FC<ChildProps> = () => {
         const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
         if (allowedTypes.includes(file.type)) {
             const videoURL = await postVideo(file);
-            console.log("the vid url:" + videoURL)
+            //console.log("the vid url:" + videoURL)
             setEditTheCourse({ ...editTheCourse, videoUrl: videoURL });
-            console.log("the edit course is: " + editTheCourse)
+            //console.log("the edit course is: " + editTheCourse)
             setVidSrc(file);
             setVidError('');
             setSelectedVideoName(file.name);

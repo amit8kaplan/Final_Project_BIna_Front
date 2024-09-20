@@ -25,7 +25,7 @@ const Wall: React.FC<IWallProps> = (props) => {
 
     const state = location.state as IWallProps || {};
     const trainer: ITrainer = state.trainer || props.trainer;
-    console.log("trainer in wall", trainer)
+    //console.log("trainer in wall", trainer)
     const [showAddDapit, setShowAddDapit] = useState(false);
     const { groups, instructors, personalInstractors } = useDataContext();
     const PersonalINstractorsComp = personalInstractors || [];
@@ -102,7 +102,7 @@ const Wall: React.FC<IWallProps> = (props) => {
     };
 
     const toPDF = () => {
-        console.log('toPDF');
+        //console.log('toPDF');
         const content = contentRef.current;
         const currentDate = new Date();
 
@@ -113,7 +113,7 @@ const Wall: React.FC<IWallProps> = (props) => {
     };
 
     const handleSubmitInWall = async (submitDapit: IDapitforSubmit) => {
-        console.log("the submit dapit is", submitDapit);
+        //console.log("the submit dapit is", submitDapit);
         await postDapit(submitDapit);
         handleCloseAddDapit();
     };

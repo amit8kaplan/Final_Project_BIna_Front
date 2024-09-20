@@ -26,7 +26,7 @@ const AddDapitPage: React.FC<IAddDapitProps> = (props) => {
     navigate("/");
   };
   const handleSubmitInAdd_dapit = async (submitDapit: IDapitforSubmit) =>{
-    console.log("the submit dapit is",submitDapit);
+    //console.log("the submit dapit is",submitDapit);
     await postDapit(submitDapit);
     handleCloseAddDapit();
   };

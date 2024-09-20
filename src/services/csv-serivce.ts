@@ -39,7 +39,7 @@ const flattenDapit = (dapit: any) => {
 // Main export function for all relevant data
 export const exportAllDataToCSV = (dataContext: any) => {
     const { sessions, instructors, groups, trainers, personalInstractors, dapits } = dataContext;
-    console.log('export dapits', dapits);
+    //console.log('export dapits', dapits);
     exportToCSV(sessions, 'sessions.csv');
     exportToCSV(instructors, 'instructors.csv');
     exportToCSV(groups, 'groups.csv');

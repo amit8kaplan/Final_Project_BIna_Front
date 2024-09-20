@@ -54,11 +54,11 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather, onSession
   const handleShow = () => setShow(true);
 
   const handleSendOtp = async () => {
-    console.log("OTP sent");
+    //console.log("OTP sent");
     setLoading(true); // Set loading to true
     try {
       const response = await sentOtp(clientId);
-      console.log('OTP Response:', response);
+      //console.log('OTP Response:', response);
       if (response.message === 'OTP sent via email') {
         setEmail(response.email);  // Set the email from the response
         setOtpSent(true);          // Set the OTP sent state to true
@@ -91,21 +91,21 @@ const SessionModal: React.FC<SessionModalProps> = ({handleCloseFather, onSession
 
   const handleVerifyOtp = async () => {
     if (otp.length === 6) {
-      console.log('OTP Verified: handleVerifyOtp', otp);
+      //console.log('OTP Verified: handleVerifyOtp', otp);
       try {
         const ins : IInstractor | undefined = instructors.find((instructor: IInstractor) => instructor._id === clientId);
         const resVerify = await verifyOtp(ins, otp, 1);
-        console.log('resVerify:', resVerify);
+        //console.log('resVerify:', resVerify);
         if (resVerify.res.message === "OTP verified and session opened") {
-          console.log("resVerify", resVerify);
-          console.log('resVerify.permissions:', resVerify.res.permissions);
+          //console.log("resVerify", resVerify);
+          //console.log('resVerify.permissions:', resVerify.res.permissions);
           sessionStorage.setItem('permissions', resVerify.res.permissions);
           // sessionStorage.setItem('ttl', resVerify.ttl);
           handleClose();
           handleCloseFather();
           onSessionChange(); // Trigger the session change callback
         } else {
-          console.log('OTP verified and session opened else');
+          //console.log('OTP verified and session opened else');
           setOtpError(resVerify.message);
         }
       } catch (error) {

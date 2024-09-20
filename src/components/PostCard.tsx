@@ -38,7 +38,7 @@ interface Icomments{
 
 const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
-    console.log("start of postCard")
+    // console.log("start of postCard")
     const [newDate, setNewDate] = useState<string | null>(null);
     const [showComments, setShowComments] = useState(false);
     const [selectedPost, setSelectedPost] = useState<any | null>(null);
@@ -46,7 +46,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const [likes, setLikes] = useState<ILikes[]>([]);
     const [comments, setComments] = useState<Icomments[]>([]);
     useEffect(()=>{
-        console.log('postCard: ', post);
+        // console.log('postCard: ', post);
         if (post.date !==null && post.date !== undefined) {
             setNewDate(dateOnly(post.date));
         }
@@ -61,7 +61,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, idTrainer }) => {
     const fetchFile = async () =>{
         try {
             if (post.filePath && post.filePath!=''){
-                console.log('get file', post.filePath)
+                // console.log('get file', post.filePath)
                 await getFile(post.filePath)
             }
         }catch(error){

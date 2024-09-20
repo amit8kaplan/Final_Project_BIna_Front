@@ -11,13 +11,13 @@ interface AddDapitPropsFromParent {
 }
 const NewDapit: React.FC = () => {
     const location = useLocation();
-    console.log(location.state)
+    //console.log(location.state)
     const instructors = location.state.instructors;
     const trainers = location.state.trainers;
     const sessions = location.state.sessions;
-    console.log("Instructors: ", instructors)
-    console.log("Trainers: ", trainers)
-    console.log("Sessions: ", sessions)
+    //console.log("Instructors: ", instructors)
+    //console.log("Trainers: ", trainers)
+    //console.log("Sessions: ", sessions)
     
     
 

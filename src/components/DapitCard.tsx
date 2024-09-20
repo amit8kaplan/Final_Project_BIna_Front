@@ -103,8 +103,8 @@ const DapitCard: React.FC<IDapitProps> = ({ selectedDapit, idTrainer }) => {
                 return;
             }
             const comments = await getComments(idTrainer);
-            console.log('Dapit id: ', selectedDapit._id);
-            console.log('fetchComments Dapit: ', comments);
+            // console.log('Dapit id: ', selectedDapit._id);
+            // console.log('fetchComments Dapit: ', comments);
             setComments(comments);
         } catch (error) {
             //console.error('Error fetching comments:', error);

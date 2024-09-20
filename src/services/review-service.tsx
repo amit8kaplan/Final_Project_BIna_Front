@@ -17,7 +17,7 @@ interface IcourseReview {
     try {
         const queryString = `?course_id=${courseID}`;
         const response = await apiClient.get(`/review${queryString}`);
-        console.log("the response is:", response.data);
+        //console.log("the response is:", response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching reviews:', error);
@@ -36,14 +36,14 @@ interface IcourseReview {
 }
 const fetchReviewsByOwner = async () => {
   const headers = await handleAccessToken();
-  console.log("headers" + JSON.stringify(headers))
-  console.log("headers" + {headers})
-  console.log("fetchRevByOwner")
+  //console.log("headers" + JSON.stringify(headers))
+  //console.log("headers" + {headers})
+  //console.log("fetchRevByOwner")
   if (headers == null) return;
 
   try{
       const response = await apiClient.get("/specific", {headers});
-      console.log("the response is:", response.data)
+      //console.log("the response is:", response.data)
       return response.data
   
   }
@@ -63,8 +63,8 @@ const deleteReview = async (reviewID: string) => {
   }
 }
 const updateReview = async (rev: IcourseReview) => {
-  console.log("updateReview")
-  console.log(rev._id)
+  //console.log("updateReview")
+  //console.log(rev._id)
   const headers = handleAccessToken();
   if (headers == null) return;
   try {

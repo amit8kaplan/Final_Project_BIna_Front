@@ -223,7 +223,7 @@ export function Home() {
         tension: 0.1
       }
     ];
-
+  
     if (selectedGradeChart !== 'courseAvgFinalGrade') {
       const groupData = groupAvgFinalGradeData[selectedGradeChart] || [];
       datasets.push({
@@ -236,12 +236,13 @@ export function Home() {
         tension: 0.1
       });
     }
-
+  
     if (selectedTrainerForAvg) {
       const trainerData = trainerAvgFinalGradeData[selectedTrainerForAvg] || [];
+      const filteredTrainerData = trainerData.map(data => data.avgGrade !== 0 ? data.avgGrade : null);
       datasets.push({
         label: `${selectedTrainerForAvg} ${selectedGradeType === 'finalGrade' ? 'Final Grade' : 'Chance Grade'}`,
-        data: trainerData.map(data => data.avgGrade),
+        data: filteredTrainerData,
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -249,7 +250,7 @@ export function Home() {
         tension: 0.1
       });
     }
-
+  
     return {
       labels: avgFinalGradeData.map(data => data.session),
       datasets
@@ -310,7 +311,7 @@ export function Home() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center bg-light" style={{ minHeight: '100vh', padding: '20px' }}>
+    <div className="d-flex flex-column justify-content-center align-items-center bg-light" style={{ minHeight: '10vh', padding: '20px' }}>
       <h1 className="mb-4">Welcome to the BIna Web App</h1>
       <div className="container">
         <div className="row">

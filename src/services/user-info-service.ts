@@ -254,7 +254,7 @@ export const newSession = async ( sessionName: string, silabuses: number[])=>{
 
 export const updateTrainer = async (trainerId: string, trainerName: string)=>{
     try {
-        console.log("updateTrainer, trainerName" , trainerName)
+        //console.log("updateTrainer, trainerName" , trainerName)
         const headers = getAuthHeaders()
         const trainerData:ITrainer ={
             name: trainerName,
@@ -298,7 +298,7 @@ export const updateGroup = async (groupId: string, groupName: string, idsTrainer
             idsInstractors: idsInstractors,
             _id: groupId
         }
-        console.log("updateGroup, groupData" , groupData, "headers", headers)
+        //console.log("updateGroup, groupData" , groupData, "headers", headers)
         const response = await apiClient.put("/user_info/updateGroup",groupData, {
             headers: headers,
             params: { groupId }

@@ -66,7 +66,7 @@ export interface DetailedDapit extends Dapit {
 
 const View: React.FC = () => {
   const [filters, setFilters] = useState<any>(null);
-  const {dapits, addDapitsFromCSV} = useDataContext();
+  const {dapits, addDapitsFromCSV, refreshfunc} = useDataContext();
   const [deleteCount, setDeleteCount] = useState(0);
   const [showEditDapit, setShowEditDapit] = useState(false);
   const [showDeleteDapit, setShowDeleteDapit] = useState(false);
@@ -78,7 +78,7 @@ const View: React.FC = () => {
   const [flagCSV, setFlagCSV] = useState(false);
   const clientId = useSessionStorage("client-id");
   const permission = useSessionStorage("permissions") || 'regular';
-  console.log("permission in view.tsx: ", permission)
+  //console.log("permission in view.tsx: ", permission)
   useEffect(() => {
     fetchInitialDapits();
     setShowDeleteDapit(false);
@@ -96,12 +96,12 @@ const View: React.FC = () => {
   };
 
   const handleFilterSubmitinFront = async (filters: any) => {
-    console.log("handleFilterSubmitinFront: ", filters)
-    console.log("handleFilterSubmitinFront filters: ", filters)
+    //console.log("handleFilterSubmitinFront: ", filters)
+    //console.log("handleFilterSubmitinFront filters: ", filters)
 
     try {
       const filteredDapits = await handleFiltersSubmit(filters);
-      console.log("handleFilterSubmitinFront filteredDapits: ", filteredDapits)
+      //console.log("handleFilterSubmitinFront filteredDapits: ", filteredDapits)
       setUseStateDapit(filteredDapits);
     } catch (error) {
       console.error('Error fetching filtered dapits:', error);
@@ -264,7 +264,7 @@ const View: React.FC = () => {
     };
 };
   const transformIDapitToDeatiledDapit = (idapit: IDapit): DetailedDapit => {
-    console.log("transformIDapitToDeatiledDapit: ", idapit)
+    //console.log("transformIDapitToDeatiledDapit: ", idapit)
     const dapit: DetailedDapit = {
       idInstractor: idapit.idInstractor,
       _id: idapit._id,
@@ -365,10 +365,10 @@ const View: React.FC = () => {
     try{ 
         const rowdapit :IDapit | undefined = dapitInIdapit.find(dapit => dapit._id === id);
         let detailsDapit: DetailedDapit | undefined;
-        console.log("handleRowClick: ", rowdapit)
+        //console.log("handleRowClick: ", rowdapit)
         if (rowdapit){
           detailsDapit = transformIDapitToDeatiledDapit(rowdapit);
-          console.log("all the dates: ", detailsDapit)
+          //console.log("all the dates: ", detailsDapit)
           setSelectedDapit(detailsDapit);
         }
       }
@@ -388,7 +388,7 @@ const View: React.FC = () => {
   const handleEditDapit = (id: string) => {
     try{
       const editDapit = dapitInIdapit.find(dapit => dapit._id === id);
-      console.log("handleEditDapit: ", editDapit)
+      //console.log("handleEditDapit: ", editDapit)
       setEditDapit(editDapit);
       setShowEditDapit(true);        
 
@@ -408,13 +408,14 @@ const View: React.FC = () => {
     setDeleteDapitData (dapit);
   }
   const handleDeleteDapitInView = async (id: string, idInstractor: string) => {
-    console.log("handleDeleteDapitInView: before try ", id);
+    //console.log("handleDeleteDapitInView: before try ", id);
     if (!id || id === '') handleCloseDeleteDapit();
     else {
       try {
-        console.log("handleDeleteDapitInView: ", id);
+        //console.log("handleDeleteDapitInView: ", id);
         const response = await deleteDapit(id, idInstractor);
-        console.log("handleDeleteDapitInView response: ", response);
+        //console.log("handleDeleteDapitInView response: ", response);
+        refreshfunc();
         handleCloseDeleteDapit();
         setDeleteCount(prevCount => prevCount + 1); // Update delete count
       } catch (error) {
@@ -423,11 +424,11 @@ const View: React.FC = () => {
     }
   };
   const handleSubmitInView = async (submitDapit: IDapitforSubmit) =>{
-    console.log("handleSubmitInView: ", submitDapit)
+    //console.log("handleSubmitInView: ", submitDapit)
     try{
       submitDapit._id = editDapit?._id;
       const response = await ChangeData(submitDapit);
-      console.log("handleSubmitInView response: ", response)
+      //console.log("handleSubmitInView response: ", response)
       handleCloseEditDapit();
     }catch (error) {
       console.error('Error posting dapit:', error);
@@ -438,19 +439,19 @@ const View: React.FC = () => {
     const fileInput = event.target;
     const file = fileInput.files?.[0];
     if (file) {
-        console.log('Importing trainers from CSV:', file.name);
+        //console.log('Importing trainers from CSV:', file.name);
         Papa.parse(file, {
             header: true,
             complete: async (results) => {
                 const dapitsCSV: IdapitFromCSV[] = results.data;
                 const dapitToSubmit : IDapitforSubmit[]= dapitsCSV.map(transformDapitFromCSVToSubmit);
                
-                console.log('Trainers from CSV:', dapitsCSV);
-                console.log("dapitToSubmit: ", dapitToSubmit)
+                //console.log('Trainers from CSV:', dapitsCSV);
+                //console.log("dapitToSubmit: ", dapitToSubmit)
                 for (const aDapit of dapitToSubmit) {
                   try {
                       if (aDapit._id) {
-                          console.log('Adding trainer from CSV with ID:', aDapit._id);
+                          //console.log('Adding trainer from CSV with ID:', aDapit._id);
                           await addDapitsFromCSV(aDapit);
                       }
                   } catch (error) {

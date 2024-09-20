@@ -97,7 +97,7 @@ const handleSelectOption = (option: string) => {
 
   const [ ,setCourseID] = useState<string>('');
   const fetchReviews = useCallback((spes_course: Course) => {
-      console.log("the course id is in fetchRev:" + spes_course._id)
+      // console.log("the course id is in fetchRev:" + spes_course._id)
       // console.log("the course id is in fetchRev:" + courseID)
       setCourseID(spes_course._id);
       const queryString = `?course_id=${spes_course._id}`;

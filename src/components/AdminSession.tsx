@@ -112,24 +112,24 @@ const AdminSession: React.FC = () => {
         const fileInput = event.target;
         const file = fileInput.files?.[0];
         if (file) {
-            console.log('Importing trainers from CSV:', file.name);
+            //console.log('Importing trainers from CSV:', file.name);
             Papa.parse(file, {
                 header: true,
                 complete: async (results) => {
                     const sessionCSV: ISession[] = results.data;
-                    console.log('Trainers from CSV:', sessionCSV);
+                    //console.log('Trainers from CSV:', sessionCSV);
                     for (const session of sessionCSV) {
                         if (session.name) {
-                            console.log('Adding trainer from CSV:', session);
+                            //console.log('Adding trainer from CSV:', session);
                             try {
                                 if (session._id) {
                                     const silabus: number[] = typeof session.silabus === 'string' 
                                     ? session.silabus.split(',').map(Number).filter(n => !isNaN(n)) 
                                     : [];
-                                    console.log('Adding trainer from CSV with silabus:', session.silabus);
+                                    //console.log('Adding trainer from CSV with silabus:', session.silabus);
                                     await addSessionFromCSV(session._id, session.name, silabus);
                                 } else {
-                                    console.log('Adding trainer from CSV without ID:', session.name);
+                                    //console.log('Adding trainer from CSV without ID:', session.name);
                                     await addSession(session.name, session.silabus);
                                 }
                             } catch (error) {

@@ -55,7 +55,7 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field:string ) => {
         const { name, value  } = e.target;
-        console.log("handleFilterChange in sideBar" , name , value, field);
+        //console.log("handleFilterChange in sideBar" , name , value, field);
         setFilters({
             ...filters,
             [field]: value
@@ -96,7 +96,7 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
         // Reset filters and enabledFilters to their initial state
         setFilters(initialFiltersState);
         setEnabledFilters(initialEnabledFiltersState);
-        console.log("All filters cleared.");
+        //console.log("All filters cleared.");
         onSubmit({});
     }
 
@@ -107,7 +107,7 @@ export function Sidebar_com({ onSubmit }: SidebarComProps) {
             }
             return acc;
         }, {} as any);
-        console.log("handleFilterSubmitinFront in sideBar" + JSON.stringify(activeFilters));
+        //console.log("handleFilterSubmitinFront in sideBar" + JSON.stringify(activeFilters));
         onSubmit(activeFilters);
     }
 

@@ -15,8 +15,8 @@ function StudentForm() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
     const onSubmit = (data: FieldValues) => {
-        console.log("on submit")
-        console.log(data)
+        // console.log("on submit")
+        // console.log(data)
     }
 
     return (

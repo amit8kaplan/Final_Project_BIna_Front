@@ -34,7 +34,7 @@ export const deleteAllCookies= () => {
     }
 }
 export const parseCookieToHeaders = (cookieString: string) => {
-    console.log('parseCookieToHeaders cookieString:', cookieString);
+    //console.log('parseCookieToHeaders cookieString:', cookieString);
     if (!cookieString || cookieString === '') {
         return {};
     }
@@ -54,25 +54,6 @@ export const parseCookieToHeaders = (cookieString: string) => {
     });
     return headers;
 }
-
-// // Function to send the parsed cookie as headers
-// const sendCookieToServer = async (instructorId: string, otp: string) => {
-//     try {
-//         if (instructorId) {
-//             const cookieString = document.cookie;
-//             const headers = parseCookieToHeaders(cookieString);
-//             const res = await apiClient.post('/auth/verify',
-//                 { clientId: instructorId, otpUser: otp },
-//                 {
-//                     headers: headers
-//                 }
-//             );
-//             console.log('Response:', res.data);
-//         }
-//     } catch (error) {
-//         console.error('Error:', error);
-//     }
-// }
 
 
 export const sentOtp = async (clientId: string) => {
@@ -108,7 +89,7 @@ export const getCookieByIdINValue = (idInstractor: string) => {
     // We want to check if the value is in the cookies based on the idInstractor only
     const decodedCookie = decodeURIComponent(document.cookie);
     const ca = decodedCookie.split(';');
-    console.log('getCookieByIdINValue ca:', ca);
+    //console.log('getCookieByIdINValue ca:', ca);
     const cookies = [];
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
@@ -149,54 +130,53 @@ export const deleteAllCookiesById = (cookies: string[]) => {
 }
 // document.cookie = `${instructor.name}=${Value}; Expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; Path=/`;
 export const setNewCookie = (instructorName: string, idInstractor: string, value: string, hours: number, permissions: string) => {
-    console.log('setNewCookie:', instructorName, idInstractor, value, hours);
+    //console.log('setNewCookie:', instructorName, idInstractor, value, hours);
 
     const newDate = new Date();
     const newExpires = new Date(newDate.getTime() + hours * 60 * 60 * 1000);
     const maxAge = hours * 60 * 60;
     
     const maxAgeString = `Max-Age=${hours * 60 * 60}`;
-    console.log('setNewCookie, maxAge, maxAgeString:', maxAge, maxAgeString);
-    console.log('setNewCookie, newDate (local):', newDate);
+    //console.log('setNewCookie, maxAge, maxAgeString:', maxAge, maxAgeString);
+    //console.log('setNewCookie, newDate (local):', newDate);
     const val = idInstractor + '_' + permissions + '_' +newExpires.toUTCString();
     const prevCookie = getCookieByIdINValue(instructorName);
-    console.log('setNewCookie prevCookie:', prevCookie);
+    //console.log('setNewCookie prevCookie:', prevCookie);
     // Check and handle existing cookies
     if (prevCookie.length === 1) {
-        console.log('setNewCookie, prevCookie.length === 1');
+        //console.log('setNewCookie, prevCookie.length === 1');
         const existingCookie = prevCookie[0];
         const existingExpiresString = existingCookie.split('_')[2];
         if (existingExpiresString) {
             const existingExpiresDate = new Date(existingExpiresString);
             const currentTime = new Date();
             const existingTTL = Math.floor((existingExpiresDate.getTime() - currentTime.getTime()) / 1000);
-            console.log('setNewCookie, existingTTL:', existingTTL);
+            //console.log('setNewCookie, existingTTL:', existingTTL);
 
             if (maxAge> existingTTL) {
                 deleteAllCookiesById(prevCookie);
             } else {
-                console.log('setNewCookie, newExpires <= existingExpires');
+                //console.log('setNewCookie, newExpires <= existingExpires');
                 return existingCookie;
             }
         }
     } else if (prevCookie.length > 1) {
-        console.log('setNewCookie, prevCookie.length > 1');
+        //console.log('setNewCookie, prevCookie.length > 1');
         deleteAllCookiesById(prevCookie);
     }
 
     // Setting new cookie
     const path = `path=/`;
-    // console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
+    //console.log('setNewCookie, setting new cookie:', instructorName, value, maxAgeString, path);
     document.cookie = `${instructorName}=${val}; ${maxAgeString}; ${path}`;
-    // Cookies.set(instructorName, val, { expires: hours / 24, path: '/' });
-    // console.log('setNewCookie, document.cookie:', document.cookie);
+    //console.log('setNewCookie, document.cookie:', document.cookie);
     return document.cookie;
 }
 
 export const getAllCookies = (): ICookie[] => {
-    // console.log('document.cookie:', document.cookie);
+    //console.log('document.cookie:', document.cookie);
     const decodedCookie = decodeURIComponent(document.cookie);
-    // console.log('decodedCookie:', decodedCookie);
+    //console.log('decodedCookie:', decodedCookie);
     const ca = decodedCookie.split(';'); // Split by semicolon
     const cookies: ICookie[] = [];
     const now = new Date();
@@ -223,7 +203,7 @@ export const getAllCookies = (): ICookie[] => {
 }
 
 export const addMoreTimeToCookie = async (instructorName: string, idInstractor:string, otp: string, hours: number) => {
-    console.log('addMoreTimeToCookie:', instructorName, idInstractor, otp, hours);
+    //console.log('addMoreTimeToCookie:', instructorName, idInstractor, otp, hours);
     if (idInstractor) {
         const prevCookies = getCookieByIdINValue(idInstractor);
         if (prevCookies.length >1) {
@@ -237,7 +217,7 @@ export const addMoreTimeToCookie = async (instructorName: string, idInstractor:s
                      { seconds: hours * 60 * 60} ,{
                         headers: headers,
                     });
-                console.log("res.status:", res.status);
+                //console.log("res.status:", res.status);
                 const docCookie = setNewCookie(instructorName, idInstractor, otp, hours, res.data.permissions);
                     return {cookie : document.cookie, res: res.data};
             }catch (error) {
@@ -249,7 +229,7 @@ export const addMoreTimeToCookie = async (instructorName: string, idInstractor:s
 
 }
 export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFromClient: string, otp: string, hours: number) => {
-    console.log('verifyNewOtp:', instructor, otp, hours, permissionAskingFromClient);
+    //console.log('verifyNewOtp:', instructor, otp, hours, permissionAskingFromClient);
     let res;
     if (instructor._id) {
         const prevCookies = getCookieByIdINValue(instructor._id);
@@ -257,21 +237,21 @@ export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFrom
             deleteAllCookiesById(prevCookies);
         }
         const headers = parseCookieToHeaders(prevCookies[0] || '');
-        console.log('headers:', headers);
-        console.log('clientId:instructor._id, otpUser: otp, permissionFromreq:permissionAskingFromClient, seconds: hours * 60 * 60', instructor._id, otp, permissionAskingFromClient, hours * 60 * 60);
+        //console.log('headers:', headers);
+        //console.log('clientId:instructor._id, otpUser: otp, permissionFromreq:permissionAskingFromClient, seconds: hours * 60 * 60', instructor._id, otp, permissionAskingFromClient, hours * 60 * 60);
         try{
             res = await apiClient.post('/auth/verifyNewOtp',
                     { clientId:instructor._id, otpUser: otp, permissionFromreq:permissionAskingFromClient, seconds: hours * 60 * 60 },
                     { headers: headers });
-            console.log("res.status:", res.status);
-            console.log("res:", res);
+            //console.log("res.status:", res.status);
+            //console.log("res:", res);
             if (res && res.status ===200 && res.data.permissions) {
                 // document.cookie = `${instructor.name}=${Value}; Expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; Path=/`;
                 const docCookie = setNewCookie(instructor.name, instructor._id, otp, hours, res.data.permissions);
                 setAuthHeaders(instructor._id, otp);
                 setPermissions(res.data.permissions);
-                console.log('docCookie:', docCookie);
-                console.log('res.data:', res.data);
+                //console.log('docCookie:', docCookie);
+                //console.log('res.data:', res.data);
                 if (document.cookie){
                     return {cookie : document.cookie, res: res.data}; 
                 }
@@ -287,12 +267,12 @@ export const verifyNewOtp = async (instructor: IInstractor, permissionAskingFrom
 }
 
 export const verifyOtpOnCookies = async (instructor: IInstractor, otp: string) => {
-    console.log('verifyOtp:', instructor, otp);
+    //console.log('verifyOtp:', instructor, otp);
     if (!instructor._id) {
         try {
             const response = await apiClient.post('/auth/verifyOtp', { clientId:instructor._id, otpUser: otp });
-            console.log("response.status:", response.status);
-            console.log("response.data:", response.data);
+            //console.log("response.status:", response.status);
+            //console.log("response.data:", response.data);
             if (response.status === 200) {
                 setPermissions(response.data.permissions);
                 setAuthHeaders(instructor._id!, otp);
@@ -308,7 +288,7 @@ export const verifyOtpOnCookies = async (instructor: IInstractor, otp: string) =
 export const deleteTheCookies =async  (idInstractor: string , otp: string) => {
     const headers = getAuthHeaders();
     
-    console.log('deleteTheCookies:', idInstractor, otp);
+    //console.log('deleteTheCookies:', idInstractor, otp);
     if (idInstractor && headers['client-id'] && headers['otp'] && headers['client-id']!= '' && headers['otp']!= '') {
         deleteAllCookiesById(getCookieByIdINValue(idInstractor));
         try{
@@ -317,8 +297,8 @@ export const deleteTheCookies =async  (idInstractor: string , otp: string) => {
             if (res.status === 200 && res.data.message === 'Session deleted successfully') {
                 deleteAllCookiesById(getCookieByIdINValue(idInstractor));
             }
-            console.log("res.status:", res.status);
-            console.log("res:", res);
+            //console.log("res.status:", res.status);
+            //console.log("res:", res);
             deleteAllHeaders()
             sessionStorage.removeItem('permissions');
             return res.data;

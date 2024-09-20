@@ -34,7 +34,7 @@ const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, course
   };
 
   const HandleBuyCourse = (course: Course, courseId: string) => {
-    console.log("the course id is:" + courseId)
+    //console.log("the course id is:" + courseId)
     course.Count = course.Count + 1;
     putCourse(course, courseId).then(() => {
       setBuyCourse(true);
@@ -45,7 +45,7 @@ const CourseCards: React.FC<ChildProps> = ({ searchQuery, selectedOption, course
 
 const handleReviews = async (courseId: string) => {
     const course = await courses.find((course) => course._id === courseId);
-    console.log("the course is: " + course)
+    //console.log("the course is: " + course)
     if (course) {
         await sendCourseIDToParent(course);
     }
@@ -53,7 +53,7 @@ const handleReviews = async (courseId: string) => {
 
   useEffect(() => {
     if (searchQuery && searchQuery.trim() !== '') {
-      console.log("the search query is:" + searchQuery)
+      //console.log("the search query is:" + searchQuery)
       fetchCoursesBySearch(searchQuery, selectedOption).then((res) => setCourses(res));
     } else {
       fetchData().then((res) => setCourses(res));

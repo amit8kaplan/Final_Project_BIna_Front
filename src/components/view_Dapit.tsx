@@ -52,13 +52,13 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const dateGoodFormat = new Date(selectedDapit.date).toISOString().split('T')[0];
   // const dateGoodFormat = ""
-  console.log(selectedDapit.date, "selectedDapit.date");
+  //console.log(selectedDapit.date, "selectedDapit.date");
   const onEmail = () => {
-    console.log('Emailing dapit details');
+    //console.log('Emailing dapit details');
   };
 
   useEffect(() => {
-    console.log('selectedDapit on view_dapit: ', selectedDapit);
+    //console.log('selectedDapit on view_dapit: ', selectedDapit);
   }, [selectedDapit]);
 
   const renderDetailedRatings = () => {

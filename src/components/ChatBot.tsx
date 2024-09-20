@@ -35,11 +35,11 @@ const ChatBotModal: React.FC = () => {
     };
 
     const handleSubmit = async () => {
-        console.log('Message sent');
+        //console.log('Message sent');
         try {
-            console.log("question", question);
+            //console.log("question", question);
             const res = await postChat(question);
-            console.log('res:', res);
+            //console.log('res:', res);
 
             if (res && res.response) {
                 setFullResponse(`Last Q: ${question}\nLast A: ${res.response}`);

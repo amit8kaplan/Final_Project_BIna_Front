@@ -9,7 +9,7 @@ function ListGroup({ items, onDeleteItem }: ListGroupProps) {
     const [selectedIndex, setSelectedIndex] = useState(-1)
 
     const handleClick = (index: number) => {
-        console.log(index)
+        // console.log(index)
         setSelectedIndex(index)
     }
 
