@@ -1,11 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession, IDapit } from "./public/interfaces";
+import { IGroup, IPersonalInstractor, IInstractor, ITrainer, ISession, IDapit, IdapitFromCSV } from "./public/interfaces";
 import { deleteInstractor,updateInstractor,updateTrainer,newInstractor,getAllGroups, getAllInstractors, getAllPersonalInstractors, getAllSessions, getAllTrainers, newTrainer,deleteTrainer } from "./services/user-info-service";
 import {updatePersonalInstractor,deletePersonalInstractor, newPersonalInstractor}from "./services/user-info-service";
 import {updateGroup, newGroup, deleteGroup} from "./services/user-info-service";
 import {newSession,updateSession,deleteSession} from "./services/user-info-service";
 import {newTrainerWithId, newGroupWithId,newInstractorWithId, newPersonalInstractorWithId} from "./services/user-info-service";
-import {getDapits} from "./services/dapit-serivce";
+import {getDapits,IDapitforSubmit,postDapitWithId} from "./services/dapit-serivce";
+import {DetailedDapit} from "./pages/view"
 import { set } from 'react-hook-form';
 interface DataContextProps {
     groups: IGroup[];
@@ -34,6 +35,7 @@ interface DataContextProps {
     addPersonalInstructorFromCSV: (id:string,instractorId: string, trainerId:string) => Promise<void>;
     addGrouFromCSV: (groupId: string, groupName: string, idsTrainers: string[], idsInstractors: string[]) => Promise<void>;
     addSessionFromCSV: (sessionId: string, sessionName: string, sessionSilabus: number[]) => Promise<void>;
+    addDapitsFromCSV: (DapitData:IDapitforSubmit) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -56,6 +58,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
                 const sessions = await getAllSessions();
                 const personalInstractors = await getAllPersonalInstractors();
                 setDapits(dapits);
+                console.log("dapits in useContext", dapits);
                 setGroups(groups);
                 setInstructors(instructors);
                 setTrainers(trainers);
@@ -330,6 +333,21 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             console.error('Error adding session:', error);
         }
     }
+    const addDapitsFromCSV = async (DapitData: IDapitforSubmit) => {
+        console.log("addDapitsFromCSV", DapitData);
+        let res:any;
+        try {
+            if (DapitData && DapitData._id && DapitData._id.length > 0 && DapitData._id!= '') {
+                res = await postDapitWithId(DapitData);   
+                if (res.data) {
+                setDapits(prevDapits => [...prevDapits, res.data]);
+                }
+            }
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error('Error adding dapits:', error);
+        }
+    }
 
     return (
         <DataContext.Provider value={{
@@ -339,7 +357,7 @@ export const DataContextProvider: React.FC<{ children: ReactNode }> = ({ childre
               editPersonalInstructor,deletePersonalInstructor,editGroup, addGroup,
               deleteGroupInDataContext,addSession,editSession,deleteSessionInDataContext,
               addTrainerFromCSV,addInstractorFromCSV,addPersonalInstructorFromCSV,
-              addGrouFromCSV, addSessionFromCSV
+              addGrouFromCSV, addSessionFromCSV,addDapitsFromCSV
                }}>
             {children}
         </DataContext.Provider>

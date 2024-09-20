@@ -195,6 +195,12 @@ const Piano: React.FC<IpianoProps> = (props) => {
     textDecoration: 'none'
   };
 
+  const formatNumber = (num: number): string => {
+    if (num === 0) return '';
+    const fixedNum = num.toFixed(2);
+    return fixedNum.endsWith('.00') ? num.toString() : fixedNum;
+  };
+
   return (
     <div className="d-flex">
       <Sidebar_piano
@@ -227,7 +233,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                   <td style={fixedCellStyle}>{trainer.name}</td>
                   {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
                     <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0) ||0) : {}) }}>
-                      {AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || ''}
+                      {formatNumber(parseFloat(AveragePerformance?.["avgHanichPerPreformance"]?.[trainer.name]?.[category] || 0))}
                     </td>
                   ))}
                 </tr>
@@ -254,7 +260,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                 <td style={fixedCellStyle}>{session.name}</td>
                                 {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
                                   <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0) || 0): {}) }}>
-                                    {AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || ''}
+                                    {formatNumber(parseFloat(AveragePerformance?.["ResavgPerformance"]?.[trainer.name]?.[session.name]?.[category] || 0))}
                                   </td>
                                 ))}
                               </tr>
@@ -307,7 +313,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
                                                 >
                                                   <td style={{ ...fixedCellStyle, ...(cellStyle? getCellStyle(parseFloat(check) || 0) : {})
                                                  }}>
-                                                    {check}
+                                                    {formatNumber(parseFloat(check))}
                                                   </td>
                                                 </OverlayTrigger>
                                               );
@@ -335,7 +341,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
               <td style={fixedCellStyle}>Avg Group</td>
               {columnOrder.filter(col => visibleColumns.includes(col)).map((category, idx) => (
                 <td key={idx} style={{ ...fixedCellStyle, ...(cellStyle?  getCellStyle(parseFloat(AveragePerformance?.["avgGroup"]?.[category] || 0) ||0 ) : {})}}>
-                  {AveragePerformance?.["avgGroup"]?.[category] || ''}
+                  {formatNumber(parseFloat(AveragePerformance?.["avgGroup"]?.[category] || 0))}
                 </td>
               ))}
             </tr>

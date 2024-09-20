@@ -76,6 +76,66 @@ export interface ILikes{
     _id?: string;
 }
 
+export interface IdapitFromCSV {
+        _id: string;
+        nameInstractor: string;
+        namePersonalInstractor: string;
+        nameTrainer: string;
+        group: string;
+        idPersonalInstractor: string;
+        idInstractor: string;
+        idTrainer: string;
+        session: string;
+        silabus: string;
+        date: string;
+        identification_0_value: string;
+        identification_0_description: string;
+        payload_0_value: string;
+        payload_0_description: string;
+        decryption_0_value: string;
+        decryption_0_description: string;
+        workingMethod_0_value: string;
+        workingMethod_0_description: string;
+        understandingTheAir_0_value: string;
+        understandingTheAir_0_description: string;
+        flight_0_value: string;
+        flight_0_description: string;
+        theoretical_0_value: string;
+        theoretical_0_description: string;
+        thinkingInAir_0_value: string;
+        thinkingInAir_0_description: string;
+        safety_0_value: string;
+        safety_0_description: string;
+        briefing_0_value: string;
+        briefing_0_description: string;
+        debriefing_0_value: string;
+        debriefing_0_description: string;
+        debriefingInAir_0_value: string;
+        debriefingInAir_0_description: string;
+        implementationExecise_0_value: string;
+        implementationExecise_0_description: string;
+        dealingWithFailures_0_value: string;
+        dealingWithFailures_0_description: string;
+        dealingWithStress_0_value: string;
+        dealingWithStress_0_description: string;
+        makingDecisions_0_value: string;
+        makingDecisions_0_description: string;
+        pilotNature_0_value: string;
+        pilotNature_0_description: string;
+        crewMember_0_value: string;
+        crewMember_0_description: string;
+        advantage_0: string;
+        advantage_1: string;
+        advantage_2: string;
+        disavantage_0: string;
+        disavantage_1: string;
+        disavantage_2: string;
+        changeTobeCommender: string;
+        finalGrade: string;
+        summerize: string;
+        __v: string;
+    }
+
 export interface IDapit {
     nameInstractor: string;
     namePersonalInstractor: string;

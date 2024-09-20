@@ -1,5 +1,6 @@
 import apiClient from "./api-client";
 import { getAuthHeaders,verifyRegular,getPermissions } from "../public/data";
+import { IDapit } from "../public/interfaces";
 
 export interface IDapitforSubmit {
     nameInstractor: string;
@@ -74,6 +75,26 @@ export const getDapits = async (filters: any) => {
     } catch (error) {
         console.error('Error fetching dapits:', error);
         
+    }
+}
+export const postDapitWithId = async (dapit: IDapitforSubmit) => {
+    console.log("postDapitWithId dapit: ", dapit);
+    try {
+        let response;
+        const authHeaders = getAuthHeaders();
+        const permissions = getPermissions();
+        const headers = {
+            ...authHeaders,
+            ...(permissions ? { permissions } : {})
+        };
+        if (!headers || !headers['client-id'] || !headers['otp']) {
+            throw new Error('Client ID and OTP are required');
+        }
+        response = await apiClient.post("/dapit/postWithId", 
+            dapit, {headers: headers});
+        return response.data;
+    } catch (error) {
+        console.error('Error posting dapit:', error);
     }
 }
 

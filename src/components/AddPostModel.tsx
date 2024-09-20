@@ -14,7 +14,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({ show, handleClose, handleSa
   const [file, setFile] = useState<File | null>(null);
   const [instractorID, setInstractorID] = useState<string>();
   const [instractorName, setInstractorName] = useState<string>();
-  const { instructors,} =  useDataContext();
+  const { instructors} =  useDataContext();
   const InstractorsComp = instructors || [];
   const handleChageInsName = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = e.target as HTMLSelectElement;

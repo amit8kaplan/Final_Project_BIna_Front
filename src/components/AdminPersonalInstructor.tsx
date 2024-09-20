@@ -168,7 +168,7 @@ const AdminPersonalInstructor: React.FC = () => {
         <div>
             <Row>
                 <Col>
-                    <h4>Personal Instructors {personalInstructorsComp.length}</h4>
+                    <h4>Personal Ins {personalInstructorsComp.length}</h4>
                 </Col>
                 <Col className="text-end">
                     <FontAwesomeIcon 

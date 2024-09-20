@@ -5,14 +5,17 @@ import ViewDapit from '../components/view_Dapit';
 import { deleteDapit, handleFiltersSubmit } from '../services/dapit-serivce';
 import { borderLeftStyle } from 'html2canvas/dist/types/css/property-descriptors/border-style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import AddDapit from '../components/AddDapit';
 import { set } from 'react-hook-form';
 import {IDapitforSubmit, ChangeData }from '../services/dapit-serivce';
 import { IDapit } from '../public/interfaces';
 import useSessionStorage from '../hooks/useSessionStorage';
-import {defaultInstractor, defaultTrainer} from "../public/interfaces"
+import {defaultInstractor, defaultTrainer, IdapitFromCSV} from "../public/interfaces"
 import DeleteDapitModal from '../components/DeleteDapitModal';
+import { Button, Row, Col, Table, Modal, Form } from 'react-bootstrap';
+import Papa from 'papaparse';
+import { useDataContext } from '../DataContext';
 
 
 
@@ -30,7 +33,7 @@ export interface Dapit {
   changeToBeCommender: number | undefined;
 }
 
-interface DetailedDapit extends Dapit {
+export interface DetailedDapit extends Dapit {
   tags: string[];
   nameTrainer: string;
   silabus: number | undefined;
@@ -63,28 +66,30 @@ interface DetailedDapit extends Dapit {
 
 const View: React.FC = () => {
   const [filters, setFilters] = useState<any>(null);
+  const {dapits, addDapitsFromCSV} = useDataContext();
   const [deleteCount, setDeleteCount] = useState(0);
   const [showEditDapit, setShowEditDapit] = useState(false);
   const [showDeleteDapit, setShowDeleteDapit] = useState(false);
   const [deleteDapitData, setDeleteDapitData] = useState<Dapit | undefined>(undefined);
-  const [dapits, setDapits] = useState<Dapit[]>([]);
+  const [useStateDapit, setUseStateDapit] = useState<Dapit[]>([]);
   const [dapitInIdapit, setDapitInIdapit] = useState<IDapit[]>([]);
   const [selectedDapit, setSelectedDapit] = useState<DetailedDapit | null>(null);
   const [editDapit, setEditDapit] = useState<IDapit | undefined>(undefined);
+  const [flagCSV, setFlagCSV] = useState(false);
   const clientId = useSessionStorage("client-id");
   const permission = useSessionStorage("permissions") || 'regular';
   console.log("permission in view.tsx: ", permission)
   useEffect(() => {
     fetchInitialDapits();
     setShowDeleteDapit(false);
-  }, [showEditDapit, deleteCount]); // Add deleteCount here
+  }, [showEditDapit, deleteCount,flagCSV]); // Add deleteCount here
 
   const fetchInitialDapits = async () => {
     try {
       const fetchedDapits = await handleFiltersSubmit({});
       setDapitInIdapit(fetchedDapits);
       const transformDapits = fetchedDapits.map(transformIdapitToDapit);
-      setDapits(transformDapits);
+      setUseStateDapit(transformDapits);
     } catch (error) {
       console.error('Error fetching initial dapits:', error);
     }
@@ -97,7 +102,7 @@ const View: React.FC = () => {
     try {
       const filteredDapits = await handleFiltersSubmit(filters);
       console.log("handleFilterSubmitinFront filteredDapits: ", filteredDapits)
-      setDapits(filteredDapits);
+      setUseStateDapit(filteredDapits);
     } catch (error) {
       console.error('Error fetching filtered dapits:', error);
     }
@@ -174,6 +179,90 @@ const View: React.FC = () => {
     };
     return idapit;
   }
+  const transformDapitFromCSVToSubmit = (csvData: IdapitFromCSV): IDapitforSubmit => {
+    const transformField = (value: string): number | undefined => value ? parseFloat(value) : undefined;
+
+    return {
+        _id: csvData._id,
+        nameInstractor: csvData.nameInstractor,
+        namePersonalInstractor: csvData.namePersonalInstractor,
+        nameTrainer: csvData.nameTrainer,
+        group: csvData.group,
+        idPersonalInstractor: csvData.idPersonalInstractor,
+        idInstractor: csvData.idInstractor,
+        idTrainer: csvData.idTrainer,
+        session: csvData.session,
+        silabus: transformField(csvData.silabus),
+        date: new Date(csvData.date),
+        identification: [
+            { value: transformField(csvData.identification_0_value), description: csvData.identification_0_description }
+        ],
+        payload: [
+            { value: transformField(csvData.payload_0_value), description: csvData.payload_0_description }
+        ],
+        decryption: [
+            { value: transformField(csvData.decryption_0_value), description: csvData.decryption_0_description }
+        ],
+        workingMethod: [
+            { value: transformField(csvData.workingMethod_0_value), description: csvData.workingMethod_0_description }
+        ],
+        understandingTheAir: [
+            { value: transformField(csvData.understandingTheAir_0_value), description: csvData.understandingTheAir_0_description }
+        ],
+        flight: [
+            { value: transformField(csvData.flight_0_value), description: csvData.flight_0_description }
+        ],
+        theoretical: [
+            { value: transformField(csvData.theoretical_0_value), description: csvData.theoretical_0_description }
+        ],
+        thinkingInAir: [
+            { value: transformField(csvData.thinkingInAir_0_value), description: csvData.thinkingInAir_0_description }
+        ],
+        safety: [
+            { value: transformField(csvData.safety_0_value), description: csvData.safety_0_description }
+        ],
+        briefing: [
+            { value: transformField(csvData.briefing_0_value), description: csvData.briefing_0_description }
+        ],
+        debriefing: [
+            { value: transformField(csvData.debriefing_0_value), description: csvData.debriefing_0_description }
+        ],
+        debriefingInAir: [
+            { value: transformField(csvData.debriefingInAir_0_value), description: csvData.debriefingInAir_0_description }
+        ],
+        implementationExecise: [
+            { value: transformField(csvData.implementationExecise_0_value), description: csvData.implementationExecise_0_description }
+        ],
+        dealingWithFailures: [
+            { value: transformField(csvData.dealingWithFailures_0_value), description: csvData.dealingWithFailures_0_description }
+        ],
+        dealingWithStress: [
+            { value: transformField(csvData.dealingWithStress_0_value), description: csvData.dealingWithStress_0_description }
+        ],
+        makingDecisions: [
+            { value: transformField(csvData.makingDecisions_0_value), description: csvData.makingDecisions_0_description }
+        ],
+        pilotNature: [
+            { value: transformField(csvData.pilotNature_0_value), description: csvData.pilotNature_0_description }
+        ],
+        crewMember: [
+            { value: transformField(csvData.crewMember_0_value), description: csvData.crewMember_0_description }
+        ],
+        advantage: [
+            csvData.advantage_0,
+            csvData.advantage_1,
+            csvData.advantage_2
+        ],
+        disavantage: [
+            csvData.disavantage_0,
+            csvData.disavantage_1,
+            csvData.disavantage_2
+        ],
+        changeTobeCommender: transformField(csvData.changeTobeCommender),
+        finalGrade: transformField(csvData.finalGrade),
+        summerize: csvData.summerize
+    };
+};
   const transformIDapitToDeatiledDapit = (idapit: IDapit): DetailedDapit => {
     console.log("transformIDapitToDeatiledDapit: ", idapit)
     const dapit: DetailedDapit = {
@@ -344,13 +433,71 @@ const View: React.FC = () => {
       console.error('Error posting dapit:', error);
     }
   }
+
+  const handleImportCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
+    if (file) {
+        console.log('Importing trainers from CSV:', file.name);
+        Papa.parse(file, {
+            header: true,
+            complete: async (results) => {
+                const dapitsCSV: IdapitFromCSV[] = results.data;
+                const dapitToSubmit : IDapitforSubmit[]= dapitsCSV.map(transformDapitFromCSVToSubmit);
+               
+                console.log('Trainers from CSV:', dapitsCSV);
+                console.log("dapitToSubmit: ", dapitToSubmit)
+                for (const aDapit of dapitToSubmit) {
+                  try {
+                      if (aDapit._id) {
+                          console.log('Adding trainer from CSV with ID:', aDapit._id);
+                          await addDapitsFromCSV(aDapit);
+                      }
+                  } catch (error) {
+                      console.error('Error adding trainer from CSV:', error);
+                  }
+                }
+                // Reset the file input value
+                fileInput.value = '';
+                setFlagCSV(!flagCSV);
+            },
+            error: (error) => {
+                console.error('Error parsing CSV:', error);
+                // Reset the file input value
+                fileInput.value = '';
+            }
+        });
+    }
+};
+
+
   return (
     <div className="d-flex">
       <Sidebar_com onSubmit={handleFilterSubmitinFront} />
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">
-            <h3>Dapits List</h3>
+            <Col>
+              <h3>Dapits List</h3>
+            </Col>
+            {permission&& permission =='admin' && (
+              <Col className="">
+              <label htmlFor="import-dapits-csv">
+                          <FontAwesomeIcon
+                          icon={faFileImport}
+                          className='me-1'
+                          style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}
+                            />
+                      </label>
+                      <input
+                          type="file"
+                          id="import-dapits-csv"
+                          accept=".csv"
+                          style={{ display: 'none' }}
+                          onChange={handleImportCSV}
+                      />
+              </Col>
+            )}
             <table className="table table-hover">
               <thead>
                 <tr>
@@ -364,7 +511,7 @@ const View: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-              {dapits.map(dapit => (
+              {useStateDapit.map(dapit => (
                 <tr key={dapit._id}>
                   <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.nameTrainer}</td>
                   <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.nameInstractor}</td>

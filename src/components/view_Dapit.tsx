@@ -92,10 +92,14 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
               <ul className="list-group">
                 {item.data.map((data, idx) => (
                   <li key={idx} className="list-group-item" style={getCellStyle(data.value || undefined)}>
-                    {data.value !== undefined ? (
+                    {data.value !== undefined && data.value != 0 ? (
                       <strong>{data.value}</strong>
                     ) : null}
-                    <span style={{ color: data.value !== undefined && data.value!== null ? 'inherit' : 'white' }}>:</span>
+                    <span style={{ color: data.value !== undefined && data.value != 0 && data.value !== null
+                      && data.description !== undefined && data.description !== null && data.description !== "" 
+                      ? 'inherit' : 'white' }}>                      
+                      { data.value != 0 || data.description !== "" ? '' : ':'}
+                    </span>
                     <span> {data.description}</span>
                   </li>
                 ))}
@@ -107,10 +111,14 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
                 <ul className="list-group">
                   {ratingCategories[index + 1].data.map((data, idx) => (
                     <li key={idx} className="list-group-item" style={getCellStyle(data.value || undefined)}>
-                      {data.value !== undefined ? (
+                      {data.value !== undefined &&  data.value != 0? (
                         <strong>{data.value}</strong>
                       ) : null}
-                      <span style={{ color: data.value !== undefined ? 'inherit' : 'white' }}>:</span>
+                     <span style={{ color: data.value !== undefined && data.value != 0 && data.value !== null
+                      && data.description !== undefined && data.description !== null && data.description !== "" 
+                      ? 'inherit' : 'white' }}>                      
+                      { data.value != 0 || data.description !== "" ? '' : ':'}
+                    </span>
                       <span> {data.description}</span>
                     </li>
                   ))}
