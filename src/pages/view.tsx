@@ -30,7 +30,7 @@ export interface Dapit {
   session: string | undefined;
   silabus: number |undefined;
   finalGrade: number | undefined;
-  changeToBeCommender: number | undefined;
+  changeTobeCommender: number | undefined;
 }
 
 export interface DetailedDapit extends Dapit {
@@ -59,7 +59,7 @@ export interface DetailedDapit extends Dapit {
   advantage: string[];
   disavantage: string[];
   summerize: string;
-  changeToBeCommender: number | undefined;
+  changeTobeCommender: number | undefined;
   finalGrade: number |undefined;
   date: Date;
 }
@@ -133,7 +133,7 @@ const View: React.FC = () => {
       session: idapit.session || '',
       silabus: idapit.silabus || 0,
       finalGrade: idapit.finalGrade || 0,
-      changeToBeCommender: idapit.changeTobeCommender || 0,
+      changeTobeCommender: idapit.changeTobeCommender || 0,
     };
     return dapit;
   }
@@ -173,7 +173,7 @@ const View: React.FC = () => {
       crewMember: dapit.crewMember,
       advantage: dapit.advantage,
       disavantage: dapit.disavantage,
-      changeTobeCommender: dapit.changeToBeCommender,
+      changeTobeCommender: dapit.changeTobeCommender,
       finalGrade: dapit.finalGrade,
       summerize: dapit.summerize,
     };
@@ -277,7 +277,7 @@ const View: React.FC = () => {
       session: idapit.session,
       silabus: idapit.silabus,
       finalGrade: idapit.finalGrade,
-      changeToBeCommender: idapit.changeTobeCommender,
+      changeTobeCommender: idapit.changeTobeCommender,
       tags: idapit.tags || [],
       date: idapit.date,
       identification: idapit.identification.map(item => ({
@@ -520,7 +520,7 @@ const View: React.FC = () => {
                   <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.session}</td>
                   <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.silabus}</td>
                   <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.finalGrade}</td>
-                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.changeToBeCommender}</td>
+                  <td onClick={() => handleRowClick(dapit._id ?? '')} style={{ ...getCellStyle(dapit.finalGrade || undefined), cursor: 'pointer' }}>{dapit.changeTobeCommender}</td>
                   {(permission === 'admin' && clientId) || dapit.idInstractor === clientId ? (
                   <td style={{ borderRight: '1px dashed rgba(0, 0, 0, 0.5)' }}>
                       <FontAwesomeIcon icon={faPen} style={{cursor: 'pointer'}} onClick={() => handleEditDapit(dapit._id ?? '')} />

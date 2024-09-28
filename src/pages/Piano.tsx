@@ -205,7 +205,7 @@ const Piano: React.FC<IpianoProps> = (props) => {
       case 'finalGrade':
         return 'Final Grade';
       case 'changeTobeCommender':
-        return 'Changes';
+        return 'Chances';
       case 'understandingTheAir':
         return 'Understanding The Air';
       case 'thinkingInAir':

@@ -200,9 +200,14 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     if (!dapitData.session) missingFields.push('Session');
     if (!dapitData.silabus) missingFields.push('silabus');
     if (!dapitData.summerize || dapitData.summerize === "" || dapitData.summerize === null) missingFields.push('Summerize');
-    if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
-    if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
-
+    if (dapitData.finalGrade === undefined ||
+      dapitData.finalGrade<4 || dapitData.finalGrade>10 ||
+      dapitData.finalGrade === null || isNaN(dapitData.finalGrade))
+        missingFields.push('Final Grade');
+    if (dapitData.changeTobeCommender === undefined ||
+      dapitData.changeTobeCommender<4 || dapitData.changeTobeCommender>10 ||
+      isNaN(dapitData.changeTobeCommender))
+        missingFields.push('Change to be Commander');
     if (missingFields.length > 0) {
       setValidationMessage(` ${missingFields.join(', ')}`);
     } else {
@@ -230,7 +235,16 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     const fileName = "Draft_dapit_of"+dapitData.nameTrainer+"_"+dapitData.session+"_"+dapitData.silabus+"_"+dapitData.nameInstractor;
     downloadPdf(content, fileName);
   };
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: string) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> |number, field: string) => {
+    if (typeof e === 'number') {
+      if (e<4 || e>10) {
+        return;
+      }
+      else{
+      setDapitData({ ...dapitData, [field]: e });
+      return;
+      }
+    }
     const val = e.target.value;
     const value = e.target.value;
     let key: string | null = null;
@@ -380,9 +394,14 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
     if (!dapitData.group) missingFields.push('Group');
     if (!dapitData.session) missingFields.push('Session');
     if (!dapitData.silabus) missingFields.push('silabus');
-    if (dapitData.finalGrade === undefined) missingFields.push('Final Grade');
+    if (dapitData.finalGrade === undefined ||
+       dapitData.finalGrade<4 || dapitData.finalGrade>10 ||
+        dapitData.finalGrade === null || isNaN(dapitData.finalGrade)) missingFields.push('Final Grade');
     if (dapitData.summerize === '' || !dapitData.summerize || dapitData.summerize == null) missingFields.push('Summerize');
-    if (dapitData.changeTobeCommender === undefined) missingFields.push('Change to be Commander');
+    if (dapitData.changeTobeCommender === undefined ||
+       dapitData.changeTobeCommender<4 || dapitData.changeTobeCommender>10 ||
+       isNaN(dapitData.changeTobeCommender))
+       missingFields.push('Change to be Commander');
     if (sessionStorage.getItem('client-id'))
     if (missingFields.length > 0) {
       setValidationMessage(` ${missingFields.join(', ')}`);
@@ -470,6 +489,7 @@ const AddDapit: React.FC<IAddDapitProps> = (props) => {
             changeTobeCommender:  undefined,
         });
         refreshfunc();
+        console.log("submitDapit",submitDapit.changeTobeCommender, submitDapit.finalGrade);
         props.handleSubmit(submitDapit);
         // handleOnClose();
     }catch(error){
@@ -793,8 +813,11 @@ const getCellStyle = (value: number | undefined) => {
                 max="10"
                 required
                 value={dapitData.finalGrade}
-                onChange={(e) => handleChange(e, 'finalGrade')}
-              />
+                onChange={(e) =>{
+                  let value = (Math.max(4, Math.min(10, parseInt(e.target.value, 10))));
+                   handleChange(value, 'finalGrade')}
+                }
+                />
             </Col>
             <Col md={6}>
               <h4>Chance to be a Commander</h4>

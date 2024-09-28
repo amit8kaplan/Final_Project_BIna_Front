@@ -43,7 +43,7 @@ interface IDapitProps {
     disavantage: string[];
     summerize: string;
     finalGrade: number | undefined;
-    changeToBeCommender: number | undefined;
+    changeTobeCommender: number | undefined;
   };
   onClose: () => void;
 }
@@ -246,8 +246,8 @@ const ViewDapit: React.FC<IDapitProps> = ({ selectedDapit, onClose }) => {
             <div className="col-md-6">
             <h4>Chance to be a Commander</h4>
               <ul className="list-group">
-                <li className="list-group-item" style={getCellStyle(selectedDapit.changeToBeCommender || undefined)}>
-                  <strong>{selectedDapit.changeToBeCommender}</strong>
+                <li className="list-group-item" style={getCellStyle(selectedDapit.changeTobeCommender || undefined)}>
+                  <strong>{selectedDapit.changeTobeCommender}</strong>
                 </li>
               </ul>
             </div>
